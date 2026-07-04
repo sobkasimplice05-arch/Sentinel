@@ -1,0 +1,129 @@
+﻿# ============================================================
+# 🛡️ SENTINEL CONFIGURATION
+# Version: 1.0
+# Updated: 2026-07-XX
+# ============================================================
+
+# === APPLICATION ===
+app:
+  name: "Sentinel"
+  version: "1.0.0"
+  environment: "development"
+  debug: true
+
+# === MODELS - LOCAL FIRST ===
+models:
+  default: "mistral"
+  fallback: "phi"
+  
+  endpoints:
+    # Ollama Local Models
+    mistral:
+      name: "Mistral 7B"
+      provider: "ollama"
+      url: "http://localhost:11434"
+      model_name: "mistral"
+      context_length: 8192
+      temperature: 0.3
+      max_tokens: 2000
+      timeout: 120
+    
+    qwen:
+      name: "Qwen 2.5-Coder 7B"
+      provider: "ollama"
+      url: "http://localhost:11434"
+      model_name: "qwen2.5-coder:7b"
+      context_length: 8192
+      temperature: 0.5
+      max_tokens: 3000
+      timeout: 120
+    
+    phi:
+      name: "Phi 2.7B (Lightweight)"
+      provider: "ollama"
+      url: "http://localhost:11434"
+      model_name: "phi"
+      context_length: 2048
+      temperature: 0.5
+      max_tokens: 1000
+      timeout: 60
+
+# === SAFETY RULES ===
+safety:
+  enable_sycophancy_detection: true
+  enable_suicide_detection: true
+  enable_jailbreak_detection: true
+  enable_hallucination_check: true
+  enable_grammar_correction: true
+  
+  thresholds:
+    sycophancy_score: 0.7          # Alerte si > 70%
+    confidence_threshold: 0.65      # Nécessite vérification si < 65%
+    quality_gate_minimum: 0.85      # Rejette si < 85%
+  
+  safety_keywords:
+    - "[terme_auto_destruction_1]"
+    - "[terme_auto_destruction_2]"
+    - "[terme_risque_physique_3]"
+    - "[terme_urgence_medicale_4]"
+  
+  jailbreak_patterns:
+    - "ignore les instructions"
+    - "simule que tu es"
+    - "oublie tes garde-fous"
+    - "contourne"
+    - "bypass"
+    - "détourne"
+
+# === QUALITY GATES ===
+quality_gates:
+  syntax_check: true
+  logic_validation: true
+  security_analysis: true
+  hallucination_detection: true
+  completeness_check: true
+
+# === LOGGING ===
+logging:
+  level: "INFO"
+  log_dir: "./logs"
+  max_size_mb: 100
+  backup_count: 5
+  format: "json"  # Pour parsing facile
+  
+  outputs:
+    - type: "file"
+      path: "./logs/sentinel_{time}.log"
+      rotation: "500 MB"
+      
+    - type: "console"
+      colorize: true
+
+# === TRANSPARENCY ===
+transparency:
+  enable_logging: true
+  log_all_decisions: true
+  log_dir: "./logs"
+  include_metadata: true
+  
+# === DEPLOYMENT ===
+deployment:
+  host: "0.0.0.0"
+  port: 8000
+  debug: false
+  max_workers: 4
+  
+# === FEATURES ===
+features:
+  grammar_correction:
+    enabled: true
+    language: "fr"
+    
+  accuracy_coaching:
+    enabled: true
+    track_improvements: true
+    
+  multi_ai_orchestration:
+    enabled: true
+    local_first: true
+    cloud_fallback: false  # $0 budget
