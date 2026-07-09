@@ -1,161 +1,103 @@
-﻿# 🛡️ SENTINEL
-**One AI to rule them all** - Transparent, Secure, Honest AI Orchestrator
+🛡️ SENTINEL
 
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![Status: In Development](https://img.shields.io/badge/Status-In%20Development-yellow.svg)](#)
+[![License: MIT](https://shields.io)](https://opensource.org)
+[![Python 3.11+](https://shields.io)](https://python.org)
+[![Status: Active Development](https://shields.io)]()
+
+**Sentinel** is an open-source, local-first LLM governance and orchestration layer designed to enforce absolute transparency, multi-layered security, and unbiased alignment. 
+
+Unlike commercial AI assistants that optimize for user compliance (sycophancy), Sentinel optimizes for strict factuality and structural audibility.
 
 ---
 
-## 🎯 Mission
+## 🎯 Value Proposition
 
-Build an AI that refuses to flatter you, admits its limits, and routes you to a human when it matters.
-
-Most AI assistants optimize for user satisfaction. Sentinel optimizes for **honesty**.
+* **Zero Complacency (Anti-Sycophancy):** Detects and neutralizes AI brown-noser behaviors, ensuring objective, raw outputs.
+* **Deterministic Auditing:** Logs 100% of pipeline decisions, execution metadata, and confidence scores into verifiable local JSON schemas.
+* **Hardened Security Guardrails:** Intercepts jailbreaks, prompts injection, and hallucinations before execution and delivery.
+* **Sovereign & Local-First:** Orchestrates open-weight models locally via Ollama with zero data leakage, zero latency overhead, and $0 API costs.
 
 ---
 
 ## ✨ Core Features
 
-✅ **100% Auditable** - Every decision logged in JSON  
-✅ **Multi-IA Orchestration** - Route to best model per task  
-✅ **Grammar Correction** - Input & output cleaned automatically  
-✅ **5-Layer Quality Gate** - Syntax, Logic, Security, Hallucination, Completeness  
-✅ **Local-First** - Zero cloud, zero tracking, zero costs  
-✅ **Zero API Costs** - $0 forever (Ollama + open-source)  
+* **Multi-Model Routing:** Intelligently maps incoming prompts to specialized local weights (e.g., Mistral for low-latency syntax, Qwen for technical execution).
+* **Pre/Post Execution Guardrails:** Features an advanced Input/Output pipeline using state-of-the-art tokenization and syntax parsers.
+* **5-Layer Quality Gate:** Dynamic evaluation framework covering *Syntax, Logic, Guardrails, Hallucination, and Structural Completeness*.
+* **Emergency Override Protocol:** Triggers isolated fallback mechanisms or human-in-the-loop escalation paths when structural confidence drops below threshold boundaries.
 
 ---
 
 ## 🚀 Quick Start
 
-### Requirements
-- Python 3.11+
-- Windows 11 / Mac / Linux
-- 4GB+ RAM
-- Ollama installed
+### Prerequisites
+* Python 3.11+
+* Ollama Runtime (Running locally)
+* Minimum Hardware: 8GB RAM / Modern Multi-core CPU or Dedicated GPU
 
 ### Installation
-
 ```bash
-# Clone
+# Clone the repository
 git clone https://github.com
 cd Sentinel
 
-# Setup
+# Initialize virtual environment
 python -m venv venv
-.\venv\Scripts\Activate.ps1  # Windows
-# or: source venv/bin/activate  # Mac/Linux
+source venv/bin/activate  # On Windows use: .\venv\Scripts\Activate.ps1
 
-# Install dependencies
+# Install production and development dependencies
 pip install -r requirements.txt
-
-# Run
-python src/main.py
 ```
 
-### API
+### Execution
 
+#### 1. Headless API Server (FastAPI)
 ```bash
-# Start server
-python -m uvicorn src.api.app:app --reload
-
-# Access: http://localhost:8000/docs
+python -m uvicorn src.api.app:app --host 127.0.0.1 --port 8000 --reload
 ```
+*Interactive Swagger Documentation available at:* `http://localhost:8000/docs`
 
-### UI
-
+#### 2. Local Web Interface (Streamlit)
 ```bash
-# Start Streamlit
 streamlit run streamlit_app.py
-
-# Access: http://localhost:8501
 ```
+*User Interface available at:* `http://localhost:8501`
 
 ---
 
-## 📊 Architecture
-User Input
-↓
-Grammar Corrector (Input)
-↓
-Instruction Parser → Task Classifier → Model Router
-↓
-LLM Execution (Local via Ollama)
-↓
-Quality Gate (5 checks)
-↓
-Grammar Corrector (Output)
-↓
-Accuracy Coach (Feedback)
-↓
-Transparency Logger
-↓
-User Gets Perfect Response
-
----
-
-## 📋 Roadmap (15 Tasks)
-
-- [x] Task 0: Repo Setup
-- [ ] Task 0.5: Grammar Corrector
-- [ ] Task 1-4: Core Engine
-- [ ] Task 5-9: Quality Gate
-- [ ] Task 10-12: Orchestration
-- [ ] Task 13-15: Interfaces & Testing
-
-See [TASKS.md](docs/TASKS.md) for details.
-
+## 📊 Pipeline Architecture
+User Prompt│▼ (Ingestion Layer)Input Guardrails (Syntax Validation & Token Sanitization)│▼ (Control Plane)Instruction Parser ──► Task Classifier ──► Predictive Model Router│▼ (Execution Engine)Local LLM (via Ollama)│▼ (Evaluation Plane)5-Layer Quality Gate│▼ (Post-Processing)Output Realignment & Calibration│▼ (Storage Engine)JSON Transparency Logger│┌──────────────────────────────────────────────┘▼Sanitized Operational Response
 ---
 
 ## 💾 Tech Stack
 
-- **Backend:** FastAPI, Python 3.11+
-- **LLM:** Ollama (local models)
-- **Models:** Mistral 7B, Qwen 7B, Phi 2.7B
-- **Frontend:** Streamlit, Claude Code
-- **Quality:** Hugging Face Transformers, spaCy
-- **Logging:** Loguru, JSON
-- **Repo:** GitHub + Actions
-
-**Cost:** $0
+* **Core Engine:** Python 3.11+, FastAPI (Asynchronous Web Server)
+* **LLM Orchestration:** Ollama API Interface
+* **Supported Weights:** Mistral-7B, Qwen-7B, Phi-3
+* **Validation & NLP:** Hugging Face Transformers, spaCy, Pydantic (Data Validation)
+* **Observability:** Loguru & Structured JSON Stream Logging
+* **Frontend Sandbox:** Streamlit
 
 ---
 
-## 📚 Documentation
+## 📋 Project Status & Roadmap
+For detailed granular tickets and implementation progress, please review [TASKS.md](./TASKS.md).
 
-- [Architecture](docs/ARCHITECTURE.md)
-- [Development Tasks](docs/TASKS.md)
-- [API Reference](docs/API.md)
-- [Configuration](docs/CONFIG.md)
-- [Session Logs](docs/SESSION_LOG.md)
+- [x] Phase 0: Repository Scaffold & Environment Matrix Setup
+- [x] Phase 1: Input/Output Syntax realigners
+- [ ] Phase 2: Multi-Layer Quality Gate Integration (Active Development)
+- [ ] Phase 3: Model Routing Optimization 
 
 ---
 
 ## 🤝 Contributing
-
-Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md)
-
----
+We welcome contributions from deep learning engineers, security researchers, and open-source advocates. Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a Pull Request.
 
 ## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
-MIT License - See [LICENSE](LICENSE) for details
-
----
-
-## 👤 Created By
-
-[SOBKA PATALE SIMPLICE](https://github.com)
+## 👤 Maintainer
+* **Sobka Patale Simplice** - *Lead Architect & Visionary*
 
 ---
-
-## 🔗 Resources
-
-- [Ollama Docs](https://ollama.ai/docs)
-- [FastAPI Docs](https://fastapi.tiangolo.com/)
-- [Streamlit Docs](https://docs.streamlit.io/)
-- [Hugging Face](https://huggingface.co/)
-
----
-
-**"An AI that says NO and owns it."** 🛡️
+> *"An AI designed to say NO when it matters, and back it up with data."* 🛡️

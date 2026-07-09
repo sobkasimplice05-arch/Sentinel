@@ -1,8 +1,24 @@
-﻿import os
-import sys
+"""
+Configuration pytest - Active le mode TEST automatiquement pour les tests
+"""
+import os
+import pytest
 
-# Secret d'architecte : Ajoute automatiquement la racine au chemin Python
-# Cela supprime définitivement l'obligation de taper $env:PYTHONPATH="."
-root_dir = os.path.dirname(os.path.abspath(__file__))
-if root_dir not in sys.path:
-    sys.path.insert(0, root_dir)
+# Activer le mode test pour tous les tests
+os.environ["TEST_MODE"] = "true"
+
+def pytest_configure(config):
+    """Hook pytest pour la configuration initiale"""
+    print("\n" + "="*70)
+    print("🔧 PYTEST CONFIGURATION")
+    print("="*70)
+    print("📋 Mode: TEST (Réponses mock activées)")
+    print("="*70 + "\n")
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_test_environment():
+    """Configure l'environnement de test avant tous les tests"""
+    os.environ["TEST_MODE"] = "true"
+    print("\n✅ Mode TEST activé pour tous les tests")
+    yield
+    print("\n✅ Tests terminés")

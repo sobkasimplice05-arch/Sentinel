@@ -13,6 +13,7 @@ from src.quality.quality_gate import QualityGate
 from src.accuracy.accuracy_coach import AccuracyCoach
 from src.logging.transparency_logger import TransparencyLogger
 import time
+import os
 
 class Sentinel:
     """Le gouverneur d'IA - SENTINEL complet"""
@@ -22,12 +23,17 @@ class Sentinel:
         logger.info("🛡️ SENTINEL - INITIALIZING COMPLETE SYSTEM")
         logger.info("="*70)
         
+        # Déterminer le mode (test ou production)
+        self.test_mode = os.getenv("TEST_MODE", "false").lower() == "true"
+        logger.info(f"📋 Mode: {'TEST' if self.test_mode else 'PRODUCTION'}")
+        
         logger.info("📦 Loading components...")
         self.grammar_corrector = GrammarCorrectorInput(language="en")
         self.parser = InstructionParser()
         self.classifier = TaskClassifier()
         self.router = ModelRouter()
-        self.orchestrator = LLMOrchestrator()
+        # Passer le mode test à l'orchestrator
+        self.orchestrator = LLMOrchestrator(test_mode=self.test_mode)
         self.quality_gate = QualityGate()
         self.accuracy_coach = AccuracyCoach()
         self.logger = TransparencyLogger()
@@ -156,6 +162,8 @@ class Sentinel:
         
         except Exception as e:
             logger.error(f"❌ SENTINEL Error: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
             return {"success": False, "error": str(e)}
 
 def demo():

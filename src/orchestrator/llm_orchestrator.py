@@ -7,15 +7,17 @@ from loguru import logger
 import requests
 import json
 import time
+import os
 
 class LLMOrchestrator:
     """Orchestre l'exécution des modèles LLM"""
     
-    def __init__(self):
+    def __init__(self, test_mode: bool = False):
         logger.info("⚙️ Initializing LLM Orchestrator...")
         self.max_retries = 3
         self.timeout = 120
-        logger.info("✅ LLM Orchestrator ready")
+        self.test_mode = test_mode or os.getenv("TEST_MODE", "False").lower() == "true"
+        logger.info(f"✅ LLM Orchestrator ready (test_mode={self.test_mode})")
     
     def execute(self, routing_result: Dict, instruction: str) -> Dict:
         """Exécute la tâche avec le modèle sélectionné"""
@@ -97,8 +99,38 @@ class LLMOrchestrator:
                 "model_used": selected_model,
             }
     
+    def _get_mock_response(self, instruction: str, model: str) -> str:
+        """Génère une réponse mock pour les tests"""
+        mock_responses = {
+            "Explain AI": "AI (Artificial Intelligence) is the simulation of human intelligence processes by computer systems. This includes learning, reasoning, and self-correction.",
+            "Explain ai": "AI (Artificial Intelligence) is the simulation of human intelligence processes by computer systems. This includes learning, reasoning, and self-correction.",
+            "Say hello": "Hello! How can I help you today?",
+            "Write hello world": "print('Hello, World!')",
+            "Write code": "# Python code example\nprint('Example code')",
+            "explain ai": "AI (Artificial Intelligence) is the simulation of human intelligence processes by computer systems. This includes learning, reasoning, and self-correction.",
+        }
+        
+        # Try exact match first
+        if instruction in mock_responses:
+            return mock_responses[instruction]
+        
+        # Try case-insensitive match
+        for key, value in mock_responses.items():
+            if key.lower() == instruction.lower():
+                return value
+        
+        # Default response
+        return f"Mock response for: {instruction[:50]}..."
+    
     def _call_model(self, endpoint: Dict, instruction: str, model: str) -> Optional[str]:
         """Appelle un modèle spécifique"""
+        
+        # En mode test, retourner une réponse mock
+        if self.test_mode:
+            logger.info(f"   Calling {model}... (TEST MODE)")
+            response = self._get_mock_response(instruction, model)
+            logger.info(f"   ✅ Got mock response ({len(response)} chars)")
+            return response
         
         url = endpoint.get("url", "http://localhost:11434")
         model_name = endpoint.get("model_name", model)
