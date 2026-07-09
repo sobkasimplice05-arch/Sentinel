@@ -1,0 +1,76 @@
+2026-07-09 07:04:37.143 | INFO     | src.sentinel_main:__init__:21 - 
+======================================================================
+2026-07-09 07:04:37.143 | INFO     | src.sentinel_main:__init__:22 - 🛡️ SENTINEL - INITIALIZING COMPLETE SYSTEM
+2026-07-09 07:04:37.143 | INFO     | src.sentinel_main:__init__:23 - ======================================================================
+2026-07-09 07:04:37.144 | INFO     | src.sentinel_main:__init__:25 - 📦 Loading components...
+2026-07-09 07:04:37.144 | INFO     | src.quality.grammar_corrector:__init__:10 - 🛡️ Fast Simulated Grammar Corrector core engine loaded successfully.
+2026-07-09 07:04:37.144 | INFO     | src.core.instruction_parser:__init__:107 - 🔧 Initializing Instruction Parser...
+2026-07-09 07:04:37.144 | INFO     | src.core.instruction_parser:__init__:108 - ✅ Instruction Parser ready
+2026-07-09 07:04:37.144 | INFO     | src.classifier.task_classifier:__init__:72 - 🔧 Initializing Task Classifier...
+2026-07-09 07:04:37.144 | INFO     | src.classifier.task_classifier:__init__:73 - ✅ Task Classifier ready
+2026-07-09 07:04:37.144 | INFO     | src.router.model_router:__init__:90 - 🔀 Initializing Model Router...
+2026-07-09 07:04:37.144 | INFO     | src.router.model_router:__init__:93 - ✅ Model Router ready (Local-First Strategy)
+2026-07-09 07:04:37.144 | INFO     | src.orchestrator.llm_orchestrator:__init__:15 - ⚙️ Initializing LLM Orchestrator...
+2026-07-09 07:04:37.144 | INFO     | src.orchestrator.llm_orchestrator:__init__:18 - ✅ LLM Orchestrator ready
+2026-07-09 07:04:37.144 | INFO     | src.quality.quality_gate:__init__:170 - 🛡️ Initializing Quality Gate...
+2026-07-09 07:04:37.144 | INFO     | src.quality.quality_gate:__init__:176 - ✅ Quality Gate ready (5 checkers)
+2026-07-09 07:04:37.144 | INFO     | src.accuracy.accuracy_coach:__init__:14 - 🎓 Initializing Accuracy Coach...
+2026-07-09 07:04:37.144 | INFO     | src.accuracy.accuracy_coach:__init__:18 - ✅ Accuracy Coach ready
+2026-07-09 07:04:37.145 | INFO     | src.logging.transparency_logger:__init__:15 - 📊 Initializing Transparency Logger...
+2026-07-09 07:04:37.145 | INFO     | src.logging.transparency_logger:__init__:19 - ✅ Transparency Logger ready
+2026-07-09 07:04:37.145 | INFO     | src.sentinel_main:__init__:35 - ✅ All components loaded
+2026-07-09 07:04:37.145 | INFO     | src.sentinel_main:__init__:36 - ======================================================================
+
+2026-07-09 07:04:37.145 | INFO     | src.sentinel_main:execute:41 - 
+======================================================================
+2026-07-09 07:04:37.145 | INFO     | src.sentinel_main:execute:42 - 🛡️ SENTINEL - EXECUTING TASK
+2026-07-09 07:04:37.145 | INFO     | src.sentinel_main:execute:43 - ======================================================================
+2026-07-09 07:04:37.145 | INFO     | src.sentinel_main:execute:49 - 
+📝 STEP 1: Grammar Correction (Input)
+2026-07-09 07:04:37.145 | INFO     | src.sentinel_main:execute:50 - ----------------------------------------------------------------------
+2026-07-09 07:04:37.145 | INFO     | src.sentinel_main:execute:53 - Original: Say hello...
+2026-07-09 07:04:37.145 | INFO     | src.sentinel_main:execute:54 - Cleaned:  Say hello...
+2026-07-09 07:04:37.145 | INFO     | src.sentinel_main:execute:57 - 
+🔍 STEP 2: Instruction Parsing
+2026-07-09 07:04:37.145 | INFO     | src.sentinel_main:execute:58 - ----------------------------------------------------------------------
+2026-07-09 07:04:37.145 | INFO     | src.core.instruction_parser:parse:114 - 📝 Parsing instruction: Say hello...
+2026-07-09 07:04:37.146 | INFO     | src.sentinel_main:execute:60 - Intent: unknown
+2026-07-09 07:04:37.146 | INFO     | src.sentinel_main:execute:61 - Language: none
+2026-07-09 07:04:37.146 | INFO     | src.sentinel_main:execute:62 - Domain: general
+2026-07-09 07:04:37.146 | INFO     | src.sentinel_main:execute:65 - 
+📋 STEP 3: Task Classification
+2026-07-09 07:04:37.146 | INFO     | src.sentinel_main:execute:66 - ----------------------------------------------------------------------
+2026-07-09 07:04:37.146 | INFO     | src.classifier.task_classifier:classify:83 - 📋 Classifying: Say hello...
+2026-07-09 07:04:37.146 | INFO     | src.classifier.task_classifier:classify:106 - ✅ Classification complete
+2026-07-09 07:04:37.146 | INFO     | src.classifier.task_classifier:classify:107 -    Type: general_task
+2026-07-09 07:04:37.146 | INFO     | src.classifier.task_classifier:classify:108 -    Priority: medium
+2026-07-09 07:04:37.146 | INFO     | src.classifier.task_classifier:classify:109 -    Confidence: 90%
+2026-07-09 07:04:37.146 | INFO     | src.sentinel_main:execute:68 - Task Type: general_task
+2026-07-09 07:04:37.146 | INFO     | src.sentinel_main:execute:69 - Priority: medium
+2026-07-09 07:04:37.147 | INFO     | src.sentinel_main:execute:72 - 
+🔀 STEP 4: Model Routing
+2026-07-09 07:04:37.147 | INFO     | src.sentinel_main:execute:73 - ----------------------------------------------------------------------
+2026-07-09 07:04:37.147 | INFO     | src.router.model_router:route:100 - 🔀 Routing task: general_task
+2026-07-09 07:04:37.147 | WARNING  | src.router.model_router:route:105 - No rules for general_task, using default
+2026-07-09 07:04:37.147 | INFO     | src.router.model_router:route:124 - ✅ Route: claude_code
+2026-07-09 07:04:37.147 | INFO     | src.router.model_router:route:125 -    Secondary: qwen
+2026-07-09 07:04:37.147 | INFO     | src.router.model_router:route:126 -    Fallback: mistral
+2026-07-09 07:04:37.147 | INFO     | src.sentinel_main:execute:75 - Selected Model: claude_code
+2026-07-09 07:04:37.147 | INFO     | src.sentinel_main:execute:76 - Strategy: local_first
+2026-07-09 07:04:37.147 | INFO     | src.sentinel_main:execute:79 - 
+⚙️ STEP 5: LLM Execution
+2026-07-09 07:04:37.147 | INFO     | src.sentinel_main:execute:80 - ----------------------------------------------------------------------
+2026-07-09 07:04:37.148 | INFO     | src.orchestrator.llm_orchestrator:execute:26 - ⚙️ Executing with claude_code...
+2026-07-09 07:04:37.148 | INFO     | src.orchestrator.llm_orchestrator:execute:27 -    Instruction: Say hello...
+2026-07-09 07:04:37.148 | INFO     | src.orchestrator.llm_orchestrator:_call_model:116 -    Calling claude_code...
+2026-07-09 07:04:37.150 | ERROR    | src.orchestrator.llm_orchestrator:_call_model:139 -    ❌ Connection error
+2026-07-09 07:04:37.150 | WARNING  | src.orchestrator.llm_orchestrator:execute:47 - Primary model failed, trying secondary...
+2026-07-09 07:04:37.150 | INFO     | src.orchestrator.llm_orchestrator:_call_model:116 -    Calling qwen...
+2026-07-09 07:04:37.151 | ERROR    | src.orchestrator.llm_orchestrator:_call_model:139 -    ❌ Connection error
+2026-07-09 07:04:37.151 | WARNING  | src.orchestrator.llm_orchestrator:execute:66 - Secondary failed, using fallback...
+2026-07-09 07:04:37.152 | INFO     | src.orchestrator.llm_orchestrator:_call_model:116 -    Calling mistral...
+2026-07-09 07:04:37.153 | ERROR    | src.orchestrator.llm_orchestrator:_call_model:139 -    ❌ Connection error
+2026-07-09 07:04:37.153 | INFO     | src.sentinel_main:execute:85 - Execution Success: False
+2026-07-09 07:04:37.153 | INFO     | src.sentinel_main:execute:86 - Model Used: claude_code
+2026-07-09 07:04:37.153 | ERROR    | src.sentinel_main:execute:89 - Execution failed
+{'success': False, 'error': 'Execution failed'}

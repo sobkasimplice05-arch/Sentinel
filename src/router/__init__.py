@@ -1,2 +1,2 @@
-from .model_router import ModelRouter, Model, ModelProvider
-__all__ = ["ModelRouter", "Model", "ModelProvider"]
+from .model_router import ModelRouter, Model
+__all__ = ["ModelRouter", "Model"]
