@@ -12,11 +12,11 @@ sentinel = st.session_state.sentinel
 
 instruction = st.text_area("What do you want SENTINEL to do?", height=100)
 if st.button("Execute", type="primary"):
-    with st.spinner("🛡️ Processing..."):
+    with st.spinner("Processing..."):
         result = sentinel.execute(instruction)
     
     if result['success']:
-        st.success("✅ Success!")
+        st.success("Success!")
         st.write(result['response'])
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -26,4 +26,4 @@ if st.button("Execute", type="primary"):
         with col3:
             st.metric("Time", f"{result['execution_time']:.2f}s")
     else:
-        st.error(f"❌ Failed")
+        st.error("Failed")

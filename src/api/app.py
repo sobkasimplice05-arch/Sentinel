@@ -1,4 +1,3 @@
-"""🌐 REST API - SENTINEL via FastAPI"""
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -20,12 +19,12 @@ class ExecuteRequest(BaseModel):
 
 @app.get("/health")
 async def health_check():
-    return {"status": "operational", "sentinel": "ready" if sentinel else "not initialized"}
+    return {"status": "operational", "sentinel": "ready" if sentinel else "not"}
 
 @app.post("/execute")
 async def execute(request: ExecuteRequest):
     if not sentinel:
-        raise HTTPException(status_code=500, detail="Sentinel not initialized")
+        raise HTTPException(status_code=500, detail="Not initialized")
     result = sentinel.execute(request.instruction, request.user_id)
     return result
 
