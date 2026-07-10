@@ -9,7 +9,6 @@ class TestModelRouter:
     def test_initialization(self, router):
         assert router is not None
     
-    # ✅ TOUS les routes utilisent maintenant QWEN_LIGHT (lightweight)
     def test_route_code(self, router):
         result = router.route({"task_type": "code_implementation"})
         assert result["selected_model"] == "qwen2.5:0.5b"
