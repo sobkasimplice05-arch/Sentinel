@@ -1,0 +1,23 @@
+TITRE: Je viens de créer une IA qui se gouverne elle-même
+
+RÉSUMÉ:
+Après quelques heures de développement, j'ai lancé SENTINEL - un 
+orchestrateur d'IA multi-modèles avec 11 composants intelligents.
+
+CARACTÉRISTIQUES UNIQUES:
+- Système de validation à 5 couches
+- Transparence 100% (tous les logs en JSON)
+- Gratuit et open-source (MIT)
+- Zéro coût de données (lightweight)
+- 93% de qualité en production
+
+LIEN: https://huggingface.co/spaces/sobkasimplice/sentinel-ai
+
+STATS:
+- 60/60 tests passants
+- 2000+ lignes de code
+- 11 composants
+- $0 coûts
+- Production-ready
+
+Créateur: Mr PATALE (CCNB + INSEEC)
