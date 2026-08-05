@@ -37,14 +37,20 @@ VALID_USER_ID_RE = re.compile(r"^[A-Za-z0-9_-]{1,50}$")
 class Sentinel:
     """Le gouverneur d'IA - SENTINEL complet"""
     
-    def __init__(self):
+    def __init__(self, test_mode: bool = False, enable_self_improvement: bool = True):
         logger.info("\n" + "="*70)
         logger.info("🛡️ SENTINEL - INITIALIZING COMPLETE SYSTEM")
         logger.info("="*70)
         
         # Déterminer le mode (test ou production)
-        self.test_mode = os.getenv("TEST_MODE", "false").lower() == "true"
+        self.test_mode = test_mode or os.getenv("TEST_MODE", "false").lower() == "true"
+        self.enable_self_improvement = (
+            enable_self_improvement
+            and os.getenv("ENABLE_SELF_IMPROVEMENT", "true").lower() == "true"
+            and not self.test_mode
+        )
         logger.info(f"📋 Mode: {'TEST' if self.test_mode else 'PRODUCTION'}")
+        logger.info(f"🔁 Self-improvement enabled: {self.enable_self_improvement}")
         
         logger.info("📦 Loading components...")
         self.grammar_corrector = GrammarCorrectorInput(language="en")
@@ -60,7 +66,10 @@ class Sentinel:
         logger.info("✅ All components loaded")
         logger.info("="*70 + "\n")
 
-        self._start_self_improvement_loop()
+        if self.enable_self_improvement:
+            self._start_self_improvement_loop()
+        else:
+            logger.info("✅ Self-improvement background thread disabled")
 
     def sanitize_user_input(self, user_input: str) -> str:
         if not isinstance(user_input, str):
@@ -152,7 +161,11 @@ class Sentinel:
             
             if not execution_result.get('success', False):
                 logger.error("Execution failed")
-                return {"success": False, "error": execution_result.get('error', "Execution failed")}
+                return {
+                    "success": False,
+                    "error": execution_result.get('error', "Execution failed"),
+                    "output": None,
+                }
             
             response = execution_result.get('response', '')
             
@@ -212,6 +225,7 @@ class Sentinel:
             return {
                 "success": True,
                 "response": response,
+                "output": response,
                 "quality_score": quality_result['overall_score'],
                 "model_used": execution_result['model_used'],
                 "execution_id": execution_id,
@@ -220,7 +234,7 @@ class Sentinel:
             }
         except (ValueError, KeyError, RuntimeError, OSError) as e:
             logger.error(f"❌ SENTINEL Error: {e}")
-            return {"success": False, "error": str(e)}
+            return {"success": False, "error": str(e), "output": None}
 
     def auto_audit_sources(self, source_paths: List[str] = None) -> Dict:
         if source_paths is None:

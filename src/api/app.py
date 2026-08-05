@@ -13,7 +13,9 @@ from src.sentinel_main import Sentinel
 ALLOWED_ORIGINS = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost,http://127.0.0.1").split(",") if origin.strip()]
 API_KEYS = {key.strip() for key in os.getenv("API_KEYS", "secret-key").split(",") if key.strip()}
 DEV_MODE = os.getenv("DEV_MODE", "false").lower() == "true"
-ENABLE_PERIODIC_AUDIT = os.getenv("ENABLE_PERIODIC_AUDIT", "true").lower() == "true"
+APP_TEST_MODE = DEV_MODE or os.getenv("TEST_MODE", "false").lower() == "true"
+ENABLE_PERIODIC_AUDIT = os.getenv("ENABLE_PERIODIC_AUDIT", "false").lower() == "true"
+ENABLE_SELF_IMPROVEMENT = os.getenv("ENABLE_SELF_IMPROVEMENT", "false").lower() == "true"
 
 DEFAULT_API_KEY = next(iter(API_KEYS), "secret-key")
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
@@ -28,7 +30,7 @@ app.add_middleware(
 )
 
 try:
-    sentinel = Sentinel()
+    sentinel = Sentinel(test_mode=APP_TEST_MODE, enable_self_improvement=ENABLE_SELF_IMPROVEMENT)
 except (RuntimeError, ImportError, OSError) as e:
     logger.error(f"Failed initialization: {e}")
     sentinel = None

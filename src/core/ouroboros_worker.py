@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 import subprocess
 import urllib.error
 import urllib.request
@@ -11,7 +12,8 @@ from loguru import logger
 from src.orchestrator.llm_orchestrator import LLMOrchestrator
 from src.core.self_audit import SelfAudit
 
-DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1534469948670476409/j5bAu4NZegegCsUd-iI_5HfFhysjJDh2zScgwKDJHOZ0qvgoPr3iqid6d2Im9_8v9tXZ"
+DISCORD_WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL", "").strip()
+ENABLE_DISCORD_ALERTS = os.getenv("ENABLE_DISCORD_ALERTS", "true").lower() == "true"
 
 def _commit_autonomous_patch() -> bool:
     try:
@@ -33,6 +35,10 @@ def _commit_autonomous_patch() -> bool:
 
 async def send_discord_alert(title: str, description: str, color: int) -> None:
     webhook_url = DISCORD_WEBHOOK_URL
+    if not ENABLE_DISCORD_ALERTS or not webhook_url:
+        logger.info("Ouroboros Worker: Discord alerts are disabled or webhook URL is not configured.")
+        return
+
     payload = {
         "embeds": [
             {
