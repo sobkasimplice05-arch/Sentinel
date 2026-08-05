@@ -4,33 +4,24 @@ from loguru import logger
 from enum import Enum
 
 class Model(str, Enum):
-    QWEN_LIGHT = "qwen2.5:0.5b"
-    QWEN_MEDIUM = "qwen2.5:1.0b"
+    QWEN_FAST = "qwen2.5:1.5b"
 
 ROUTING_RULES = {
-    "code_implementation": {"primary": Model.QWEN_LIGHT},
-    "code_debugging": {"primary": Model.QWEN_LIGHT},
-    "code_optimization": {"primary": Model.QWEN_LIGHT},
-    "code_refactoring": {"primary": Model.QWEN_LIGHT},
-    "test_writing": {"primary": Model.QWEN_LIGHT},
-    "data_analysis": {"primary": Model.QWEN_LIGHT},
-    "explanation": {"primary": Model.QWEN_LIGHT},
+    "code_implementation": {"primary": Model.QWEN_FAST},
+    "code_debugging": {"primary": Model.QWEN_FAST},
+    "code_optimization": {"primary": Model.QWEN_FAST},
+    "code_refactoring": {"primary": Model.QWEN_FAST},
+    "test_writing": {"primary": Model.QWEN_FAST},
+    "data_analysis": {"primary": Model.QWEN_FAST},
+    "explanation": {"primary": Model.QWEN_FAST},
 }
 
 MODEL_ENDPOINTS = {
-    Model.QWEN_LIGHT: {
-        "name": "Qwen 2.5 0.5B",
+    Model.QWEN_FAST: {
+        "name": "Qwen 2.5 1.5B",
         "provider": "ollama_local",
-        "url": "http://localhost:11434",
-        "model_name": "qwen2.5:0.5b",
-        "max_tokens": 500,
-    },
-    Model.QWEN_MEDIUM: {
-        "name": "Qwen 2.5 1.0B",
-        "provider": "ollama_local",
-        "url": "http://localhost:11434",
-        "model_name": "qwen2.5:1.0b",
-        "max_tokens": 1000,
+        "url": "http://localhost:11434/api/generate",
+        "model_name": "qwen2.5:1.5b",
     },
 }
 
@@ -43,14 +34,13 @@ class ModelRouter:
     
     def route(self, task_classification: Dict) -> Dict:
         task_type = task_classification.get("task_type", "explanation")
-        primary_model = self.routing_rules.get(task_type, {"primary": Model.QWEN_LIGHT})["primary"]
-        secondary_model = Model.QWEN_MEDIUM if primary_model == Model.QWEN_LIGHT else Model.QWEN_LIGHT
+        primary_model = self.routing_rules.get(task_type, {"primary": Model.QWEN_FAST})["primary"]
 
         return {
             "task_type": task_type,
             "selected_model": primary_model.value,
-            "secondary_model": secondary_model.value,
-            "fallback_model": Model.QWEN_MEDIUM.value,
+            "secondary_model": primary_model.value,
+            "fallback_model": primary_model.value,
             "provider": "ollama_local",
             "endpoint": MODEL_ENDPOINTS[primary_model],
             "strategy": "local_first",

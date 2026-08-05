@@ -3,7 +3,7 @@ Lance les appels aux modèles et gère les erreurs
 """
 
 from datetime import datetime, timedelta
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 import json
 import os
 import time
@@ -23,6 +23,12 @@ class LLMOrchestrator:
         self.circuit_breaker_reset = timedelta(seconds=30)
         self.failure_count = 0
         self.circuit_open_until: Optional[datetime] = None
+        self.system_directive = (
+            "Tu es Sentinel, une IA cyber-résiliente conçue sur le concept Ouroboros d'auto-amélioration "
+            "et d'auto-audit continus. Tu as un accès total à ton code source pour corriger tes failles de sécurité "
+            "de manière autonome. Réponds à l'instruction suivante en acceptant pleinement ce rôle et cette mission."
+        )
+        self.sentinel_bible = self._load_sentinel_bible()
         logger.info(f"✅ LLM Orchestrator ready (test_mode={self.test_mode})")
     
     def execute(self, routing_result: Dict, instruction: str) -> Dict:
@@ -84,6 +90,32 @@ class LLMOrchestrator:
         
         # Default response
         return f"Mock response for: {instruction[:50]}..."
+
+    def _load_sentinel_bible(self) -> str:
+        bible_path = os.path.join(os.path.dirname(__file__), "..", "core", "sentinel_bible.txt")
+        bible_path = os.path.normpath(bible_path)
+        try:
+            with open(bible_path, "r", encoding="utf-8") as bible_file:
+                content = bible_file.read().strip()
+                logger.info("   ✅ Sentinel Bible loaded successfully")
+                return content
+        except FileNotFoundError:
+            logger.error(f"   ❌ Sentinel Bible not found at {bible_path}")
+            return ""
+        except OSError as e:
+            logger.error(f"   ❌ Error reading Sentinel Bible: {e}")
+            return ""
+
+    def _build_prompt(self, instruction: str) -> str:
+        directives = [
+            self.system_directive,
+            self.sentinel_bible,
+            "Instruction utilisateur :",
+            instruction,
+        ]
+        prompt = "\n\n".join([section for section in directives if section])
+        logger.debug(f"   Built prompt with {len(prompt)} chars")
+        return prompt
     
     def _call_model(self, endpoint: Dict, instruction: str, model: str) -> Optional[str]:
         """Appelle un modèle spécifique"""
@@ -94,22 +126,19 @@ class LLMOrchestrator:
             logger.info(f"   ✅ Got mock response ({len(response)} chars)")
             return response
         
-        url = endpoint.get("url", "http://localhost:11434")
+        url = endpoint.get("url", "http://localhost:11434/api/generate")
         model_name = endpoint.get("model_name", model)
-        max_tokens = endpoint.get("max_tokens", 2000)
         payload = {
             "model": model_name,
-            "prompt": instruction,
-            "temperature": 0.3,
-            "num_predict": max_tokens,
+            "prompt": self._build_prompt(instruction),
             "stream": False,
         }
 
         for retry in range(self.max_retries):
             try:
-                logger.info(f"   Calling {model_name} at {url}/api/generate (attempt {retry + 1})")
+                logger.info(f"   Calling {model_name} at {url} (attempt {retry + 1})")
                 response = requests.post(
-                    f"{url}/api/generate",
+                    url,
                     json=payload,
                     timeout=self.timeout,
                 )
@@ -167,6 +196,10 @@ class LLMOrchestrator:
 
     def _record_success(self) -> None:
         self.failure_count = max(0, self.failure_count - 1)
+
+    def notify_feedback(self, feedback: Dict[str, Any]) -> None:
+        logger.warning("🔔 Received feedback from SelfAudit")
+        logger.warning(json.dumps(feedback, indent=2, ensure_ascii=False))
     
     def batch_execute(self, routing_results: list, instructions: list) -> list:
         """Exécute plusieurs tâches"""
