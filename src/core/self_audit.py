@@ -122,7 +122,10 @@ class SelfAudit:
         if not path.exists() or not path.is_file():
             return {"path": file_path, "success": False, "error": "File not found"}
 
-        source = path.read_text(encoding='utf-8')
+        try:
+            source = path.read_text(encoding='utf-8')
+        except UnicodeDecodeError:
+            source = path.read_text(encoding='utf-8', errors='replace')
         prompt = self._build_audit_prompt(file_path, source)
 
         routing = {
