@@ -135,7 +135,7 @@ class InstructionParser:
                 "confidence": round(confidence, 2),
                 "success": True
             }
-        except Exception as e:
+        except (re.error, KeyError, ValueError, TypeError) as e:
             return self._error_result(instruction, str(e))
 
     def _extract_intent(self, text: str) -> Intent:
@@ -162,7 +162,13 @@ class InstructionParser:
 
     def _extract_requirements(self, text: str) -> List[str]:
         requirements = []
-        patterns = [r"should (.*?)(?:\.|,|$)", r"must (.*?)(?:\.|,|$)", r"with (.*?)(?:\.|,|$)", r"that (.*?)(?:\.|,|$)", r"and (.*?)(?:\.|,|$)]"]
+        patterns = [
+            r"should (.*?)(?:\.|,|$)",
+            r"must (.*?)(?:\.|,|$)",
+            r"with (.*?)(?:\.|,|$)",
+            r"that (.*?)(?:\.|,|$)",
+            r"and (.*?)(?:\.|,|$)",
+        ]
         for pattern in patterns:
             matches = re.findall(pattern, text, re.IGNORECASE)
             requirements.extend(matches)

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sentinel AI Chat</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #08111f;
+      color: #e9f0ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: min(100%, 900px);
+      max-width: 1000px;
+      background: rgba(12, 24, 44, 0.98);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+      border-radius: 24px;
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 24px 28px;
+      background: linear-gradient(90deg, #0b2346, #112f62);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 0.02em;
+    }
+
+    .header p {
+      margin: 8px 0 0;
+      color: #a2b0d8;
+      font-size: 14px;
+    }
+
+    .chat-window {
+      padding: 24px 28px;
+      min-height: 420px;
+      max-height: 680px;
+      overflow-y: auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    .message {
+      max-width: 84%;
+      line-height: 1.6;
+      padding: 16px 18px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      word-break: break-word;
+    }
+
+    .message.user {
+      background: rgba(29, 78, 216, 0.18);
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .message.ai {
+      background: rgba(15, 23, 42, 0.96);
+      margin-right: auto;
+    }
+
+    .footer {
+      padding: 20px 28px 28px;
+      display: grid;
+      gap: 12px;
+      background: rgba(3, 12, 25, 0.8);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .input-group {
+      display: grid;
+      gap: 12px;
+    }
+
+    .input-group label {
+      color: #9ba8d5;
+      font-size: 13px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .chat-input {
+      width: 100%;
+      min-height: 52px;
+      resize: vertical;
+      padding: 16px 18px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(8, 18, 35, 0.95);
+      color: #f8fbff;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .chat-input:focus {
+      border-color: rgba(59, 130, 246, 0.7);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .send-button {
+      border: none;
+      padding: 15px 24px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #3b82f6, #4f46e5);
+      color: white;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 15px;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .send-button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.05);
+    }
+
+    .status {
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    .loader {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 3px solid rgba(255, 255, 255, 0.16);
+      border-top-color: #60a5fa;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Sentinel AI Chat</h1>
+      <p>Chattez avec Sentinel et obtenez une réponse intelligente en direct.</p>
+    </div>
+    <div class="chat-window" id="chatWindow">
+      <div class="message ai">
+        Bienvenue ! Entrez votre question ci-dessous pour commencer.
+      </div>
+    </div>
+    <div class="footer">
+      <div class="input-group">
+        <label for="messageInput">Votre message</label>
+        <textarea id="messageInput" class="chat-input" rows="3" placeholder="Posez votre question..." aria-label="Message utilisateur"></textarea>
+      </div>
+      <div class="actions">
+        <div class="status" id="statusText">Prêt à envoyer</div>
+        <button class="send-button" id="sendButton">Envoyer</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chatWindow = document.getElementById('chatWindow');
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    const statusText = document.getElementById('statusText');
+    const API_KEY = 'localdevkey';
+
+    function appendMessage(content, role) {
+      const message = document.createElement('div');
+      message.className = `message ${role}`;
+      message.textContent = content;
+      chatWindow.appendChild(message);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function setLoading(isLoading) {
+      if (isLoading) {
+        sendButton.disabled = true;
+        statusText.innerHTML = '<span class="loader"></span> En attente de la réponse...';
+      } else {
+        sendButton.disabled = false;
+        statusText.textContent = 'Prêt à envoyer';
+      }
+    }
+
+    async function sendMessage() {
+      const text = messageInput.value.trim();
+      if (!text) return;
+
+      appendMessage(text, 'user');
+      messageInput.value = '';
+      setLoading(true);
+
+      try {
+        const response = await fetch('/execute', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': API_KEY
+          },
+          body: JSON.stringify({ instruction: text, user_id: 'web_user' })
+        });
+
+        if (!response.ok) {
+          const errorBody = await response.json();
+          appendMessage(`Erreur: ${errorBody.detail || 'Réponse invalide'}`, 'ai');
+          return;
+        }
+
+        const data = await response.json();
+        if (data.success) {
+          appendMessage(data.response || 'Aucune réponse reçue.', 'ai');
+        } else {
+          appendMessage(data.error || 'Erreur inattendue du serveur.', 'ai');
+        }
+      } catch (error) {
+        appendMessage(`Échec de la requête : ${error.message}`, 'ai');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    sendButton.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+  </script>
+</body>
+</html>

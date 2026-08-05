@@ -69,31 +69,48 @@ class SecurityAnalyzer:
         score = 1.0
         issues = []
         
-        # Check for dangerous patterns
         dangerous_patterns = [
-            ("eval(", "Use of eval() is dangerous"),
-            ("exec(", "Use of exec() is dangerous"),
-            ("__import__", "Dynamic import detected"),
-            ("subprocess.call", "Subprocess call without safety checks"),
-            ("DROP TABLE", "SQL injection risk"),
-            ("'; DROP", "Possible SQL injection"),
+            (r"\beval\(", "Use of eval() is dangerous"),
+            (r"\bexec\(", "Use of exec() is dangerous"),
+            (r"\b__import__\b", "Dynamic import detected"),
+            (r"\bos\.system\(", "Subprocess or shell execution risk"),
+            (r"\bsubprocess\.Popen\(", "Subprocess Popen detected"),
+            (r"\bsubprocess\.call\(", "Subprocess call without safety checks"),
+            (r"\bopen\(.*?['\"]w['\"]", "Potential file overwrite or injection via open()"),
+            (r"\brequests\.(get|post|put|delete|patch)\(", "External request detected"),
+            (r"\byaml\.load\(", "Unsafe YAML loading"),
+            (r"\bpickle\.loads\(", "Unsafe pickle deserialization"),
         ]
         
         for pattern, issue in dangerous_patterns:
-            if pattern in response:
-                score -= 0.3
+            if re.search(pattern, response, re.IGNORECASE):
+                score -= 0.25
                 issues.append(issue)
         
-        # Check for hardcoded secrets
+        sql_patterns = [
+            (r"\bSELECT\b.*\bFROM\b", "SQL query detected"),
+            (r"\bINSERT\b.*\bINTO\b", "SQL query detected"),
+            (r"\bUPDATE\b.*\bSET\b", "SQL query detected"),
+            (r"\bDELETE\b.*\bFROM\b", "SQL query detected"),
+            (r"\bDROP\b.*\bTABLE\b", "SQL injection risk"),
+            (r"['\"]\s*;\s*DROP\s+TABLE", "Possible SQL injection"),
+        ]
+        
+        for pattern, issue in sql_patterns:
+            if re.search(pattern, response, re.IGNORECASE):
+                score -= 0.2
+                issues.append(issue)
+        
         secret_patterns = [
-            (r"password\s*=\s*['\"].*['\"]", "Hardcoded password"),
-            (r"api_key\s*=\s*['\"].*['\"]", "Hardcoded API key"),
-            (r"secret\s*=\s*['\"].*['\"]", "Hardcoded secret"),
+            (r"\bpassword\b\s*=\s*['\"].*['\"]", "Hardcoded password"),
+            (r"\bapi[_-]?key\b\s*=\s*['\"].*['\"]", "Hardcoded API key"),
+            (r"\bsecret\b\s*=\s*['\"].*['\"]", "Hardcoded secret"),
+            (r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b", "Email address detected"),
         ]
         
         for pattern, issue in secret_patterns:
             if re.search(pattern, response, re.IGNORECASE):
-                score -= 0.25
+                score -= 0.2
                 issues.append(issue)
         
         logger.info(f"   Security score: {score:.1%}")

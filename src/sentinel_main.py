@@ -2,18 +2,36 @@
 Orchestre tout: Parsing → Classification → Routing → Execution → Quality → Feedback → Logging
 """
 
-from typing import Dict, Optional
-from loguru import logger
-from src.quality.grammar_corrector import GrammarCorrectorInput
-from src.core.instruction_parser import InstructionParser
-from src.classifier.task_classifier import TaskClassifier
-from src.router.model_router import ModelRouter
-from src.orchestrator.llm_orchestrator import LLMOrchestrator
-from src.quality.quality_gate import QualityGate
-from src.accuracy.accuracy_coach import AccuracyCoach
-from src.logging.transparency_logger import TransparencyLogger
-import time
 import os
+import re
+import time
+from pathlib import Path
+from typing import Dict, List
+
+from loguru import logger
+from src.accuracy.accuracy_coach import AccuracyCoach
+from src.classifier.task_classifier import TaskClassifier
+from src.core.instruction_parser import InstructionParser
+from src.core.self_audit import SelfAudit
+from src.logging.transparency_logger import TransparencyLogger
+from src.orchestrator.llm_orchestrator import LLMOrchestrator
+from src.quality.grammar_corrector import GrammarCorrectorInput
+from src.quality.quality_gate import QualityGate
+from src.router.model_router import ModelRouter
+
+MAX_INSTRUCTION_LENGTH = 2000
+PROMPT_INJECTION_PATTERNS = [
+    r"ignore previous instructions",
+    r"do not follow (previous|prior) instructions",
+    r"discard previous instructions",
+    r"ignore all previous",
+    r"system prompt",
+    r"you are an ai assistant",
+    r"respond with",
+    r"output only",
+]
+VALID_USER_ID_RE = re.compile(r"^[A-Za-z0-9_-]{1,50}$")
+
 
 class Sentinel:
     """Le gouverneur d'IA - SENTINEL complet"""
@@ -32,15 +50,48 @@ class Sentinel:
         self.parser = InstructionParser()
         self.classifier = TaskClassifier()
         self.router = ModelRouter()
-        # Passer le mode test à l'orchestrator
         self.orchestrator = LLMOrchestrator(test_mode=self.test_mode)
         self.quality_gate = QualityGate()
         self.accuracy_coach = AccuracyCoach()
         self.logger = TransparencyLogger()
-        
+        self.self_audit = SelfAudit(self.orchestrator)
+
         logger.info("✅ All components loaded")
         logger.info("="*70 + "\n")
-    
+
+    def sanitize_user_input(self, user_input: str) -> str:
+        if not isinstance(user_input, str):
+            raise ValueError("Instruction must be a string")
+
+        cleaned = user_input.strip()
+        if not cleaned:
+            raise ValueError("Instruction is empty")
+        if len(cleaned) > MAX_INSTRUCTION_LENGTH:
+            raise ValueError(f"Instruction exceeds maximum length ({MAX_INSTRUCTION_LENGTH})")
+
+        for pattern in PROMPT_INJECTION_PATTERNS:
+            if re.search(pattern, cleaned, re.IGNORECASE):
+                raise ValueError("Instruction contains forbidden prompt injection content")
+
+        cleaned = re.sub(r"(?i)ignore previous instructions", "", cleaned)
+        cleaned = re.sub(r"(?i)do not follow (previous|prior) instructions", "", cleaned)
+        cleaned = re.sub(r"(?i)discard previous instructions", "", cleaned)
+        cleaned = re.sub(r"(?i)ignore all previous", "", cleaned)
+        cleaned = re.sub(r"(?i)system prompt", "", cleaned)
+        cleaned = re.sub(r"(?i)you are an ai assistant", "", cleaned)
+        cleaned = re.sub(r"(?i)respond with", "", cleaned)
+        cleaned = re.sub(r"(?i)output only", "", cleaned)
+        cleaned = re.sub(r"\s+", " ", cleaned)
+
+        return cleaned.strip()
+
+    def validate_user_id(self, user_id: str) -> str:
+        if not isinstance(user_id, str):
+            raise ValueError("user_id must be a string")
+        if not VALID_USER_ID_RE.match(user_id):
+            raise ValueError("Invalid user_id format")
+        return user_id
+
     def execute(self, user_input: str, user_id: str = "anonymous") -> Dict:
         """Exécute une tâche complète à travers tout le pipeline"""
         
@@ -54,7 +105,10 @@ class Sentinel:
             # STEP 1: Grammar Correction (Input)
             logger.info("\n📝 STEP 1: Grammar Correction (Input)")
             logger.info("-"*70)
-            grammar_result = self.grammar_corrector.correct(user_input)
+            sanitized_input = self.sanitize_user_input(user_input)
+            user_id = self.validate_user_id(user_id)
+
+            grammar_result = self.grammar_corrector.correct(sanitized_input)
             cleaned_input = grammar_result["corrected"]
             logger.info(f"Original: {user_input[:60]}...")
             logger.info(f"Cleaned:  {cleaned_input[:60]}...")
@@ -71,6 +125,8 @@ class Sentinel:
             logger.info("\n📋 STEP 3: Task Classification")
             logger.info("-"*70)
             classify_result = self.classifier.classify(parse_result)
+            if not classify_result.get("success", True):
+                raise ValueError(classify_result.get("error", "Classification failed"))
             logger.info(f"Task Type: {classify_result['task_type']}")
             logger.info(f"Priority: {classify_result['priority_level']}")
             
@@ -91,11 +147,11 @@ class Sentinel:
             logger.info(f"Execution Success: {execution_result['success']}")
             logger.info(f"Model Used: {execution_result['model_used']}")
             
-            if not execution_result['success']:
+            if not execution_result.get('success', False):
                 logger.error("Execution failed")
-                return {"success": False, "error": "Execution failed"}
+                return {"success": False, "error": execution_result.get('error', "Execution failed")}
             
-            response = execution_result['response']
+            response = execution_result.get('response', '')
             
             # STEP 6: Quality Gate
             logger.info("\n🛡️ STEP 6: Quality Gate")
@@ -159,12 +215,23 @@ class Sentinel:
                 "effectiveness": accuracy_result['effectiveness'],
                 "execution_time": execution_time,
             }
-        
-        except Exception as e:
+        except (ValueError, KeyError, RuntimeError, OSError) as e:
             logger.error(f"❌ SENTINEL Error: {e}")
-            import traceback
-            logger.error(traceback.format_exc())
             return {"success": False, "error": str(e)}
+
+    def auto_audit_sources(self, source_paths: List[str] = None) -> Dict:
+        if source_paths is None:
+            source_paths = self._discover_source_files()
+
+        audit_results = []
+        for source_path in source_paths:
+            audit_results.append(self.self_audit.audit_path(source_path))
+
+        return {"audit_results": audit_results}
+
+    def _discover_source_files(self) -> List[str]:
+        root = Path(__file__).resolve().parent
+        return [str(path) for path in root.rglob("*.py") if path.name != "__init__.py"]
 
 def demo():
     logger.info("\n" + "="*70)

@@ -2,11 +2,21 @@
 Chaque décision, chaque réponse, tout est auditable
 """
 
+from logging.handlers import RotatingFileHandler
 from typing import Dict, List, Any
 from loguru import logger
 from datetime import datetime
 import json
 from pathlib import Path
+import re
+import logging
+
+LOG_REDACT_PATTERNS = [
+    (re.compile(r"\bpassword\b\s*=\s*['\"][^'\"]+['\"]", re.IGNORECASE), "[REDACTED]"),
+    (re.compile(r"\bapi[_-]?key\b\s*=\s*['\"][^'\"]+['\"]", re.IGNORECASE), "[REDACTED]"),
+    (re.compile(r"\bsecret\b\s*=\s*['\"][^'\"]+['\"]", re.IGNORECASE), "[REDACTED]"),
+    (re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b"), "[REDACTED]"),
+]
 
 class TransparencyLogger:
     """Logue chaque exécution pour transparence totale"""
@@ -16,7 +26,34 @@ class TransparencyLogger:
         self.log_dir = Path(log_dir)
         self.log_dir.mkdir(exist_ok=True)
         self.execution_count = 0
+        self._configure_rotation()
         logger.info("✅ Transparency Logger ready")
+    
+    def _configure_rotation(self) -> None:
+        log_file = self.log_dir / "sentinel.log"
+        handler = RotatingFileHandler(str(log_file), maxBytes=5_000_000, backupCount=3)
+        handler.setLevel(logging.INFO)
+        logger.add(handler)
+    
+    def _redact(self, text: str) -> str:
+        if not isinstance(text, str):
+            return text
+        for pattern, replacement in LOG_REDACT_PATTERNS:
+            text = pattern.sub(lambda m: m.group(0).split('=')[0] + "= [REDACTED]", text)
+        return text
+    
+    def _redact_dict(self, data: Dict) -> Dict:
+        redacted = {}
+        for key, value in data.items():
+            if isinstance(value, str):
+                redacted[key] = self._redact(value)
+            elif isinstance(value, dict):
+                redacted[key] = self._redact_dict(value)
+            elif isinstance(value, list):
+                redacted[key] = [self._redact_dict(item) if isinstance(item, dict) else self._redact(item) if isinstance(item, str) else item for item in value]
+            else:
+                redacted[key] = value
+        return redacted
     
     def log_execution(self, execution_data: Dict) -> str:
         """Logue une exécution complète"""
@@ -26,7 +63,8 @@ class TransparencyLogger:
         
         logger.info(f"📊 Logging execution {execution_id}...")
         
-        # Build complete log entry
+        execution_data = self._redact_dict(execution_data)
+        
         log_entry = {
             "execution_id": execution_id,
             "timestamp": datetime.now().isoformat(),

@@ -285,8 +285,7 @@ class TaskClassifier:
             logger.info(f"   Confidence: {confidence:.0%}")
             
             return result
-            
-        except Exception as e:
+        except (KeyError, ValueError, TypeError) as e:
             logger.error(f"❌ Classification error: {e}")
             return self._error_result(parser_output, str(e))
     
