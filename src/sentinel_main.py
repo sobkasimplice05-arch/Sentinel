@@ -5,6 +5,7 @@ Orchestre tout: Parsing → Classification → Routing → Execution → Quality
 import os
 import re
 import time
+import threading
 from pathlib import Path
 from typing import Dict, List
 
@@ -58,6 +59,8 @@ class Sentinel:
 
         logger.info("✅ All components loaded")
         logger.info("="*70 + "\n")
+
+        self._start_self_improvement_loop()
 
     def sanitize_user_input(self, user_input: str) -> str:
         if not isinstance(user_input, str):
@@ -232,6 +235,23 @@ class Sentinel:
     def _discover_source_files(self) -> List[str]:
         root = Path(__file__).resolve().parent
         return [str(path) for path in root.rglob("*.py") if path.name != "__init__.py"]
+
+    def _self_improvement_cycle(self) -> None:
+        logger.info("🔁 Sentinel self-improvement loop starting...")
+        while True:
+            try:
+                source_files = self._discover_source_files()
+                logger.info(f"🔎 Auditing {len(source_files)} source files for self-improvement")
+                results = self.self_audit.audit_sources(source_files, rewrite=True)
+                logger.info(f"🔁 Self-audit completed: {len(results.get('results', []))} files processed")
+            except Exception as exc:
+                logger.error(f"❌ Self-improvement cycle error: {exc}")
+            time.sleep(300)
+
+    def _start_self_improvement_loop(self) -> None:
+        thread = threading.Thread(target=self._self_improvement_cycle, daemon=True)
+        thread.start()
+        logger.info("✅ Sentinel self-improvement background thread launched")
 
 def demo():
     logger.info("\n" + "="*70)

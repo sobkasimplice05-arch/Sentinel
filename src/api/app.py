@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field, constr
 from loguru import logger
 from pathlib import Path
+from src.core.ouroboros_worker import start_periodic_audit
 from src.sentinel_main import Sentinel
 
 ALLOWED_ORIGINS = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost,http://127.0.0.1").split(",") if origin.strip()]
@@ -82,6 +83,11 @@ async def execute(request: ExecuteRequest, api_key: str = Depends(validate_api_k
 @app.get("/status")
 async def status():
     return {"system": "SENTINEL", "version": "1.0.0", "status": "operational"}
+
+
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(start_periodic_audit())
 
 
 if __name__ == "__main__":
