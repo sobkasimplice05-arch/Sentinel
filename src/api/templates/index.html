@@ -225,19 +225,44 @@
           body: JSON.stringify({ instruction: text, user_id: 'web_user' })
         });
 
+        const contentType = response.headers.get('content-type') || '';
+        const isJson = contentType.includes('application/json');
+        const textBody = await response.text();
+
         if (!response.ok) {
-          const errorBody = await response.json();
-          appendMessage(`Erreur: ${errorBody.detail || 'Réponse invalide'}`, 'ai');
+          let errorDetail = 'Réponse invalide';
+          if (isJson) {
+            try {
+              const errorBody = JSON.parse(textBody);
+              errorDetail = errorBody.detail || errorDetail;
+            } catch (parseError) {
+              errorDetail = `Réponse d'erreur non JSON: ${textBody || response.statusText}`;
+            }
+          } else {
+            errorDetail = `Réponse d'erreur non JSON: ${textBody || response.statusText}`;
+          }
+          appendMessage(`Erreur: ${errorDetail}`, 'ai');
           return;
         }
 
-        const data = await response.json();
+        let data;
+        if (isJson) {
+          try {
+            data = JSON.parse(textBody);
+          } catch (parseError) {
+            throw new Error(`Impossible de parser la réponse JSON: ${parseError.message}`);
+          }
+        } else {
+          throw new Error(`Réponse invalide du serveur (type: ${contentType || 'inconnu'})`);
+        }
+
         if (data.success) {
           appendMessage(data.response || 'Aucune réponse reçue.', 'ai');
         } else {
           appendMessage(data.error || 'Erreur inattendue du serveur.', 'ai');
         }
       } catch (error) {
+        console.error('Fetch error:', error);
         appendMessage(`Échec de la requête : ${error.message}`, 'ai');
       } finally {
         setLoading(false);
