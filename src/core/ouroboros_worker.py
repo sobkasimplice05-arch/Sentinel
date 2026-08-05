@@ -13,7 +13,6 @@ from src.core.self_audit import SelfAudit
 
 DISCORD_WEBHOOK_URL = "https://discord.com"
 
-
 def _commit_autonomous_patch() -> bool:
     try:
         subprocess.run(["git", "add", "."], check=True)
