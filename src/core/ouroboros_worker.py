@@ -11,7 +11,7 @@ from loguru import logger
 from src.orchestrator.llm_orchestrator import LLMOrchestrator
 from src.core.self_audit import SelfAudit
 
-DISCORD_WEBHOOK_URL = "https://discord.com"
+DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1534469948670476409/j5bAu4NZegegCsUd-iI_5HfFhysjJDh2zScgwKDJHOZ0qvgoPr3iqid6d2Im9_8v9tXZ"
 
 def _commit_autonomous_patch() -> bool:
     try:

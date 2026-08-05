@@ -13,6 +13,7 @@ from src.sentinel_main import Sentinel
 ALLOWED_ORIGINS = [origin.strip() for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost,http://127.0.0.1").split(",") if origin.strip()]
 API_KEYS = {key.strip() for key in os.getenv("API_KEYS", "secret-key").split(",") if key.strip()}
 DEV_MODE = os.getenv("DEV_MODE", "false").lower() == "true"
+ENABLE_PERIODIC_AUDIT = os.getenv("ENABLE_PERIODIC_AUDIT", "true").lower() == "true"
 
 DEFAULT_API_KEY = next(iter(API_KEYS), "secret-key")
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
@@ -88,7 +89,10 @@ async def status():
 
 @app.on_event("startup")
 async def startup_event():
-    asyncio.create_task(start_periodic_audit())
+    if ENABLE_PERIODIC_AUDIT and not DEV_MODE:
+        asyncio.create_task(start_periodic_audit())
+    else:
+        logger.info("Ouroboros Worker: periodic audit startup skipped (DEV_MODE=%s ENABLE_PERIODIC_AUDIT=%s)", DEV_MODE, ENABLE_PERIODIC_AUDIT)
 
 
 if __name__ == "__main__":
