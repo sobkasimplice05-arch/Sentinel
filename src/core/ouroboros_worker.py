@@ -1,6 +1,5 @@
 import asyncio
 import json
-import os
 import subprocess
 import urllib.error
 import urllib.request
@@ -68,7 +67,7 @@ async def start_periodic_audit() -> None:
     """Démarre une boucle Ouroboros qui audit les sources toutes les 5 minutes."""
     logger.info("Ouroboros Worker: Démarrage du worker de nuit...")
 
-    orchestrator = LLMOrchestrator(test_mode=os.getenv("TEST_MODE", "false").lower() == "true")
+    orchestrator = LLMOrchestrator(test_mode=False)
     self_audit = SelfAudit(orchestrator)
     source_root = Path(__file__).resolve().parents[2]
 
