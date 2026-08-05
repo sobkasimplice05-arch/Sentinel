@@ -18,4 +18,5 @@ echo "📦 Running syntax check on source only..."
 python -m compileall src
 
 echo "🚀 Starting FastAPI app with Uvicorn..."
-uvicorn src.api.app:app --reload
+# Bind to 0.0.0.0 so the app is reachable from outside the container/VM
+uvicorn src.api.app:app --host 0.0.0.0 --port 8000 --reload
