@@ -61,12 +61,88 @@ class ExecuteRequest(BaseModel):
     user_id: constr(pattern=r"^[A-Za-z0-9_-]{1,50}$") = "anonymous"
 
 
+def _find_index_template() -> Path | None:
+    candidates = [
+        Path(__file__).resolve().parent / "templates" / "index.html",
+        Path(__file__).resolve().parent.parent / "templates" / "index.html",
+        Path.cwd() / "src" / "api" / "templates" / "index.html",
+        Path.cwd() / "templates" / "index.html",
+    ]
+    for path in candidates:
+        if path.exists() and path.is_file():
+            return path
+    return None
+
+
 @app.get("/", response_class=HTMLResponse)
 def read_root():
-    template_path = Path(__file__).resolve().parent / "templates" / "index.html"
-    if not template_path.exists():
-        raise HTTPException(status_code=500, detail="UI template not found")
-    return HTMLResponse(template_path.read_text(encoding="utf-8"))
+    template_path = _find_index_template()
+    if template_path:
+        return HTMLResponse(template_path.read_text(encoding="utf-8"))
+
+    logger.warning("UI template missing. Serving inline fallback HTML.")
+    inline_html = """<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+  <meta charset=\"UTF-8\">
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+  <title>Sentinel Chat Interface</title>
+  <style>
+    body {font-family: Arial, sans-serif; padding: 16px; background: #121212; color: #f0f0f0;}
+    .chat-window {max-width: 800px; margin: 0 auto; background: #1e1e1e; border-radius: 12px; padding: 20px;}
+    .chat-message {margin-bottom: 12px;}
+    .chat-message.user {color: #8ab4f8;}
+    .chat-message.bot {color: #a3e635;}
+    .chat-input {width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #0f172a; color: #fff;}
+    .chat-button {margin-top: 12px; padding: 10px 16px; border: none; border-radius: 8px; background: #2563eb; color: #fff; cursor: pointer;}
+  </style>
+</head>
+<body>
+  <div class=\"chat-window\">
+    <h1>Sentinel</h1>
+    <div id=\"chatWindow\"></div>
+    <textarea id=\"messageInput\" class=\"chat-input\" rows=\"3\" placeholder=\"Posez votre question...\"></textarea>
+    <button id=\"sendButton\" class=\"chat-button\">Envoyer</button>
+  </div>
+  <script>
+    const chatWindow = document.getElementById('chatWindow');
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+
+    function appendMessage(sender, text) {
+      const item = document.createElement('div');
+      item.className = 'chat-message ' + sender;
+      item.textContent = sender.toUpperCase() + ': ' + text;
+      chatWindow.appendChild(item);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    sendButton.addEventListener('click', async () => {
+      const message = messageInput.value.trim();
+      if (!message) return;
+      appendMessage('user', message);
+      messageInput.value = '';
+
+      try {
+        const response = await fetch('/execute', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ instruction: message, user_id: 'anonymous' }),
+        });
+        const result = await response.json();
+        if (response.ok && result.success) {
+          appendMessage('bot', result.output || JSON.stringify(result));
+        } else {
+          appendMessage('bot', 'Erreur: ' + (result.detail || result.error || 'Request failed.'));
+        }
+      } catch (error) {
+        appendMessage('bot', 'Fetch error: ' + error.message);
+      }
+    });
+  </script>
+</body>
+</html>"""
+    return HTMLResponse(inline_html)
 
 
 @app.get("/health")
