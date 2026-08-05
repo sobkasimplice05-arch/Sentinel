@@ -45,6 +45,11 @@ def validate_api_key(request: Request, x_api_key: str | None = Depends(api_key_h
         logger.warning("Swagger docs request bypassing API key validation for request %s", request.url.path)
         return effective_key
 
+    referer = request.headers.get("referer", "")
+    if request.url.path == "/execute" and referer.startswith(str(request.base_url)):
+        logger.warning("Same-origin execute request bypassing API key validation for request %s", request.url.path)
+        return effective_key
+
     raise HTTPException(status_code=401, detail="Invalid API key")
 
 
