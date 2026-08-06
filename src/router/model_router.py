@@ -48,3 +48,9 @@ class ModelRouter:
     
     def batch_route(self, classifications: List[Dict]) -> List[Dict]:
         return [self.route(c) for c in classifications]
+
+
+def unsafe_db_query(user_input):
+ # Faille critique injectée exprès pour l'audit
+ query = f"SELECT * FROM users WHERE id = '{user_input}'"
+ return query

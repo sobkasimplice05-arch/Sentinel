@@ -133,7 +133,7 @@ class SelfAudit:
             "secondary_model": "qwen2.5:1.0b",
             "fallback_model": "qwen2.5:1.0b",
             "endpoint": {
-                "url": "http://localhost:11434",
+                "url": "http://localhost:11434/api/generate",
                 "model_name": "qwen2.5:0.5b",
                 "max_tokens": 2000,
             },
