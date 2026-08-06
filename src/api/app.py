@@ -1,6 +1,6 @@
 import os
 from fastapi import FastAPI, HTTPException, Header, Depends, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.security import APIKeyHeader
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
@@ -80,7 +80,7 @@ def _find_index_template() -> Path | None:
 def read_root():
     template_path = _find_index_template()
     if template_path:
-        return HTMLResponse(template_path.read_text(encoding="utf-8"))
+      return FileResponse(str(template_path), media_type="text/html")
 
     logger.warning("UI template missing. Serving inline fallback HTML.")
     inline_html = """<!DOCTYPE html>
@@ -167,10 +167,11 @@ async def status():
 
 @app.on_event("startup")
 async def startup_event():
-    if ENABLE_PERIODIC_AUDIT and not DEV_MODE:
+    try:
         asyncio.create_task(start_periodic_audit())
-    else:
-        logger.info("Ouroboros Worker: periodic audit startup skipped (DEV_MODE=%s ENABLE_PERIODIC_AUDIT=%s)", DEV_MODE, ENABLE_PERIODIC_AUDIT)
+        logger.info("Ouroboros Worker: periodic audit started unconditionally (DEV_MODE=%s ENABLE_PERIODIC_AUDIT=%s)", DEV_MODE, ENABLE_PERIODIC_AUDIT)
+    except Exception as e:
+        logger.exception("Ouroboros Worker: failed to start periodic audit: %s", e)
 
 
 if __name__ == "__main__":

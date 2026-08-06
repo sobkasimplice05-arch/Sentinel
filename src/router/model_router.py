@@ -1,7 +1,5 @@
-"""🔀 MODEL ROUTER - Version Légère"""
 from typing import Dict, List
 from loguru import logger
-from enum import Enum
 
 class Model(str, Enum):
     QWEN_FAST = "qwen2.5:1.5b"
@@ -31,7 +29,7 @@ class ModelRouter:
         self.routing_rules = ROUTING_RULES
         self.model_endpoints = MODEL_ENDPOINTS
         logger.info("✅ Ready")
-    
+
     def route(self, task_classification: Dict) -> Dict:
         task_type = task_classification.get("task_type", "explanation")
         primary_model = self.routing_rules.get(task_type, {"primary": Model.QWEN_FAST})["primary"]
@@ -45,6 +43,17 @@ class ModelRouter:
             "endpoint": MODEL_ENDPOINTS[primary_model],
             "strategy": "local_first",
         }
-    
+
     def batch_route(self, classifications: List[Dict]) -> List[Dict]:
         return [self.route(c) for c in classifications]
+
+
+def safe_db_query(user_input):
+    # Securely sanitized query
+    query = f"SELECT * FROM users WHERE id = %s"
+    cursor.execute(query, (user_input,))
+    return cursor.fetchall()
+
+# Example usage:
+# user_input = "1234567890"
+# query_result = safe_db_query(user_input)

@@ -20,7 +20,7 @@ class LLMOrchestrator:
         self.timeout = 120
         self.test_mode = test_mode or os.getenv("TEST_MODE", "False").lower() == "true"
         self.circuit_breaker_threshold = 5
-        self.circuit_breaker_reset = timedelta(seconds=30)
+        self.circuit_breaker_reset = timedelta(seconds=10)
         self.failure_count = 0
         self.circuit_open_until: Optional[datetime] = None
         self.system_directive = (
@@ -126,7 +126,12 @@ class LLMOrchestrator:
             logger.info(f"   ✅ Got mock response ({len(response)} chars)")
             return response
         
-        url = endpoint.get("url", "http://localhost:11434/api/generate")
+        base_url = endpoint.get("url", "http://localhost:11434/api/generate")
+        if base_url.endswith("/api/generate"):
+            url = base_url
+        else:
+            url = base_url.rstrip("/") + "/api/generate"
+
         model_name = endpoint.get("model_name", model)
         payload = {
             "model": model_name,
