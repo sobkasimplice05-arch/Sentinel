@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Dict, List
 from loguru import logger
 
