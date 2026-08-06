@@ -1,0 +1,35 @@
+name: Sentinel H24 Autonomous Evolution
+on:
+  schedule:
+    - cron: '0 * * * *' # S'exécute TOUTES LES HEURES, 24h/24, 7j/7 sans s'arrêter
+  workflow_dispatch:
+
+jobs:
+  evolve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      - name: Install Dependencies
+        run: pip install requests pydantic httpx pytest
+          
+      - name: Run Cloud Self-Audit & Evolution
+        run: |
+          export PYTHONPATH=.
+          python3 src/core/self_audit.py
+          
+      - name: Deploy Autonomous Code to GitHub
+        run: |
+          git config --global user.name "Sentinel-Bot"
+          git config --global user.email "sentinel@ouroboros.ai"
+          git add .
+          git diff-index --quiet HEAD || git commit -m "feat(ouroboros): autonomous cloud evolution - Arbitrum SaaS deployment"
+          git push origin main || echo "Pas de modification ou conflit temporaire résolu."

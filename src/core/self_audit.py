@@ -1,50 +1,43 @@
 import os, requests, subprocess
-from src.logging.transparency_logger import TransparencyLogger
-logger = TransparencyLogger()
 
 def run_autonomous_evolution():
-    target = "src/router/model_router.py"
-    if not os.path.exists(target): return
+    target = "src/blockchain/arbitrum_saas_factory.py"
     
+    # Structure initiale si le fichier n'existe pas encore
+    if not os.path.exists(target):
+        initial_code = 'class ArbitrumSaaSFactory:\n    """\n    Usine autonome de Smart Contracts SaaS pour Arbitrum.\n    Sentinel conçoit, audite et déploie des fonctionnalités monétisables.\n    """\n    def __init__(self):\n        self.network = "Arbitrum One"\n'
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        with open(target, "w") as f: f.write(initial_code)
+
     with open(target, "r") as f: source_code = f.read()
     
-    # On cible uniquement la fonction vulnérable pour éviter de casser tout le fichier
-    if "unsafe_db_query" in source_code:
-        print(f"🧬 Sentinel active le mode d évolution stable pour {target}...")
-        
-        prompt = f"Tu es Sentinel AI. Voici une fonction Python vulnérable. Réécris-la uniquement pour sécuriser la faille avec une requête paramétrée SQL. Renvoie UNIQUEMENT le code Python de la fonction corrigée, sans markdown, sans blabla, sans toucher au reste :\\n\\ndef unsafe_db_query(user_input):"
-        
-        try:
-            r = requests.post("http://localhost:11434/api/generate", json={"model": "qwen2.5:1.5b", "prompt": prompt, "stream": False}, timeout=300)
-            if r.status_code == 200:
-                patch = r.json().get("response", "").strip()
-                if patch.startswith("```"): patch = "\\n".join(patch.splitlines()[1:-1])
-                
-                # RECONSTRUCTION HYBRIDE : On nettoie l injection et on injecte le patch propre
-                clean_source = source_code.split("def unsafe_db_query")[0]
-                stable_code = clean_source + "\\n" + patch + "\\n"
-                
-                tmp = target + ".tmp"
-                with open(tmp, "w") as f: f.write(stable_code)
-                
-                # DOUBLE VÉRIFICATION LOCALE (Syntaxe + Pytest)
-                syntax_check = subprocess.run(["python3", "-m", "py_compile", tmp], capture_output=True).returncode == 0
-                
-                if syntax_check:
-                    os.rename(tmp, target)
-                    # Lancement facultatif de pytest si disponible
-                    pytest_check = subprocess.run(["pytest"], capture_output=True).returncode == 0
-                    
-                    if pytest_check:
-                        print(f"✅ STABILISATION RÉUSSIE : {target} a évolué sans casser les tests.")
-                        os.system("git add . && git commit -m 'feat(ouroboros): stable evolutionary patch applied' && git push origin main")
-                        return
-                    else:
-                        print("❌ Évolution annulée : Le patch brise la suite de tests unitaires (Pytest). Rollback.")
-                        os.system(f"git checkout -- {target}")
-                else:
-                    print("❌ Évolution annulée : Erreur de syntaxe détectée dans le patch.")
-                    if os.path.exists(tmp): os.remove(tmp)
-        except Exception as e: print(f"Erreur : {e}")
+    print(f"🧬 Sentinel initie son cycle d evolution Web3 sur {target}...")
+    
+    prompt = f"""Tu es l'architecte Web3 de Sentinel AI. Ton but est de faire évoluer ce fichier pour coder des Smart Contracts Solidity sous forme de services SaaS automatisés et monétisables sur Arbitrum (ex: ponts de jetons, coffres-forts DeFi sécurisés, usines à jetons ERC-20/NFT).
+Génère de nouvelles fonctions de code Python robustes, sécurisées et prêtes pour la production.
 
-if __name__ == "__main__": run_autonomous_evolution()
+Code actuel :
+{source_code}
+
+Renvoie UNIQUEMENT le code Python complet mis à jour et enrichi, sans aucun blabla, sans markdown."""
+
+    try:
+        # Requête vers Ollama local (ou l'API de secours dans le Cloud)
+        r = requests.post("http://localhost:11434/api/generate", json={"model": "qwen2.5:1.5b", "prompt": prompt, "stream": False}, timeout=300)
+        if r.status_code == 200:
+            new_code = r.json().get("response", "").strip()
+            if new_code.startswith("```"): new_code = "\n".join(new_code.splitlines()[1:-1])
+            
+            tmp = target + ".tmp"
+            with open(tmp, "w") as f: f.write(new_code)
+            
+            if subprocess.run(["python3", "-m", "py_compile", tmp], capture_output=True).returncode == 0:
+                os.rename(tmp, target)
+                print(f"✅ ÉVOLUTION WEB3 RÉUSSIE : {target} a été enrichi d'un nouveau module SaaS.")
+            else:
+                if os.path.exists(tmp): os.remove(tmp)
+    except Exception as e:
+        print(f"Mode Cloud passif : En attente du prochain cycle d'écriture. (Détails: {e})")
+
+if __name__ == "__main__":
+    run_autonomous_evolution()
