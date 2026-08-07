@@ -1,0 +1,78 @@
+{
+  "project_info": {
+    "title": "Sentinel AI : Vision & Contexte",
+    "created": 1786063820.245,
+    "last_updated": 1786063842.285,
+    "total_slides": 6
+  },
+  "slides": [
+    {
+      "id": "slide_1",
+      "state": "edited",
+      "pageNum": 1
+    },
+    {
+      "id": "slide_2",
+      "state": "edited",
+      "pageNum": 2
+    },
+    {
+      "id": "slide_3",
+      "state": "edited",
+      "pageNum": 3
+    },
+    {
+      "id": "slide_4",
+      "state": "edited",
+      "pageNum": 4
+    },
+    {
+      "id": "slide_5",
+      "state": "edited",
+      "pageNum": 5
+    },
+    {
+      "id": "slide_6",
+      "state": "edited",
+      "pageNum": 6
+    }
+  ],
+  "outline": [
+    {
+      "id": "slide_1",
+      "title": "Sentinel AI : Vision & Contexte",
+      "summary": "Présentation générale de Sentinel AI, le défi des IA traditionnelles et la vision d'un système autonome pour une candidature d'excellence.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_2",
+      "title": "Le Triptyque Inviolable",
+      "summary": "Détail des 3 piliers fondamentaux : Auto-Réparation, Auto-Amélioration et Auto-Évolution.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_3",
+      "title": "Architecture & Ingénierie du Code",
+      "summary": "Description des modules internes : self_audit.py, quality_gate.py et les saas_endpoints.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_4",
+      "title": "Exécution Cloud H24 & Automatisation",
+      "summary": "Le workflow GitHub Actions horaire garantissant l'immortalité opérationnelle 24h/24 sans intervention humaine.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_5",
+      "title": "Innovation SaaS & Impact Sécurité",
+      "summary": "Présentation du Threat Intelligence Engine et de la posture de défense proactive contre les injections de prompt.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "slide_6",
+      "title": "Candidature Bourse & Mentorat",
+      "summary": "Appel à l'accompagnement stratégique et perspectives d'accélération pour l'avenir de Sentinel AI.",
+      "image_plan": "Use a suitable image if needed"
+    }
+  ]
+}

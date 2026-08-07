@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { background: #EAEFEA; font-family: 'Helvetica Neue', Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+      .slide-container {
+          width: 1280px;
+          min-height: 720px;
+          background: #F4F7F5;
+          position: relative;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          padding: 70px 80px;
+      }
+      .header h2 {
+          font-family: 'Georgia', serif;
+          font-size: 38px;
+          color: #1A3C34;
+          margin-bottom: 12px;
+      }
+      .header p {
+          font-size: 18px;
+          color: #3E504B;
+          font-weight: 300;
+      }
+      .content-split {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 50px;
+          margin-top: 20px;
+          margin-bottom: 20px;
+      }
+      .col-box {
+          background: rgba(26, 60, 52, 0.03);
+          padding: 35px;
+          border-left: 5px solid #1A3C34;
+      }
+      .col-box:nth-child(2) {
+          border-left-color: #D96C06;
+          background: rgba(217, 108, 6, 0.03);
+      }
+      .col-box h3 {
+          font-size: 22px;
+          color: #1A3C34;
+          margin-bottom: 16px;
+      }
+      .col-box p {
+          font-size: 16px;
+          color: #3E504B;
+          line-height: 1.6;
+          font-weight: 300;
+          margin-bottom: 15px;
+      }
+      .module-tag {
+          display: inline-block;
+          background: #1A3C34;
+          color: white;
+          padding: 6px 12px;
+          font-size: 13px;
+          font-family: monospace;
+          margin-right: 8px;
+          margin-bottom: 8px;
+      }
+      .module-tag.alt {
+          background: #D96C06;
+      }
+      .footer-note {
+          font-size: 14px;
+          color: #3E504B;
+          text-align: right;
+          border-top: 1px solid rgba(26, 60, 52, 0.1);
+          padding-top: 15px;
+      }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h2>Architecture & Ingénierie du Code</h2>
+            <p>Une organisation modulaire rigoureuse pour garantir la maintenabilité et l'évolutivité.</p>
+        </div>
+
+        <div class="content-split">
+            <div class="col-box">
+                <h3>Moteur Ouroboros & Core</h3>
+                <p>Le cœur du système repose sur des boucles d'inspection asynchrones et des vérifications strictes. Chaque modification de code est validée par compilation statique avant d'être fusionnée.</p>
+                <div>
+                    <span class="module-tag">src/core/self_audit.py</span>
+                    <span class="module-tag">src/core/ouroboros_worker.py</span>
+                    <span class="module-tag">src/sentinel_main.py</span>
+                </div>
+            </div>
+            
+            <div class="col-box">
+                <h3>Qualité & Sécurité SaaS</h3>
+                <p>Le Quality Gate évalue chaque réponse selon 5 dimensions clés (syntaxe, logique, sécurité, hallucination, complétude), bloquant toute tentative de compromission.</p>
+                <div>
+                    <span class="module-tag alt">src/quality/quality_gate.py</span>
+                    <span class="module-tag alt">src/saas_endpoints/threat_intelligence.py</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            Séparation claire des préoccupations et conformité aux standards professionnels de développement.
+        </div>
+    </div>
+</body>
+</html>

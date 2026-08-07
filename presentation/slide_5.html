@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { background: #EAEFEA; font-family: 'Helvetica Neue', Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+      .slide-container {
+          width: 1280px;
+          min-height: 720px;
+          background: #F4F7F5;
+          position: relative;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          padding: 70px 80px;
+      }
+      .header h2 {
+          font-family: 'Georgia', serif;
+          font-size: 38px;
+          color: #1A3C34;
+          margin-bottom: 12px;
+      }
+      .header p {
+          font-size: 18px;
+          color: #3E504B;
+          font-weight: 300;
+      }
+      .content-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 40px;
+          margin-top: 20px;
+          margin-bottom: 20px;
+      }
+      .card-box {
+          background: rgba(26, 60, 52, 0.03);
+          padding: 30px;
+          border-top: 4px solid #1A3C34;
+      }
+      .card-box:nth-child(2) {
+          border-top-color: #D96C06;
+          background: rgba(217, 108, 6, 0.03);
+      }
+      .card-box h3 {
+          font-size: 20px;
+          color: #1A3C34;
+          margin-bottom: 15px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+      }
+      .card-box ul {
+          list-style: none;
+      }
+      .card-box li {
+          font-size: 15px;
+          color: #3E504B;
+          margin-bottom: 12px;
+          line-height: 1.5;
+          position: relative;
+          padding-left: 20px;
+      }
+      .card-box li::before {
+          content: "•";
+          color: #D96C06;
+          font-weight: bold;
+          position: absolute;
+          left: 0;
+      }
+      .footer-note {
+          font-size: 14px;
+          color: #3E504B;
+          text-align: center;
+          border-top: 1px solid rgba(26, 60, 52, 0.1);
+          padding-top: 15px;
+      }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h2>Innovation SaaS & Impact Sécurité</h2>
+            <p>Une posture de défense proactive et des services de cybersécurité de pointe.</p>
+        </div>
+
+        <div class="content-grid">
+            <div class="card-box">
+                <h3><i class="fas fa-brain" style="color: #1A3C34;"></i> Threat Intelligence Engine</h3>
+                <ul>
+                    <li>Génération autonome de modules SaaS de cybersécurité au sein de <code>src/saas_endpoints/</code>.</li>
+                    <li>Analyse de signatures SHA-256 et calcul instantané de scores de risque pour les charges utiles (payloads).</li>
+                    <li>Génération de rapports de sécurité structurés pour les développeurs et les équipes d'audit.</li>
+                </ul>
+            </div>
+
+            <div class="card-box">
+                <h3><i class="fas fa-shield-virus" style="color: #D96C06;"></i> Défense Proactive</h3>
+                <ul>
+                    <li>Blocage en temps réel des tentatives d'injection de prompt et des contournements de type mode DAN.</li>
+                    <li>Évolution continue des barrières du Quality Gate sans intervention humaine requise.</li>
+                    <li>Transition d'une sécurité réactive (patching post-incident) à une immunité active et adaptative.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            Sentinel AI redéfinit les standards de protection pour les applications basées sur les grands modèles de langage.
+        </div>
+    </div>
+</body>
+</html>

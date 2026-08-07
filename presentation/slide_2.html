@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { background: #EAEFEA; font-family: 'Helvetica Neue', Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+      .slide-container {
+          width: 1280px;
+          min-height: 720px;
+          background: #F4F7F5;
+          position: relative;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          padding: 70px 80px;
+      }
+      .header h2 {
+          font-family: 'Georgia', serif;
+          font-size: 38px;
+          color: #1A3C34;
+          margin-bottom: 12px;
+      }
+      .header p {
+          font-size: 18px;
+          color: #3E504B;
+          font-weight: 300;
+      }
+      .grid-3 {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 30px;
+          margin-top: 20px;
+          margin-bottom: 20px;
+      }
+      .pillar {
+          background: rgba(26, 60, 52, 0.03);
+          border-top: 4px solid #1A3C34;
+          padding: 30px;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          min-height: 340px;
+      }
+      .pillar:nth-child(2) {
+          border-top-color: #D96C06;
+          background: rgba(217, 108, 6, 0.03);
+      }
+      .pillar-icon {
+          font-size: 28px;
+          color: #1A3C34;
+          margin-bottom: 20px;
+      }
+      .pillar:nth-child(2) .pillar-icon {
+          color: #D96C06;
+      }
+      .pillar h3 {
+          font-size: 20px;
+          color: #1A3C34;
+          margin-bottom: 12px;
+          font-weight: 700;
+      }
+      .pillar p {
+          font-size: 15px;
+          color: #3E504B;
+          line-height: 1.5;
+          font-weight: 300;
+      }
+      .footer-note {
+          font-size: 14px;
+          color: #3E504B;
+          text-align: center;
+          border-top: 1px solid rgba(26, 60, 52, 0.1);
+          padding-top: 15px;
+      }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h2>Le Triptyque Inviolable</h2>
+            <p>Les trois dimensions fondamentales qui confèrent à Sentinel son autonomie totale.</p>
+        </div>
+
+        <div class="grid-3">
+            <div class="pillar">
+                <div class="pillar-icon"><i class="fas fa-wrench"></i></div>
+                <h3>1. Auto-Réparation</h3>
+                <p>Analyse continue des logs d'erreur et des rapports de plantage. Sentinel identifie les fichiers Python défectueux, réécrit la fonction fautive et valide la compilation sans intervention humaine.</p>
+            </div>
+            <div class="pillar">
+                <div class="pillar-icon"><i class="fas fa-shield-alt"></i></div>
+                <h3>2. Auto-Amélioration</h3>
+                <p>Scanners de sécurité permanents (Quality Gate). Renforcement dynamique des barrières de filtrage pour contrer en temps réel les nouvelles techniques d'injection de prompt et les jailbreaks.</p>
+            </div>
+            <div class="pillar">
+                <div class="pillar-icon"><i class="fas fa-dna"></i></div>
+                <h3>3. Auto-Évolution</h3>
+                <p>Usine de services SaaS intégrée (<code>src/saas_endpoints</code>). Sentinel invente, code et déploie de nouvelles fonctionnalités de cybersécurité adaptées aux besoins des développeurs.</p>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            Sentinel AI dépasse le statut d'outil pour devenir un organisme logiciel auto-adaptatif.
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { background: #EAEFEA; font-family: 'Helvetica Neue', Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+      .slide-container {
+          width: 1280px;
+          min-height: 720px;
+          background: #F4F7F5;
+          position: relative;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          padding: 70px 80px;
+      }
+      .header h2 {
+          font-family: 'Georgia', serif;
+          font-size: 38px;
+          color: #1A3C34;
+          margin-bottom: 12px;
+      }
+      .header p {
+          font-size: 18px;
+          color: #3E504B;
+          font-weight: 300;
+      }
+      .conclusion-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 40px;
+          margin-top: 20px;
+          margin-bottom: 20px;
+      }
+      .c-box {
+          background: rgba(217, 108, 6, 0.04);
+          border-top: 4px solid #D96C06;
+          padding: 30px;
+      }
+      .c-box:nth-child(1) {
+          border-top-color: #1A3C34;
+          background: rgba(26, 60, 52, 0.04);
+      }
+      .c-box h3 {
+          font-size: 20px;
+          color: #1A3C34;
+          margin-bottom: 14px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+      }
+      .c-box p {
+          font-size: 15px;
+          color: #3E504B;
+          line-height: 1.6;
+          font-weight: 300;
+      }
+      .footer-call {
+          font-size: 16px;
+          color: #1A3C34;
+          text-align: center;
+          font-weight: 700;
+          border-top: 1px solid rgba(26, 60, 52, 0.15);
+          padding-top: 20px;
+      }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h2>Candidature Bourse & Mentorat</h2>
+            <p>Accompagner Sentinel AI vers de nouveaux sommets d'autonomie et d'impact mondial.</p>
+        </div>
+
+        <div class="conclusion-grid">
+            <div class="c-box">
+                <h3><i class="fas fa-rocket" style="color: #1A3C34;"></i> Accélération Technologique</h3>
+                <p>Bénéficier d'un mentorat d'experts en IA et en ingénierie cloud pour optimiser l'infrastructure distribuée, affiner les modèles de fondation et étendre les capacités d'auto-évolution du système.</p>
+            </div>
+            
+            <div class="c-box">
+                <h3><i class="fas fa-globe" style="color: #D96C06;"></i> Impact Mondial & Souveraineté</h3>
+                <p>Établir Sentinel AI comme référence de la sécurité autonome des logiciels. Démontrer l'excellence de l'ingénierie logicielle menée depuis l'Afrique centrale pour résoudre les défis globaux de cybersécurité.</p>
+            </div>
+        </div>
+
+        <div class="footer-call">
+            Prêt pour la prochaine mutation vers l'autonomie universelle. Merci pour votre confiance.
+        </div>
+    </div>
+</body>
+</html>
