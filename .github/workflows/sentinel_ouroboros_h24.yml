@@ -1,4 +1,5 @@
 name: Sentinel H24 Autonomous Evolution
+
 on:
   schedule:
     - cron: '0 * * * *' # S'exécute TOUTES LES HEURES, 24h/24, 7j/7 sans s'arrêter
@@ -7,6 +8,8 @@ on:
 jobs:
   evolve:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -19,7 +22,7 @@ jobs:
           python-version: '3.12'
           
       - name: Install Dependencies
-        run: pip install requests pydantic httpx pytest
+        run: pip install requests pydantic httpx pytest loguru
           
       - name: Run Cloud Self-Audit & Evolution
         run: |
@@ -31,5 +34,5 @@ jobs:
           git config --global user.name "Sentinel-Bot"
           git config --global user.email "sentinel@ouroboros.ai"
           git add .
-          git diff-index --quiet HEAD || git commit -m "feat(ouroboros): autonomous cloud evolution - Arbitrum SaaS deployment"
+          git diff-index --quiet HEAD || git commit -m "feat(ouroboros): autonomous cloud evolution - H24 Ouroboros mutation"
           git push origin main || echo "Pas de modification ou conflit temporaire résolu."
