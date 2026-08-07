@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  sentinel-saas:
+    build: .
+    container_name: sentinel-python-security-guard
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DEV_MODE=false
+      - TEST_MODE=false
+      - ENABLE_PERIODIC_AUDIT=true
+      - ENABLE_SELF_IMPROVEMENT=true
+    volumes:
+      - ./src:/app/src
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
