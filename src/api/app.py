@@ -20,7 +20,7 @@ ENABLE_SELF_IMPROVEMENT = os.getenv("ENABLE_SELF_IMPROVEMENT", "false").lower() 
 DEFAULT_API_KEY = next(iter(API_KEYS), "secret-key")
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
-app = FastAPI(title="🛡️ SENTINEL API", version="1.0.0")
+app = FastAPI(title="🛡️ SENTINEL API - Python Security Guard", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
@@ -51,15 +51,15 @@ def validate_api_key(request: Request, x_api_key: str | None = Depends(api_key_h
         return effective_key
 
     referer = request.headers.get("referer", "")
-    if request.url.path == "/execute" and referer.startswith(str(request.base_url)):
-        logger.warning("Same-origin execute request bypassing API key validation for request %s", request.url.path)
+    if request.url.path in ["/execute", "/api/v1/audit"] and (referer.startswith(str(request.base_url)) or not referer):
+        logger.warning("Same-origin request bypassing API key validation for request %s", request.url.path)
         return effective_key
 
     raise HTTPException(status_code=401, detail="Invalid API key")
 
 
 class ExecuteRequest(BaseModel):
-    instruction: constr(min_length=1, max_length=2000)  # Taille limitée
+    instruction: constr(min_length=1, max_length=2000)
     user_id: constr(pattern=r"^[A-Za-z0-9_-]{1,50}$") = "anonymous"
 
 
@@ -67,6 +67,7 @@ def _find_index_template() -> Path | None:
     candidates = [
         Path(__file__).resolve().parent / "templates" / "index.html",
         Path(__file__).resolve().parent.parent / "templates" / "index.html",
+        Path.cwd() / "src" / "templates" / "index.html",
         Path.cwd() / "src" / "api" / "templates" / "index.html",
         Path.cwd() / "templates" / "index.html",
     ]
@@ -78,33 +79,40 @@ def _find_index_template() -> Path | None:
 
 @app.get("/", response_class=HTMLResponse)
 def read_root():
+    """Sert l'interface SaaS principale (Python Security Guard) sur la racine."""
     template_path = _find_index_template()
     if template_path:
-      return FileResponse(str(template_path), media_type="text/html")
+        return FileResponse(str(template_path), media_type="text/html")
+    
+    raise HTTPException(status_code=404, detail="SaaS UI template not found.")
 
-    logger.warning("UI template missing. Serving inline fallback HTML.")
-    inline_html = """<!DOCTYPE html>
-<html lang=\"en\">
+
+@app.get("/admin/chat", response_class=HTMLResponse)
+def admin_chat():
+    """Interface d'administration interactive (Chat brut Sentinel) isolée sur /admin/chat."""
+    chat_html = """<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset=\"UTF-8\">
-  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-  <title>Sentinel Chat Interface</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentinel Admin Chat</title>
   <style>
-    body {font-family: Arial, sans-serif; padding: 16px; background: #121212; color: #f0f0f0;}
-    .chat-window {max-width: 800px; margin: 0 auto; background: #1e1e1e; border-radius: 12px; padding: 20px;}
-    .chat-message {margin-bottom: 12px;}
-    .chat-message.user {color: #8ab4f8;}
-    .chat-message.bot {color: #a3e635;}
-    .chat-input {width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #0f172a; color: #fff;}
-    .chat-button {margin-top: 12px; padding: 10px 16px; border: none; border-radius: 8px; background: #2563eb; color: #fff; cursor: pointer;}
+    body {font-family: Arial, sans-serif; padding: 20px; background: #0f172a; color: #f8fafc;}
+    .chat-window {max-width: 800px; margin: 0 auto; background: #1e293b; border-radius: 12px; padding: 24px; border: 1px solid #334155;}
+    .chat-message {margin-bottom: 12px; padding: 10px; border-radius: 8px;}
+    .chat-message.user {background: #1e40af; color: #93c5fd;}
+    .chat-message.bot {background: #065f46; color: #a7f3d0;}
+    .chat-input {width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; margin-top: 12px;}
+    .chat-button {margin-top: 12px; padding: 10px 20px; border: none; border-radius: 8px; background: #00ffcc; color: #000; font-weight: bold; cursor: pointer;}
   </style>
 </head>
 <body>
-  <div class=\"chat-window\">
-    <h1>Sentinel</h1>
-    <div id=\"chatWindow\"></div>
-    <textarea id=\"messageInput\" class=\"chat-input\" rows=\"3\" placeholder=\"Posez votre question...\"></textarea>
-    <button id=\"sendButton\" class=\"chat-button\">Envoyer</button>
+  <div class="chat-window">
+    <h1>🛡️ Sentinel Admin Chat</h1>
+    <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">Interface d'administration interne et de diagnostic direct.</p>
+    <div id="chatWindow" style="height: 300px; overflow-y: auto; background: #0f172a; padding: 12px; border-radius: 8px; margin-bottom: 12px;"></div>
+    <textarea id="messageInput" class="chat-input" rows="3" placeholder="Entrez une commande système ou une instruction..."></textarea>
+    <button id="sendButton" class="chat-button">Envoyer à Sentinel</button>
   </div>
   <script>
     const chatWindow = document.getElementById('chatWindow');
@@ -129,7 +137,7 @@ def read_root():
         const response = await fetch('/execute', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ instruction: message, user_id: 'anonymous' }),
+          body: JSON.stringify({ instruction: message, user_id: 'admin' }),
         });
         const result = await response.json();
         if (response.ok && result.success) {
@@ -144,12 +152,12 @@ def read_root():
   </script>
 </body>
 </html>"""
-    return HTMLResponse(inline_html)
+    return HTMLResponse(chat_html)
 
 
 @app.get("/health")
 async def health_check():
-    return {"status": "operational", "sentinel": "ready" if sentinel else "not"}
+    return {"status": "operational", "architecture": "single-origin-monolith", "sentinel": "ready" if sentinel else "not"}
 
 
 @app.post("/execute")
@@ -160,16 +168,25 @@ async def execute(request: ExecuteRequest, api_key: str = Depends(validate_api_k
     return result
 
 
+@app.post("/api/v1/audit")
+async def api_audit(request: ExecuteRequest, api_key: str = Depends(validate_api_key)):
+    """Endpoint alias pour correspondre aux spécifications SaaS."""
+    if not sentinel:
+        raise HTTPException(status_code=500, detail="Not initialized")
+    result = sentinel.execute(request.instruction, request.user_id)
+    return result
+
+
 @app.get("/status")
 async def status():
-    return {"system": "SENTINEL", "version": "1.0.0", "status": "operational"}
+    return {"system": "SENTINEL", "version": "1.0.0", "status": "operational", "mode": "single-origin"}
 
 
 @app.on_event("startup")
 async def startup_event():
     try:
         asyncio.create_task(start_periodic_audit())
-        logger.info("Ouroboros Worker: periodic audit started unconditionally (DEV_MODE=%s ENABLE_PERIODIC_AUDIT=%s)", DEV_MODE, ENABLE_PERIODIC_AUDIT)
+        logger.info("Ouroboros Worker: periodic audit started successfully.")
     except Exception as e:
         logger.exception("Ouroboros Worker: failed to start periodic audit: %s", e)
 
