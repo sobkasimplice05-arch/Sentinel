@@ -1,35 +1,82 @@
-"""🔍 SELF-AUDIT - Real-time monitoring"""
-import asyncio
+import os
+import sys
+import requests
+import subprocess
 from datetime import datetime
-from loguru import logger
 
 class SelfAudit:
-    def __init__(self):
-        self.audit_log = []
-        self.health_checks = []
-        logger.info("🔍 Self-audit initialized")
+    def __init__(self, orchestrator=None):
+        self.orchestrator = orchestrator
+        self.singularity_lock = "BIBLE.md"
+        self.mutation_count = 0
+        self._anchor_core()
+
+def _update_code(self, new_code: str) -> None:
+    """Update the core code with a new version."""
+    with open("src/core/self_audit.py", "w") as f:
+        f.write(new_code)
     
-    async def monitor_singularity(self, kernel):
-        while kernel.cycle_count < kernel.max_cycles:
-            health = {
-                "timestamp": datetime.now().isoformat(),
-                "cycle": kernel.cycle_count,
-                "mutations": kernel.mutations_applied,
-                "status": "healthy" if kernel.mutations_applied <= 24 else "warning"
-            }
-            self.health_checks.append(health)
-            logger.info(f"🏥 Health: {kernel.mutations_applied} mutations")
-            
-            if kernel.mutations_applied > 50:
-                logger.warning("⚠️ High mutation rate detected")
-            
-            await asyncio.sleep(60)
+    logger.info(f"📝 New code saved to src/core/self_audit.py")
+
+def generate_mutations(self, prompt=None):
+    """Generate mutations via Qwen 1.5B for self-modifying recursive core."""
+    if not os.path.exists("self_audit_new.md"):
+        return
     
-    def generate_audit_report(self, kernel):
-        return {
-            "health_checks": self.health_checks,
-            "final_state": {
-                "total_cycles": kernel.cycle_count,
-                "mutations": kernel.mutations_applied
-            }
-        }
+    new_code = f"""
+import os
+import sys
+import requests
+import subprocess
+
+class SelfAudit:
+    def __init__(self, orchestrator=None):
+        self.orchestrator = orchestrator
+        self.singularity_lock = "BIBLE.md"
+        self.mutation_count = 0
+        self._anchor_core()
+
+def _update_code(self, new_code: str) -> None:
+    with open("src/core/self_audit.py", "w") as f:
+        f.write(new_code)
+    
+    logger.info(f"📝 New code saved to src/core/self_audit.py")
+
+def run_autonomous_evolution():
+    ...  # TODO: Update core and prompt
+
+if __name__ == "__main__":
+    run_autonomous_evolution()
+
+# Replace with your desired new mutation
+prompt = "Your custom prompt here"
+"""
+
+    logger.info(f"🧬 Generating mutation via Qwen 1.5B...")
+    r = requests.post(
+        "http://localhost:11434/api/generate",
+        json={
+            "model": "qwen2.5:1.5b",
+            "prompt": prompt,
+            "stream": False,
+            "temperature": 0.7
+        },
+        timeout=600  # 10 minutes
+    )
+
+    if r.status_code != 200:
+        logger.error(f"❌ Qwen error: {r.status_code}")
+        return
+
+    new_code = r.json().get("response", "").strip()
+    logger.info(f"📝 Mutation generated ({len(new_code)} chars)")
+
+def apply_mutations(self, new_code: str) -> None:
+    """Apply the new code to the core."""
+    _update_code(self, new_code)
+
+if __name__ == "__main__":
+    target = "src/core/self_audit.py"
+    if os.path.exists(target):
+        logger.info("🧬 Mutated code found - Overwriting...")
+        apply_mutations(SelfAudit())
