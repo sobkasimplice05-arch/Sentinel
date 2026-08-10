@@ -1,0 +1,1233 @@
+{
+  "version": "2.0-SINGULARITY",
+  "total_cycles": 72,
+  "mutations_applied": 72,
+  "evolution_trace": [
+    {
+      "cycle": 1,
+      "timestamp": "2026-08-10T11:49:12.415749",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 2,
+      "timestamp": "2026-08-10T11:49:13.417307",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 3,
+      "timestamp": "2026-08-10T11:49:14.418457",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 4,
+      "timestamp": "2026-08-10T11:49:15.419650",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 5,
+      "timestamp": "2026-08-10T11:49:16.421772",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 6,
+      "timestamp": "2026-08-10T11:49:17.423559",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 7,
+      "timestamp": "2026-08-10T11:49:18.425347",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 8,
+      "timestamp": "2026-08-10T11:49:19.427173",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 9,
+      "timestamp": "2026-08-10T11:49:20.429125",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 10,
+      "timestamp": "2026-08-10T11:49:21.430945",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 11,
+      "timestamp": "2026-08-10T11:49:22.432219",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 12,
+      "timestamp": "2026-08-10T11:49:23.434014",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 13,
+      "timestamp": "2026-08-10T11:49:24.435955",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 14,
+      "timestamp": "2026-08-10T11:49:25.437825",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 15,
+      "timestamp": "2026-08-10T11:49:26.439629",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 16,
+      "timestamp": "2026-08-10T11:49:27.441404",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 17,
+      "timestamp": "2026-08-10T11:49:28.443185",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 18,
+      "timestamp": "2026-08-10T11:49:29.444996",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 19,
+      "timestamp": "2026-08-10T11:49:30.446794",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 20,
+      "timestamp": "2026-08-10T11:49:31.448581",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 21,
+      "timestamp": "2026-08-10T11:49:32.450407",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 22,
+      "timestamp": "2026-08-10T11:49:33.452220",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 23,
+      "timestamp": "2026-08-10T11:49:34.454033",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 24,
+      "timestamp": "2026-08-10T11:49:35.455173",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 25,
+      "timestamp": "2026-08-10T11:49:36.457107",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 26,
+      "timestamp": "2026-08-10T11:49:37.458308",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 27,
+      "timestamp": "2026-08-10T11:49:38.460179",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 28,
+      "timestamp": "2026-08-10T11:49:39.461994",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 29,
+      "timestamp": "2026-08-10T11:49:40.463819",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 30,
+      "timestamp": "2026-08-10T11:49:41.465402",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 31,
+      "timestamp": "2026-08-10T11:49:42.467362",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 32,
+      "timestamp": "2026-08-10T11:49:43.469261",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 33,
+      "timestamp": "2026-08-10T11:49:44.470871",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 34,
+      "timestamp": "2026-08-10T11:49:45.472905",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 35,
+      "timestamp": "2026-08-10T11:49:46.478246",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 36,
+      "timestamp": "2026-08-10T11:49:47.480020",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 37,
+      "timestamp": "2026-08-10T11:49:48.482071",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 38,
+      "timestamp": "2026-08-10T11:49:49.484245",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 39,
+      "timestamp": "2026-08-10T11:49:50.486421",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 40,
+      "timestamp": "2026-08-10T11:49:51.488587",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 41,
+      "timestamp": "2026-08-10T11:49:52.490309",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 42,
+      "timestamp": "2026-08-10T11:49:53.492379",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 43,
+      "timestamp": "2026-08-10T11:49:54.494694",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 44,
+      "timestamp": "2026-08-10T11:49:55.496406",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 45,
+      "timestamp": "2026-08-10T11:49:56.498293",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 46,
+      "timestamp": "2026-08-10T11:49:57.499390",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 47,
+      "timestamp": "2026-08-10T11:49:58.501989",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 48,
+      "timestamp": "2026-08-10T11:49:59.504691",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 49,
+      "timestamp": "2026-08-10T11:50:00.506820",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 50,
+      "timestamp": "2026-08-10T11:50:01.509766",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 51,
+      "timestamp": "2026-08-10T11:50:02.511921",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 52,
+      "timestamp": "2026-08-10T11:50:03.513789",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 53,
+      "timestamp": "2026-08-10T11:50:04.515663",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 54,
+      "timestamp": "2026-08-10T11:50:05.517239",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 55,
+      "timestamp": "2026-08-10T11:50:06.519133",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 56,
+      "timestamp": "2026-08-10T11:50:07.521054",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 57,
+      "timestamp": "2026-08-10T11:50:08.522879",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 58,
+      "timestamp": "2026-08-10T11:50:09.524741",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 59,
+      "timestamp": "2026-08-10T11:50:10.526584",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 60,
+      "timestamp": "2026-08-10T11:50:11.528365",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 61,
+      "timestamp": "2026-08-10T11:50:12.530179",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 62,
+      "timestamp": "2026-08-10T11:50:13.532024",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 63,
+      "timestamp": "2026-08-10T11:50:14.533863",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 64,
+      "timestamp": "2026-08-10T11:50:15.535682",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 65,
+      "timestamp": "2026-08-10T11:50:16.537511",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 66,
+      "timestamp": "2026-08-10T11:50:17.539253",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 67,
+      "timestamp": "2026-08-10T11:50:18.540274",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 68,
+      "timestamp": "2026-08-10T11:50:19.542377",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 69,
+      "timestamp": "2026-08-10T11:50:20.544457",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 70,
+      "timestamp": "2026-08-10T11:50:21.546256",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 71,
+      "timestamp": "2026-08-10T11:50:22.548075",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "cycle": 72,
+      "timestamp": "2026-08-10T11:50:23.549873",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    }
+  ],
+  "mutation_log": [
+    {
+      "applied_at": "2026-08-10T11:49:12.415528",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:13.417005",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:14.418151",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:15.419392",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:16.421179",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:17.423245",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:18.425083",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:19.426879",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:20.428829",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:21.430684",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:22.431930",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:23.433782",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:24.435636",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:25.437554",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:26.439322",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:27.441152",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:28.442927",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:29.444745",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:30.446532",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:31.448301",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:32.450128",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:33.451952",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:34.453759",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:35.454867",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:36.456781",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:37.457977",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:38.459923",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:39.461716",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:40.463532",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:41.465199",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:42.467096",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:43.468984",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:44.470582",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:45.472608",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:46.477985",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:47.479621",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:48.481698",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:49.483761",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:50.486105",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:51.488178",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:52.490042",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:53.491674",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:54.494182",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:55.496154",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:56.498047",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:57.499113",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:58.501480",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:49:59.504106",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:00.506546",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:01.509316",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:02.511602",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:03.513511",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:04.515377",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:05.517015",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:06.518881",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:07.520800",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:08.522594",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:09.524482",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:10.526251",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:11.528116",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:12.529915",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:13.531753",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:14.533606",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:15.535398",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:16.537227",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:17.538978",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:18.540036",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:19.542059",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:20.544125",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:21.546006",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:22.547812",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    },
+    {
+      "applied_at": "2026-08-10T11:50:23.549596",
+      "mutation": {
+        "type": "parameter_adjustment",
+        "target": "routing_weights",
+        "change": 0.05
+      }
+    }
+  ]
+}
