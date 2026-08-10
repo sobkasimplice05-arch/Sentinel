@@ -1,6 +1,4 @@
-"""
-🔥 SINGULARITÉ KERNEL - Hybrid Cloud/Local Evolution
-"""
+"""🔥 SINGULARITÉ KERNEL - Hybrid Cloud/Local Evolution"""
 import asyncio
 import json
 from datetime import datetime
@@ -41,7 +39,8 @@ class SingularityKernel:
         except Exception as e:
             logger.error(f"❌ Cycle {self.cycle_count} failed: {e}")
         
-        await asyncio.sleep(3600)
+        # ✅ FIX: 1 second delay instead of 3600 (1 hour)
+        await asyncio.sleep(1)  # ← CHANGED FROM 3600!
     
     async def generate_mutation_cloud(self):
         try:
@@ -64,10 +63,10 @@ class SingularityKernel:
         logger.info(f"🧬 Applied: {mutation}")
     
     async def run_72_hour_loop(self):
-        logger.info("🚀 STARTING 72-HOUR AUTONOMOUS EVOLUTION...")
+        logger.info("🚀 STARTING 72-CYCLE EVOLUTION...")
         for _ in range(self.max_cycles):
             await self.run_autonomous_cycle()
-        logger.info("🏁 72-HOUR EVOLUTION COMPLETE")
+        logger.info("🏁 72-CYCLE EVOLUTION COMPLETE")
         self.save_evolution_report()
     
     def save_evolution_report(self):
@@ -81,7 +80,3 @@ class SingularityKernel:
         with open("singularity_report.json", "w") as f:
             json.dump(report, f, indent=2)
         logger.info("📊 Evolution report saved")
-
-if __name__ == "__main__":
-    kernel = SingularityKernel()
-    asyncio.run(kernel.run_72_hour_loop())
