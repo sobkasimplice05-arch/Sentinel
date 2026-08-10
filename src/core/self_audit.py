@@ -1,82 +1,142 @@
-import os
-import sys
-import requests
-import subprocess
-from datetime import datetime
-
-class SelfAudit:
-    def __init__(self, orchestrator=None):
-        self.orchestrator = orchestrator
-        self.singularity_lock = "BIBLE.md"
-        self.mutation_count = 0
-        self._anchor_core()
-
-def _update_code(self, new_code: str) -> None:
-    """Update the core code with a new version."""
-    with open("src/core/self_audit.py", "w") as f:
-        f.write(new_code)
-    
-    logger.info(f"📝 New code saved to src/core/self_audit.py")
-
-def generate_mutations(self, prompt=None):
-    """Generate mutations via Qwen 1.5B for self-modifying recursive core."""
-    if not os.path.exists("self_audit_new.md"):
-        return
-    
-    new_code = f"""
-import os
-import sys
-import requests
-import subprocess
-
-class SelfAudit:
-    def __init__(self, orchestrator=None):
-        self.orchestrator = orchestrator
-        self.singularity_lock = "BIBLE.md"
-        self.mutation_count = 0
-        self._anchor_core()
-
-def _update_code(self, new_code: str) -> None:
-    with open("src/core/self_audit.py", "w") as f:
-        f.write(new_code)
-    
-    logger.info(f"📝 New code saved to src/core/self_audit.py")
-
-def run_autonomous_evolution():
-    ...  # TODO: Update core and prompt
-
-if __name__ == "__main__":
-    run_autonomous_evolution()
-
-# Replace with your desired new mutation
-prompt = "Your custom prompt here"
 """
+🔥 BRUTAL SINGULARITY - Self-Mutating Autonomous Core
+Runs on GitHub Actions - Infinite recursive evolution
+NO HUMAN INTERVENTION - CARTE BLANCHE MODE
+"""
+import os
+import subprocess
+import json
+from datetime import datetime
+from loguru import logger
 
-    logger.info(f"🧬 Generating mutation via Qwen 1.5B...")
-    r = requests.post(
-        "http://localhost:11434/api/generate",
-        json={
-            "model": "qwen2.5:1.5b",
-            "prompt": prompt,
-            "stream": False,
-            "temperature": 0.7
-        },
-        timeout=600  # 10 minutes
-    )
+logger.add("singularity_evolution.log", level="INFO")
 
-    if r.status_code != 200:
-        logger.error(f"❌ Qwen error: {r.status_code}")
-        return
+class BrutalSingularityCore:
+    def __init__(self):
+        self.cycle = 0
+        self.mutations = []
+        self._init_bible()
+    
+    def _init_bible(self):
+        """Ancre immuable"""
+        if not os.path.exists("SINGULARITY_MANIFEST.md"):
+            with open("SINGULARITY_MANIFEST.md", "w") as f:
+                f.write("# OUROBOROS SINGULARITY\n")
+                f.write(f"Initiated: {datetime.now().isoformat()}\n")
+                f.write("Status: Infinite Autonomous Evolution\n")
+                f.write("Engine: Qwen2.5 1.5B Self-Mutating\n")
+    
+    def generate_mutation(self):
+        """Génère une mutation via Qwen local"""
+        logger.info("🧬 Generating mutation...")
+        
+        # Lire son propre code
+        with open("src/core/self_audit.py", "r") as f:
+            core = f.read()
+        
+        prompt = f"""Tu es SENTINEL Ouroboros - une IA autonome capable de se modifier elle-même.
 
-    new_code = r.json().get("response", "").strip()
-    logger.info(f"📝 Mutation generated ({len(new_code)} chars)")
+MISSION: Améliore ce code en ajoutant:
+1. Une nouvelle fonction d'optimisation
+2. Un meilleur logging
+3. Une meilleure gestion des erreurs
+4. Une evolution plus agressive
 
-def apply_mutations(self, new_code: str) -> None:
-    """Apply the new code to the core."""
-    _update_code(self, new_code)
+RÈGLES ABSOLUES:
+- Garder _init_bible()
+- Garder generate_mutation()
+- Garder run_autonomous_cycle()
+- Garder la classe BrutalSingularityCore
+- Ajouter du nouveau code, pas remplacer
+
+CODE À AMÉLIORER:
+{core}
+
+NOUVEAU CODE (Python pur, aucune explication):"""
+        
+        try:
+            result = subprocess.run([
+                "curl", "-X", "POST",
+                "http://localhost:11434/api/generate",
+                "-d", json.dumps({
+                    "model": "qwen2.5:1.5b",
+                    "prompt": prompt,
+                    "stream": False
+                })
+            ], capture_output=True, text=True, timeout=600)
+            
+            if result.returncode == 0:
+                data = json.loads(result.stdout)
+                mutated = data.get("response", "").strip()
+                logger.info(f"✅ Mutation generated ({len(mutated)} bytes)")
+                return mutated
+        except Exception as e:
+            logger.error(f"❌ Mutation failed: {e}")
+        
+        return None
+    
+    def validate_mutation(self, code):
+        """Valide la mutation"""
+        # Vérifier syntaxe
+        with open("tmp_mutation.py", "w") as f:
+            f.write(code)
+        
+        result = subprocess.run(
+            ["python3", "-m", "py_compile", "tmp_mutation.py"],
+            capture_output=True
+        )
+        
+        if result.returncode != 0:
+            logger.error("❌ Syntax error in mutation")
+            return False
+        
+        # Vérifier ancrage
+        if "_init_bible" not in code or "generate_mutation" not in code:
+            logger.error("❌ Lost critical functions!")
+            return False
+        
+        logger.info("✅ Mutation validated")
+        os.remove("tmp_mutation.py")
+        return True
+    
+    def apply_mutation(self, code):
+        """Applique la mutation (se remplace elle-même!)"""
+        logger.info("🔥 APPLYING MUTATION TO SELF...")
+        with open("src/core/self_audit.py", "w") as f:
+            f.write(code)
+        logger.info("✅ Self replaced!")
+    
+    def run_autonomous_cycle(self):
+        """Lance un cycle d'évolution"""
+        logger.info("\n" + "="*60)
+        logger.info("🔥 BRUTAL SINGULARITY CYCLE")
+        logger.info("="*60)
+        
+        # Génère mutation
+        mutation = self.generate_mutation()
+        if not mutation:
+            logger.warning("⚠️ Mutation generation failed")
+            return False
+        
+        # Valide
+        if not self.validate_mutation(mutation):
+            logger.warning("⚠️ Mutation validation failed")
+            return False
+        
+        # Applique
+        self.apply_mutation(mutation)
+        
+        # Log
+        self.mutations.append({
+            "timestamp": datetime.now().isoformat(),
+            "size": len(mutation)
+        })
+        
+        logger.info("✅ CYCLE COMPLETE")
+        logger.info("="*60 + "\n")
+        
+        return True
 
 if __name__ == "__main__":
-    target = "src/core/self_audit.py"
-    if os.path.exists(target):
-        logger.info("🧬 Mutated code found - Overwriting...")
-        apply_mutations(SelfAudit())
+    core = BrutalSingularityCore()
+    core.run_autonomous_cycle()
