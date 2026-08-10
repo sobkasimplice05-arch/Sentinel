@@ -1,8 +1,5 @@
-"""
-🔍 SELF-AUDIT - Real-time monitoring of evolution
-"""
-
-import json
+"""🔍 SELF-AUDIT - Real-time monitoring"""
+import asyncio
 from datetime import datetime
 from loguru import logger
 
@@ -13,8 +10,6 @@ class SelfAudit:
         logger.info("🔍 Self-audit initialized")
     
     async def monitor_singularity(self, kernel):
-        """Monitor Singularity Kernel in real-time"""
-        
         while kernel.cycle_count < kernel.max_cycles:
             health = {
                 "timestamp": datetime.now().isoformat(),
@@ -22,18 +17,15 @@ class SelfAudit:
                 "mutations": kernel.mutations_applied,
                 "status": "healthy" if kernel.mutations_applied <= 24 else "warning"
             }
-            
             self.health_checks.append(health)
-            logger.info(f"🏥 Health: {kernel.mutations_applied} mutations applied")
+            logger.info(f"🏥 Health: {kernel.mutations_applied} mutations")
             
-            # If mutations getting too aggressive, log warning
             if kernel.mutations_applied > 50:
-                logger.warning("⚠️ High mutation rate - check before cycle 72")
+                logger.warning("⚠️ High mutation rate detected")
             
-            await asyncio.sleep(60)  # Check every minute
+            await asyncio.sleep(60)
     
     def generate_audit_report(self, kernel):
-        """Generate audit report"""
         return {
             "health_checks": self.health_checks,
             "final_state": {
