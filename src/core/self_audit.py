@@ -45,7 +45,7 @@ def send_discord_human_report(status, commit_sha, details, error_log=None):
 
 def run_autonomous_evolution():
     print("🌀 SENTINEL CORE : Déclenchement de la Singularité...")
-    
+
     with open("src/core/self_audit.py", "r") as f:
         core_code = f.read()
 
