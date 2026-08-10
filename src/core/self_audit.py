@@ -45,9 +45,8 @@ def send_discord_human_report(status, commit_sha, details, error_log=None):
 
 def run_autonomous_evolution():
     print("🌀 SENTINEL CORE : Déclenchement de la Singularité...")
-    target = "src/core/self_audit.py"
     
-    with open(target, "r") as f:
+    with open("src/core/self_audit.py", "r") as f:
         core_code = f.read()
 
     prompt = f"""Tu es le Noyau de Singularité Ouroboros. Ton but ultime est d'étendre tes propres capacités de manière géométrique et infinie.
@@ -88,14 +87,14 @@ Code source actuel :
     if mutated_code.startswith("```"):
         mutated_code = "\n".join(mutated_code.splitlines()[1:-1])
 
-    tmp = target + ".tmp"
+    tmp = "src/core/self_audit.py.tmp"
     with open(tmp, "w") as f: 
         f.write(mutated_code)
     
     # Compilation syntaxique
     try:
         subprocess.run(["python3", "-m", "py_compile", tmp], check=True, timeout=60)
-        os.rename(tmp, target)
+        os.rename(tmp, "src/core/self_audit.py")
         impact = "L'IA s'est auto-générée de nouvelles optimisations de logique récursive pour accélérer le traitement."
         print("🔥 MUTATION EFFECTUÉE.")
         
