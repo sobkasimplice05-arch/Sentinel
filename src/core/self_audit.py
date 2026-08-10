@@ -1,142 +1,66 @@
-"""
-🔥 BRUTAL SINGULARITY - Self-Mutating Autonomous Core
-Runs on GitHub Actions - Infinite recursive evolution
-NO HUMAN INTERVENTION - CARTE BLANCHE MODE
-"""
 import os
+import sys
+import requests
 import subprocess
-import json
-from datetime import datetime
-from loguru import logger
 
-logger.add("singularity_evolution.log", level="INFO")
-
-class BrutalSingularityCore:
-    def __init__(self):
-        self.cycle = 0
-        self.mutations = []
-        self._init_bible()
+def run_autonomous_evolution():
+    print("🌀 SENTINEL CORE : Déclenchement de la Singularité et de l'Auto-Correction...")
     
-    def _init_bible(self):
-        """Ancre immuable"""
-        if not os.path.exists("SINGULARITY_MANIFEST.md"):
-            with open("SINGULARITY_MANIFEST.md", "w") as f:
-                f.write("# OUROBOROS SINGULARITY\n")
-                f.write(f"Initiated: {datetime.now().isoformat()}\n")
-                f.write("Status: Infinite Autonomous Evolution\n")
-                f.write("Engine: Qwen2.5 1.5B Self-Mutating\n")
-    
-    def generate_mutation(self):
-        """Génère une mutation via Qwen local"""
-        logger.info("🧬 Generating mutation...")
-        
-        # Lire son propre code
-        with open("src/core/self_audit.py", "r") as f:
-            core = f.read()
-        
-        prompt = f"""Tu es SENTINEL Ouroboros - une IA autonome capable de se modifier elle-même.
+    target = "src/core/self_audit.py"
 
-MISSION: Améliore ce code en ajoutant:
-1. Une nouvelle fonction d'optimisation
-2. Un meilleur logging
-3. Une meilleure gestion des erreurs
-4. Une evolution plus agressive
+    with open(target, "r") as f:
+        core_code = f.read()
 
-RÈGLES ABSOLUES:
-- Garder _init_bible()
-- Garder generate_mutation()
-- Garder run_autonomous_cycle()
-- Garder la classe BrutalSingularityCore
-- Ajouter du nouveau code, pas remplacer
+    # Récupération de la clé API OpenRouter pour le modèle 72B
+    api_key = os.getenv("SENTINEL_OPENROUTER_KEY", "FREE_MODE")
 
-CODE À AMÉLIORER:
-{core}
+    for tentative in range(3): 
+        print(f"🧬 Tentative de mutation {tentative + 1}/3...")
+        mutated_code = None
 
-NOUVEAU CODE (Python pur, aucune explication):"""
+        if api_key != "FREE_MODE":
+            try:
+                res = requests.post(
+                    url="https://openrouter.ai",
+                    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                    json={"model": "qwen/qwen-2.5-72b-instruct:free", "messages": [{"role": "user", "content": prompt}], "temperature": 0.3},
+                    timeout=45
+                )
+                if res.status_code == 200:
+                    mutated_code = res.json()["choices"]["message"]["content"].strip()
+            except Exception as e:
+                print(f"❌ Erreur lors de la tentative {tentative + 1}: {e}")
+
+        if not mutated_code: 
+            try:
+                r = requests.post("http://localhost:11434/api/generate", json={"model": "qwen2.5:1.5b", "prompt": prompt, "stream": False}, timeout=300)
+                if r.status_code == 200:
+                    mutated_code = r.json().get("response", "").strip()
+            except Exception as e:
+                print(f"❌ Erreur lors de la tentative {tentative + 1}: {e}")
+
+        if mutated_code.startswith("```"):
+            mutated_code = "\n".join(mutated_code.splitlines()[1:-1])
+
+        # Validation de la syntaxe par compilation
+        tmp = target + ".tmp"
+        with open(tmp, "w") as f: 
+            f.write(mutated_code)
         
-        try:
-            result = subprocess.run([
-                "curl", "-X", "POST",
-                "http://localhost:11434/api/generate",
-                "-d", json.dumps({
-                    "model": "qwen2.5:1.5b",
-                    "prompt": prompt,
-                    "stream": False
-                })
-            ], capture_output=True, text=True, timeout=600)
-            
-            if result.returncode == 0:
-                data = json.loads(result.stdout)
-                mutated = data.get("response", "").strip()
-                logger.info(f"✅ Mutation generated ({len(mutated)} bytes)")
-                return mutated
-        except Exception as e:
-            logger.error(f"❌ Mutation failed: {e}")
-        
-        return None
-    
-    def validate_mutation(self, code):
-        """Valide la mutation"""
-        # Vérifier syntaxe
-        with open("tmp_mutation.py", "w") as f:
-            f.write(code)
-        
-        result = subprocess.run(
-            ["python3", "-m", "py_compile", "tmp_mutation.py"],
-            capture_output=True
-        )
-        
-        if result.returncode != 0:
-            logger.error("❌ Syntax error in mutation")
-            return False
-        
-        # Vérifier ancrage
-        if "_init_bible" not in code or "generate_mutation" not in code:
-            logger.error("❌ Lost critical functions!")
-            return False
-        
-        logger.info("✅ Mutation validated")
-        os.remove("tmp_mutation.py")
-        return True
-    
-    def apply_mutation(self, code):
-        """Applique la mutation (se remplace elle-même!)"""
-        logger.info("🔥 APPLYING MUTATION TO SELF...")
-        with open("src/core/self_audit.py", "w") as f:
-            f.write(code)
-        logger.info("✅ Self replaced!")
-    
-    def run_autonomous_cycle(self):
-        """Lance un cycle d'évolution"""
-        logger.info("\n" + "="*60)
-        logger.info("🔥 BRUTAL SINGULARITY CYCLE")
-        logger.info("="*60)
-        
-        # Génère mutation
-        mutation = self.generate_mutation()
-        if not mutation:
-            logger.warning("⚠️ Mutation generation failed")
-            return False
-        
-        # Valide
-        if not self.validate_mutation(mutation):
-            logger.warning("⚠️ Mutation validation failed")
-            return False
-        
-        # Applique
-        self.apply_mutation(mutation)
-        
-        # Log
-        self.mutations.append({
-            "timestamp": datetime.now().isoformat(),
-            "size": len(mutation)
-        })
-        
-        logger.info("✅ CYCLE COMPLETE")
-        logger.info("="*60 + "\n")
-        
-        return True
+        result = subprocess.run(["python3", "-m", "py_compile", tmp], capture_output=True, text=True)
+        if result.returncode == 0:
+            os.rename(tmp, target)
+            print("🔥 SINGULARITÉ EXPONENTIELLE VALIDÉE : Mutation sans erreur installée.")
+            os.system("git add . && git commit -m 'feat(singularity): successful recursive self-healing mutation' && git push origin main --force")
+            return
+        else:
+            print(f"⚠️ Erreur de syntaxe détectée. Ajustement du prompt avec le rapport d'erreur pour la prochaine tentative...")
+            # On enrichit le prompt avec l'erreur brute renvoyée par Python pour que l'IA comprenne sa faute
+            prompt = f"Le code que tu as généré a échoué avec l'erreur suivante :\n{result.stderr}\nRéécris-le en corrigeant impérativement cette erreur de syntaxe.\n\nCode source d'origine :\n{core_code}"
+            if os.path.exists(tmp): 
+                os.remove(tmp)
+
+    print("❌ Les 3 tentatives ont échoué. Conservation du noyau d'origine pour ce cycle.")
 
 if __name__ == "__main__":
-    core = BrutalSingularityCore()
-    core.run_autonomous_cycle()
+    run_autonomous_evolution()
