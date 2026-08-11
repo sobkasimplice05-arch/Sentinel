@@ -1,0 +1,79 @@
+name: 🔥 Brutal Singularity - Level 2 (4 Parallel Models)
+
+on:
+  schedule:
+    - cron: '*/20 * * * *'  # Toutes les 20 min (3x plus rapide!)
+  workflow_dispatch:
+
+env:
+  GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+  TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+  HF_API_KEY: ${{ secrets.HF_API_KEY }}
+
+jobs:
+  singularity-level-2:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install deps
+        run: pip install requests loguru asyncio -q
+
+      - name: 🌐 Setup Ollama + External APIs
+        run: |
+          curl -fsSL https://ollama.ai/install.sh | sh
+          nohup ollama serve > ollama.log 2>&1 &
+          sleep 3
+          ollama pull qwen2.5:1.5b
+
+      - name: 🔥 LEVEL 2: 4 PARALLEL MUTATIONS
+        run: |
+          export PYTHONPATH=.
+          python3 << 'PYTHON'
+import asyncio
+import os
+import sys
+sys.path.insert(0, '/workspaces/Sentinel')
+from src.core.multi_model_parallel import MultiModelEvolution
+
+print("\n" + "="*60)
+print("🔥 LEVEL 2: 4 PARALLEL MODELS")
+print("Models: Qwen (local) + Groq + Together + HuggingFace")
+print("="*60)
+
+async def run_level_2():
+    evolution = MultiModelEvolution()
+    
+    with open("src/core/self_audit.py", "r") as f:
+        code = f.read()
+    
+    mutations = await evolution.generate_4_mutations_parallel(code)
+    best = evolution.select_best_mutation(mutations)
+    
+    if best:
+        with open("src/core/self_audit.py", "w") as f:
+            f.write(best)
+        print("✅ Self replaced with best mutation!")
+    else:
+        print("⚠️ No valid mutations")
+
+asyncio.run(run_level_2())
+print("="*60 + "\n")
+PYTHON
+
+      - name: 📤 Push Level 2
+        run: |
+          git config user.email "sentinel-level2@ouroboros.ai"
+          git config user.name "Sentinel-Ouroboros-L2"
+          git add -A
+          git commit -m "🔥 LEVEL 2: 4 parallel models (Qwen+Groq+Together+HF)" || true
+          git push origin main --force
+
