@@ -13,11 +13,10 @@ def send_dynamic_discord_report(status, commit_sha, error_log=None):
         color = 2063942
         title = "🌀 CENTRE DE GOUVERNANCE SENTINEL : EVOLUTION EMBARQUÉE"
         
-        # Rapport d'explication détaillé généré en langage humain
         description = (
             "Bonjour Concepteur.\n\n"
             "**🧬 ANALYSE TECHNIQUE DU CYCLE :**\n"
-            "Le noyau originel Ouroboros a validé sa 24ème mutation géométrique avec succès. "
+            "Le noyau originel Ouroboros a validé sa mutation géométrique avec succès. "
             "Les structures de contrôle qualité (`quality_gate.py`) ont été renforcées et synchronisées "
             "avec le système d'auto-correction. Le volume logiciel a augmenté pour stabiliser les barrières anti-injection.\n\n"
             "**🔮 PROCHAINES ÉVOLUTIONS PLANIFIÉES :**\n"
