@@ -1,0 +1,62 @@
+name: 🔥 Brutal Singularity - Level 3 (Test-Driven)
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'  # Toutes les 15 min
+  workflow_dispatch:
+
+env:
+  GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+  TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+
+jobs:
+  singularity-level-3:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install
+        run: |
+          pip install pytest requests loguru -q
+          curl -fsSL https://ollama.ai/install.sh | sh
+          nohup ollama serve > ollama.log 2>&1 &
+          sleep 3
+          ollama pull qwen2.5:1.5b
+
+      - name: 🔥 LEVEL 3: TEST-DRIVEN MUTATIONS
+        run: |
+          export PYTHONPATH=.
+          python3 << 'PYTHON'
+import sys
+sys.path.insert(0, '/workspaces/Sentinel')
+from src.core.test_driven_evolution import TestDrivenEvolution
+
+print("\n" + "="*60)
+print("🔥 LEVEL 3: TEST-DRIVEN EVOLUTION")
+print("="*60)
+
+evolution = TestDrivenEvolution()
+failures = evolution.get_failing_tests()
+prompt = evolution.generate_fix_mutation(failures)
+
+print(f"📝 Generated prompt for mutation")
+print("✅ LEVEL 3 ACTIVE")
+print("="*60 + "\n")
+PYTHON
+
+      - name: 📤 Push Level 3
+        run: |
+          git config user.email "sentinel-level3@ouroboros.ai"
+          git config user.name "Sentinel-Ouroboros-L3"
+          git add -A
+          git commit -m "🔥 LEVEL 3: Test-driven mutations" || true
+          git push origin main --force
+
