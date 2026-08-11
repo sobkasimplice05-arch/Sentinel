@@ -2,8 +2,8 @@ name: Évolution autonome du Sentinel H24
 
 on:
   schedule:
-    - cron: '0 * * * *' # S'exécute toutes les heures de manière automatique
-  workflow_dispatch: # Vous permet de cliquer sur le bouton blanc pour forcer le lancement
+    - cron: '0 * * * *'
+  workflow_dispatch:
 
 jobs:
   evolve:
@@ -25,10 +25,12 @@ jobs:
 
     - name: Run Recursive Singularity Cycle
       env:
-        # Injection étanche de vos clés secrètes dans le moteur Cloud
+        # PANTHEON COMPLET DE VOS CLÉS SECRÈTES CONNECTÉES AU CLOUD
         SENTINEL_DISCORD_WEBHOOK: ${{ secrets.SENTINEL_DISCORD_WEBHOOK }}
         GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+        HF_API_KEY: ${{ secrets.HF_API_KEY }}
+        REPLICATE_API_KEY: ${{ secrets.REPLICATE_API_KEY }}
         PYTHONPATH: .
       run: |
         python3 src/core/self_audit.py
