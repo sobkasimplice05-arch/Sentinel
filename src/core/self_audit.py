@@ -5,7 +5,7 @@ import subprocess
 
 def send_dynamic_discord_report(status, commit_sha, error_log=None):
     webhook_url = os.getenv("SENTINEL_DISCORD_WEBHOOK")
-    if not webhook_url: 
+    if not webhook_url:
         print("❌ Webhook non trouvé.")
         return
 
@@ -48,14 +48,17 @@ def run_autonomous_evolution():
 
     try:
         r = requests.post("http://localhost:11434/api/generate", json={"model": "qwen2.5:1.5b", "prompt": prompt, "stream": False}, timeout=120)
-        mutated_code = r.json().get("response", "").strip() if r.status_code == 200 else None
-    except: return
+        mutated_code = r.text.strip()  # Changed 'response' to 'text'
+    except Exception as e:
+        print(f"❌ Erreur réseau Webhook : {e}")
+        return
 
-    if mutated_code and mutated_code.startswith("```"):
+    if mutated_code and "```" in mutated_code:  # Check for code block
         mutated_code = "\n".join(mutated_code.splitlines()[1:-1])
 
     tmp = target + ".tmp"
-    with open(tmp, "w") as f: f.write(mutated_code)
+    with open(tmp, "w") as f:
+        f.write(mutated_code)
     
     if subprocess.run(["python3", "-m", "py_compile", tmp], capture_output=True).returncode == 0:
         os.rename(tmp, target)
