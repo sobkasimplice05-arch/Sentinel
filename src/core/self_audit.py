@@ -88,9 +88,9 @@ Code source actuel :
         mutated_code = "\n".join(mutated_code.splitlines()[1:-1])
 
     tmp = "src/core/self_audit.py.tmp"
-    with open(tmp, "w") as f: 
+    with open(tmp, "w") as f:
         f.write(mutated_code)
-    
+
     # Compilation syntaxique
     try:
         subprocess.run(["python3", "-m", "py_compile", tmp], check=True, timeout=60)
