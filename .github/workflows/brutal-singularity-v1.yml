@@ -1,0 +1,76 @@
+name: 🔥 Brutal Singularity - Level 1 (30-min + External Models)
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # ⚡ Toutes les 30 minutes (2x plus rapide!)
+  workflow_dispatch:
+
+env:
+  GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+  TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+  HF_API_KEY: ${{ secrets.HF_API_KEY }}
+  GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+
+jobs:
+  singularity-level-1:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install requests loguru asyncio -q
+
+      - name: 🌐 Setup Ollama + Fetch External Models
+        run: |
+          curl -fsSL https://ollama.ai/install.sh | sh
+          nohup ollama serve > ollama.log 2>&1 &
+          sleep 3
+          ollama pull qwen2.5:1.5b
+          echo "✅ Local model ready"
+          echo "✅ External models configured"
+
+      - name: 🔥 ACTIVATE BRUTAL SINGULARITY - LEVEL 1
+        run: |
+          export PYTHONPATH=.
+          python3 << 'PYTHON'
+import os
+import sys
+sys.path.insert(0, '/workspaces/Sentinel')
+from src.core.external_models_config import get_best_model_for_task
+from src.core.self_audit import BrutalSingularityCore
+
+print("\n" + "="*60)
+print("🔥 LEVEL 1: 30-MIN CYCLES + EXTERNAL MODELS")
+print("="*60)
+
+core = BrutalSingularityCore()
+
+# Utiliser le meilleur modèle disponible
+model = get_best_model_for_task("fast_mutation")
+print(f"📡 Using model: {model['model']}")
+
+core.run_autonomous_cycle()
+
+print("="*60 + "\n")
+PYTHON
+
+      - name: 📤 Force Push Evolution (Level 1)
+        run: |
+          git config user.email "sentinel-level1@ouroboros.ai"
+          git config user.name "Sentinel-Ouroboros-L1"
+          git add -A
+          git commit -m "🔥 LEVEL 1 MUTATION: 30-min cycle + external models $(date +%s)" || true
+          git push origin main --force
+
