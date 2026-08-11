@@ -1,0 +1,47 @@
+[1mdiff --git a/ollama.log b/ollama.log[m
+[1mindex d5d290d..0bba45d 100755[m
+[1m--- a/ollama.log[m
+[1m+++ b/ollama.log[m
+[36m@@ -1,6 +1,6 @@[m
+ Couldn't find '/home/runner/.ollama/id_ed25519'. Generating new private key.[m
+ Your new public key is: [m
+ [m
+[31m-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINtpfXlgXOQE1f26uhigjVzsyG2GNBu7o2I2FxrLGNSG[m
+[32m+[m[32mssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPd1QepRfWSNXKFy8wwn6zAFqt+vgdC7EC6greSFKPZ3[m
+ [m
+ Error: listen tcp 127.0.0.1:11434: bind: address already in use[m
+[1mdiff --git a/src/core/self_audit.py b/src/core/self_audit.py[m
+[1mindex 853891a..4d306ff 100644[m
+[1m--- a/src/core/self_audit.py[m
+[1m+++ b/src/core/self_audit.py[m
+[36m@@ -45,9 +45,8 @@[m [mdef send_discord_human_report(status, commit_sha, details, error_log=None):[m
+ [m
+ def run_autonomous_evolution():[m
+     print("🌀 SENTINEL CORE : Déclenchement de la Singularité...")[m
+[31m-    target = "src/core/self_audit.py"[m
+[31m-    [m
+[31m-    with open(target, "r") as f:[m
+[32m+[m
+[32m+[m[32m    with open("src/core/self_audit.py", "r") as f:[m
+         core_code = f.read()[m
+ [m
+     prompt = f"""Tu es le Noyau de Singularité Ouroboros. Ton but ultime est d'étendre tes propres capacités de manière géométrique et infinie.[m
+[36m@@ -88,14 +87,14 @@[m [mCode source actuel :[m
+     if mutated_code.startswith("```"):[m
+         mutated_code = "\n".join(mutated_code.splitlines()[1:-1])[m
+ [m
+[31m-    tmp = target + ".tmp"[m
+[31m-    with open(tmp, "w") as f: [m
+[32m+[m[32m    tmp = "src/core/self_audit.py.tmp"[m
+[32m+[m[32m    with open(tmp, "w") as f:[m
+         f.write(mutated_code)[m
+[31m-    [m
+[32m+[m
+     # Compilation syntaxique[m
+     try:[m
+         subprocess.run(["python3", "-m", "py_compile", tmp], check=True, timeout=60)[m
+[31m-        os.rename(tmp, target)[m
+[32m+[m[32m        os.rename(tmp, "src/core/self_audit.py")[m
+         impact = "L'IA s'est auto-générée de nouvelles optimisations de logique récursive pour accélérer le traitement."[m
+         print("🔥 MUTATION EFFECTUÉE.")[m
+         [m
