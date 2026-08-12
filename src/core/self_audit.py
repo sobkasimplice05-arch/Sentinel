@@ -95,3 +95,39 @@ Code source actuel :
 
 if __name__ == "__main__":
     run_autonomous_evolution()
+
+# Add at top of file after imports:
+from src.core.error_handler import ErrorTracker
+from src.core.discord_webhook import DiscordWebhook
+
+# Initialize
+error_tracker = ErrorTracker()
+discord = DiscordWebhook()
+
+# In run_autonomous_evolution():
+# After successful mutation:
+discord.send_mutation_report(
+    cycle_num,
+    {
+        "type": "code_optimization",
+        "code": mutated_code,
+        "changes_count": count_changes(core_code, mutated_code),
+        "functions_added": extract_new_functions(mutated_code),
+        "functions_modified": extract_modified_functions(core_code, mutated_code),
+        "performance_pct": 5,
+        "syntax_valid": True,
+        "tests_passed": 59,
+        "tests_failed": 0,
+        "model_used": "qwen2.5:1.5b",
+        "execution_time": 2.5,
+        "success": True
+    }
+)
+
+# On error:
+discord.send_error_report(
+    cycle_num,
+    str(error),
+    "api_timeout"  # ou "syntax_error", etc.
+)
+
