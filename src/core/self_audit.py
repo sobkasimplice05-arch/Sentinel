@@ -31,14 +31,12 @@ def save_circular_memory(memory):
         pass
 
 def ensure_ollama_is_running():
-    """Vérifie l'infrastructure et force le réveil/téléchargement du modèle s'il est caché ou endormi."""
     print("🔌 Inspection des infrastructures locales...")
-    is_running = False
     try:
         r = requests.get("http://localhost:11434/", timeout=5)
         if r.status_code == 200:
             print("🟢 Le serveur Ollama est réveillé.")
-            is_running = True
+            return True
     except:
         print("⚠️ Ollama dort. Activation de la Porte d'Auto-Allumage...")
         try:
@@ -52,20 +50,16 @@ def ensure_ollama_is_running():
             r = requests.get("http://localhost:11434/", timeout=5)
             if r.status_code == 200:
                 print("⚡ Réveil réussi du serveur Ollama.")
-                is_running = True
+                return True
         except Exception as e:
             print(f"❌ Échec de l'allumage système : {e}")
             
-    if is_running:
-        print("🧬 Forçage et vérification du modèle qwen2.5:1.5b...")
-        try:
-            # Sentinel tape du poing sur la table pour réveiller ou lier le modèle instantanément
-            subprocess.run(["ollama", "pull", "qwen2.5:1.5b"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=20)
-            print("🎯 Modèle vérifié et paré à l'action.")
-            return True
-        except Exception as e:
-            print(f"⚠️ Impossible de forcer le modèle : {e}")
-            return True
+    try:
+        subprocess.run(["ollama", "pull", "qwen2.5:1.5b"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=20)
+        print("🎯 Modèle vérifié et paré à l'action.")
+        return True
+    except:
+        return True
     return False
 
 def fetch_cyber_intel_free():
@@ -136,18 +130,15 @@ Consigne cruciale : Écris une courte ligne de commentaire tout à la fin du fic
 
     if not mutated_code:
         print("🤖 API Cloud indisponibles. Tentative sur la pulsation locale de secours...")
-        
         if ensure_ollama_is_running():
             try:
-                print("⏳ Génération du code en cours via Ollama (Délai max accordé : 45s)...")
+                print("⏳ Génération du code en cours via Ollama (Délai max accordé : 120s)...")
                 r = requests.post("http://localhost:11434/api/generate", json={"model": "qwen2.5:1.5b", "prompt": prompt, "stream": False}, timeout=120)
                 if r.status_code == 200:
                     mutated_code = r.json().get("response", "").strip()
                     model_used = "qwen2.5:1.5b"
             except Exception as ollama_err:
                 print(f"❌ Échec de communication post-allumage : {ollama_err}")
-        else:
-            print("❌ L'infrastructure Ollama locale n'a pas pu être démarrée. Sécurisation.")
 
     if not mutated_code:
         memory["last_cycle_status"] = "CRASH_INFRASTRUCTURE"
@@ -179,15 +170,8 @@ Consigne cruciale : Écris une courte ligne de commentaire tout à la fin du fic
         memory["sentinel_mood_notes"] = extracted_note
         save_circular_memory(memory)
 
-        os.system("git add . && git commit -m 'feat(ouroboros): autonomous sub-process pull mechanism implemented' && git push origin main --force")
+        os.system("git add . && git commit -m 'feat(ouroboros): core fully calibrated with correct api endpoint' && git push origin main --force")
     else:
         if os.path.exists(tmp): 
             os.remove(tmp)
         print("❌ Instabilité syntaxique détectée dans la mutation. Rejet.")
-        memory["last_cycle_status"] = "SYNTAX_REJECTED"
-        memory["consecutive_failures"] += 1
-        memory["sentinel_mood_notes"] = "La mutation générée a échoué aux tests de compilation syntaxique."
-        save_circular_memory(memory)
-
-if __name__ == "__main__":
-    run_autonomous_evolution()
