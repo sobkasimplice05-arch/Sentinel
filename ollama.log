@@ -1,6 +1,6 @@
 Couldn't find '/home/runner/.ollama/id_ed25519'. Generating new private key.
 Your new public key is: 
 
-ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHkj/S6it/PId/N4PgyJZOQtLW7goD2l8iG411xMWnpp
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGO1gYHjog3l3bzJiG2u6ivoREDTGRs4Rqp/j5fD0YWM
 
 Error: listen tcp 127.0.0.1:11434: bind: address already in use
