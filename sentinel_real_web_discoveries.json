@@ -1,0 +1,25 @@
+[
+  {
+    "type": "real_cves",
+    "count": 1665,
+    "timestamp": "2026-08-15T14:27:11.200767",
+    "source": "CISA KEV"
+  },
+  {
+    "type": "real_exploits",
+    "count": 30,
+    "timestamp": "2026-08-15T14:27:12.686395",
+    "source": "GitHub"
+  },
+  {
+    "type": "threat_intel",
+    "sources": [],
+    "timestamp": "2026-08-15T14:27:13.294578"
+  },
+  {
+    "type": "security_papers",
+    "count": 30,
+    "timestamp": "2026-08-15T14:27:13.627777",
+    "source": "arXiv"
+  }
+]
