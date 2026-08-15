@@ -1,0 +1,51 @@
+name: 🌐 Sentinel Real Web Learning (Hourly)
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Toutes les heures
+  workflow_dispatch:
+
+jobs:
+  real-web-learning:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install deps
+        run: pip install requests loguru -q
+
+      - name: 🌐 SENTINEL LEARNS FROM REAL WEB
+        run: |
+          export PYTHONPATH=.
+          python3 << 'PYTHON'
+import asyncio
+from src.core.sentinel_real_learner import SentinelRealLearner
+import json
+from datetime import datetime
+
+async def main():
+    learner = SentinelRealLearner()
+    discoveries = await learner.autonomous_real_learning()
+    
+    with open("sentinel_web_discoveries.json", "w") as f:
+        json.dump(discoveries, f, indent=2)
+    
+    print("\n✅ WEB DISCOVERIES SAVED")
+
+asyncio.run(main())
+PYTHON
+
+      - name: 📤 Commit discoveries
+        run: |
+          git config user.email "sentinel-web@learner.ai"
+          git config user.name "Sentinel-RealWebLearner"
+          git add sentinel_web_discoveries.json
+          git commit -m "🌐 SENTINEL: Real web learning cycle - $(date)" || true
+          git push origin main --force
+
