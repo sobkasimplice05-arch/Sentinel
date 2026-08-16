@@ -1,0 +1,45 @@
+name: 🌐 Sentinel Autonomous Evolution Core
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  evolution-cycle:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      workflows: write
+
+    steps:
+      - name: 📥 Restauration du Code Source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      
+      - name: 🐍 Initialisation de l'environnement Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 📦 Installation des dépendances réseau
+        run: pip install requests -q
+
+      - name: 🌀 Exécution de la Pulsation Ouroboros
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          SENTINEL_DISCORD_WEBHOOK: ${{ secrets.SENTINEL_DISCORD_WEBHOOK }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          export PYTHONPATH=.
+          python3 src/core/self_audit.py
+
+      - name: 📤 Sauvegarde et Synchronisation de la Mutation
+        run: |
+          git config --global user.email "sentinel-bot@ouroboros.ai"
+          git config --global user.name "Sentinel-Bot"
+          git add --all
+          git commit -m "🔧 build(singularity): autonomous evolution cycle completed" || true
+          git push origin main --force
