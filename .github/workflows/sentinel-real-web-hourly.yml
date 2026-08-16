@@ -24,29 +24,7 @@ jobs:
       - name: 🌐 SENTINEL LEARNS FROM REAL WEB
         run: |
           export PYTHONPATH=.
-          python3 -c "
-import asyncio
-import json
-from datetime import datetime
-from src.core.sentinel_real_learner import SentinelRealLearner
-
-async def main():
-    try:
-        learner = SentinelRealLearner()
-        discoveries = await learner.autonomous_real_learning()
-        with open('sentinel_web_discoveries.json', 'w') as f:
-            json.dump(discoveries, f, indent=2)
-        print('\n💾 Discoveries saved!')
-        return True
-    except Exception as e:
-        print(f'\n❌ ERROR: {e}')
-        import traceback
-        traceback.print_exc()
-        return False
-
-success = asyncio.run(main())
-exit(0 if success else 1)
-"
+          python3 src/workflows/sentinel_learning_cycle.py
 
       - name: 📤 Commit discoveries
         if: success()
@@ -54,6 +32,6 @@ exit(0 if success else 1)
           git config user.email "sentinel-web@learner.ai"
           git config user.name "Sentinel-RealWebLearner"
           git add sentinel_web_discoveries.json 2>/dev/null || true
-          git commit -m "🌐 SENTINEL: Web learning cycle - $(date)" || true
+          git commit -m "🌐 SENTINEL: Web learning cycle" || true
           git push origin main --force
 
