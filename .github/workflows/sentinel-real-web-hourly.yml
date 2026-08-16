@@ -1,4 +1,5 @@
 name: 🌐 Sentinel Real Web Learning & Autonomous Evolution
+
 on:
   schedule:
     - cron: '0 * * * *'
@@ -16,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-
+      
       - name: 🐍 Configuration de Python
         uses: actions/setup-python@v5
         with:
@@ -28,7 +29,7 @@ jobs:
       - name: 1️⃣ LA CHASSE : Ingestion des menaces réelles du Web
         run: |
           export PYTHONPATH=.
-          python3 src/workflows/sentinel_learning_cycle.py || echo '⚠️ Échec partiel de la récolte, Sentinel avance quand même.'
+          python3 src/workflows/sentinel_learning_cycle.py || echo "⚠️ Échec partiel de la récolte, Sentinel avance quand même."
 
       - name: 2️⃣ LA MUTATION : Réplication Libre de l'Ouroboros
         env:
@@ -43,8 +44,8 @@ jobs:
       - name: 3️⃣ SAUVEGARDE : Propulsion de l'évolution de l'Agent
         if: always()
         run: |
-          git config --global user.email 'sentinel-ouroboros@sovereign.ai'
-          git config --global user.name 'Sentinel-Bot'
+          git config --global user.email "sentinel-ouroboros@sovereign.ai"
+          git config --global user.name "Sentinel-Bot"
           git add --all
-          git commit -m '🔥 BRUTAL MUTATION: Autonomous web-driven evolution cycle' || true
+          git commit -m "🔥 BRUTAL MUTATION: Autonomous web-driven evolution cycle" || true
           git push origin main --force
