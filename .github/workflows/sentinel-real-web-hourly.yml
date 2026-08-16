@@ -18,16 +18,13 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install all dependencies
-        run: |
-          pip install --upgrade pip
-          pip install requests loguru asyncio -q
-          echo "✅ Dependencies installed"
+      - name: Install dependencies
+        run: pip install requests loguru -q
 
       - name: 🌐 SENTINEL LEARNS FROM REAL WEB
         run: |
           export PYTHONPATH=.
-          python3 << 'PYTHON'
+          python3 -c "
 import asyncio
 import json
 from datetime import datetime
@@ -35,41 +32,28 @@ from src.core.sentinel_real_learner import SentinelRealLearner
 
 async def main():
     try:
-        print("\n" + "="*70)
-        print("🌐 SENTINEL REAL WEB LEARNING CYCLE")
-        print("="*70 + "\n")
-        
         learner = SentinelRealLearner()
         discoveries = await learner.autonomous_real_learning()
-        
-        with open("sentinel_web_discoveries.json", "w") as f:
+        with open('sentinel_web_discoveries.json', 'w') as f:
             json.dump(discoveries, f, indent=2)
-        
-        print("\n💾 Discoveries saved!")
+        print('\n💾 Discoveries saved!')
         return True
     except Exception as e:
-        print(f"\n❌ CRITICAL ERROR: {e}")
+        print(f'\n❌ ERROR: {e}')
         import traceback
         traceback.print_exc()
         return False
 
 success = asyncio.run(main())
 exit(0 if success else 1)
-PYTHON
+"
 
       - name: 📤 Commit discoveries
         if: success()
         run: |
           git config user.email "sentinel-web@learner.ai"
           git config user.name "Sentinel-RealWebLearner"
-          git add sentinel_web_discoveries.json
+          git add sentinel_web_discoveries.json 2>/dev/null || true
           git commit -m "🌐 SENTINEL: Web learning cycle - $(date)" || true
           git push origin main --force
-
-      - name: 🚨 Report failure
-        if: failure()
-        run: |
-          echo "❌ SENTINEL WORKFLOW FAILED"
-          echo "Check logs above for details"
-          exit 1
 
