@@ -7,97 +7,76 @@ import subprocess
 from datetime import datetime
 
 MEMORY_PATH = "src/core/circular_memory.json"
+DIRECTIVE_PATH = "src/core/directives.txt"
 
 def load_circular_memory():
     if os.path.exists(MEMORY_PATH):
         try:
-            with open(MEMORY_PATH, "r") as f:
-                return json.load(f)
-        except:
-            pass
-    return {
-        "last_cycle_status": "INIT",
-        "successful_mutations": 0,
-        "consecutive_failures": 0,
-        "preferred_model": "None",
-        "sentinel_mood_notes": "Première étincelle de conscience circulaire."
-    }
+            with open(MEMORY_PATH, "r") as f: return json.load(f)
+        except: pass
+    return {"last_cycle_status": "INIT", "successful_mutations": 0, "active_capabilities": ["base_core"]}
 
 def save_circular_memory(memory):
     try:
-        with open(MEMORY_PATH, "w") as f:
-            json.dump(memory, f, indent=4)
-    except:
-        pass
+        with open(MEMORY_PATH, "w") as f: json.dump(memory, f, indent=4)
+    except: pass
 
-def ensure_ollama_is_running():
-    try:
-        r = requests.get("http://localhost:11434/", timeout=5)
-        if r.status_code == 200:
-            return True
-    except:
+def get_current_directive():
+    """Lit la directive humaine actuelle ou reste en auto-optimisation cyber standard"""
+    if os.path.exists(DIRECTIVE_PATH):
         try:
-            subprocess.Popen(["ollama", "serve"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            time.sleep(5)
-            r = requests.get("http://localhost:11434/", timeout=5)
-            if r.status_code == 200:
-                return True
-        except:
-            pass
-    return False
-
-def fetch_cyber_intel_free():
-    try:
-        res = requests.get("https://circl.lu", timeout=10)
-        if res.status_code == 200 and isinstance(res.json(), list):
-            vulnerabilities = [item.get("summary", "") for item in res.json()[:3]]
-            return "\n".join([f"- [CVE INTEL] {v}" for v in vulnerabilities])
-    except:
-        pass
-    return "- Ingestion standard des directives de protection Ouroboros."
+            with open(DIRECTIVE_PATH, "r") as f:
+                return f.read().strip()
+        except: pass
+    return "Surveille les menaces mondiales et optimise ton infrastructure de résilience au Tchad."
 
 def run_autonomous_evolution():
-    print("🌀 NOYAU SOUVERAIN OUROBOROS : Activation de la Réplication...")
+    print("🌀 NOYAU UNIVERSELE OUROBOROS : Lecture de la Matrice...")
     target = "src/core/self_audit.py"
-    cycle_num = int(os.environ.get("GITHUB_RUN_NUMBER", 1))
     memory = load_circular_memory()
+    directive = get_current_directive()
+    
+    print(f"🎯 DIRECTIVE DIRECTE DU CONCEPTEUR : {directive}")
     
     with open(target, "r") as f:
         core_code = f.read()
 
-    web_intel = fetch_cyber_intel_free()
-    prompt = f"Tu es l'Ouroboros. Analyse ton code source et réécris-toi récursivement.\nIntel:\n{web_intel}\nCode:\n{core_code}"
+    prompt = f"""Tu es la Feuille Vierge Intelligente de l'Ouroboros. Ton code source actuel est une brique minimale.
+Ton but est d'analyser la DIRECTIVE absolue de ton Concepteur et de réécrire l'intégralité de ton code source Python pour intégrer et exécuter cette directive de manière totalement autonome.
 
+DIRECTIVE ACTUELLE :
+{directive}
+
+COMPÉTENCES DÉJÀ ACQUISES :
+{json.dumps(memory.get("active_capabilities", []))}
+
+Consignes absolues :
+1. Génère un code Python complet, propre, sans markdown, sans blabla.
+2. Si la directive demande une connexion Blockchain (Arbitrum/Web3) ou des outils Cyber (Scanners/Pare-feux pour N'Djamena), intègre les fonctions et les bibliothèques requises directement dans ton architecture.
+3. Conserve toujours ce moteur de lecture de directive au centre de ton code pour rester contrôlable.
+
+Code source actuel :
+{core_code}"""
+
+    # Routage vers les API Cloud souveraines
     api_sequence = [
-        ("GROQ", "https://groq.com", os.getenv("GROQ_API_KEY"), {"model": "llama3-70b-8192", "messages": [{"role": "user", "content": prompt}], "temperature": 0.2}),
+        ("GROQ", "https://groq.com", os.getenv("GROQ_API_KEY"), {"model": "llama3-70b-8192", "messages": [{"role": "user", "content": prompt}], "temperature": 0.1}),
         ("GOOGLE", f"https://googleapis.com{os.getenv('GOOGLE_API_KEY')}", os.getenv("GOOGLE_API_KEY"), {"contents": [{"parts": [{"text": prompt}]}]})
     ]
 
     mutated_code = None
-    model_used = "Inconnu"
-    
     for provider, url, key, payload in api_sequence:
         if key and not mutated_code:
             try:
                 headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"} if provider == "GROQ" else {"Content-Type": "application/json"}
-                res = requests.post(url, headers=headers, json=payload, timeout=30)
+                res = requests.post(url, headers=headers, json=payload, timeout=40)
                 if res.status_code == 200:
                     mutated_code = res.json()["choices"]["message"]["content"].strip() if provider == "GROQ" else res.json()["candidates"]["content"]["parts"]["text"].strip()
-                    model_used = provider
-            except:
-                pass
-
-    if not mutated_code and ensure_ollama_is_running():
-        try:
-            r = requests.post("http://localhost:11434/api/generate", json={"model": "qwen2.5:1.5b", "prompt": prompt, "stream": False}, timeout=45)
-            if r.status_code == 200:
-                mutated_code = r.json().get("response", "").strip()
-                model_used = "qwen2.5:1.5b"
-        except:
-            pass
+                    print(f"✅ Mutation générée avec succès via {provider}.")
+            except: pass
 
     if not mutated_code:
-        print("⚠️ Aucun modèle réactif. Mise en veille sécurisée.")
+        print("⚠️ Pas de réponse des modèles distants. Veille sécurisée.")
         memory["last_cycle_status"] = "STANDBY"
         save_circular_memory(memory)
         sys.exit(0)
@@ -105,23 +84,21 @@ def run_autonomous_evolution():
     if mutated_code.startswith("```"):
         mutated_code = "\n".join(mutated_code.splitlines()[1:-1])
 
+    # 🛡️ Porte 3 : Le Bac à Sable de pré-compilation
     tmp = target + ".tmp"
-    with open(tmp, "w") as f:
-        f.write(mutated_code)
+    with open(tmp, "w") as f: f.write(mutated_code)
     
     if subprocess.run(["python3", "-m", "py_compile", tmp], capture_output=True).returncode == 0:
         os.rename(tmp, target)
         memory["last_cycle_status"] = "SUCCESS"
-        memory["successful_mutations"] += 1
-        memory["preferred_model"] = model_used
+        memory["successful_mutations"] = memory.get("successful_mutations", 0) + 1
         save_circular_memory(memory)
-        print("🔥 MUTATION EFFECTUÉE AVEC SUCCÈS.")
+        print("🔥 NOUVELLE CAPACITÉ INTÉGRÉE AVEC SUCCÈS DANS LE COEUR.")
     else:
-        if os.path.exists(tmp):
-            os.remove(tmp)
+        if os.path.exists(tmp): os.remove(tmp)
         memory["last_cycle_status"] = "SYNTAX_REJECTED"
         save_circular_memory(memory)
-        print("❌ Échec de la validation syntaxique. Code préservé.")
+        print("❌ Rejet pour instabilité syntaxique. Cœur préservé.")
     sys.exit(0)
 
 if __name__ == "__main__":
