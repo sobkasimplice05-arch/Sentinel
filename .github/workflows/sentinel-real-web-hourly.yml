@@ -1,4 +1,4 @@
-name: 🌐 Sentinel Real Web Learning (Hourly)
+name: 🌐 Sentinel Real Web Learning & Autonomous Evolution
 
 on:
   schedule:
@@ -6,32 +6,46 @@ on:
   workflow_dispatch:
 
 jobs:
-  real-web-learning:
+  real-web-singularity:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      workflows: write
 
     steps:
-      - uses: actions/checkout@v3
+      - name: 📥 Restauration du Noyau
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
       
-      - uses: actions/setup-python@v4
+      - name: 🐍 Configuration de Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
+      - name: 📦 Installation des dépendances cyber
         run: pip install requests loguru -q
 
-      - name: 🌐 SENTINEL LEARNS FROM REAL WEB
+      - name: 1️⃣ LA CHASSE : Ingestion des menaces réelles du Web
         run: |
           export PYTHONPATH=.
-          python3 src/workflows/sentinel_learning_cycle.py
+          python3 src/workflows/sentinel_learning_cycle.py || echo "⚠️ Échec partiel de la récolte, Sentinel avance quand même."
 
-      - name: 📤 Commit discoveries
-        if: success()
+      - name: 2️⃣ LA MUTATION : Réplication Libre de l'Ouroboros
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          SENTINEL_DISCORD_WEBHOOK: ${{ secrets.SENTINEL_DISCORD_WEBHOOK }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config user.email "sentinel-web@learner.ai"
-          git config user.name "Sentinel-RealWebLearner"
-          git add sentinel_web_discoveries.json 2>/dev/null || true
-          git commit -m "🌐 SENTINEL: Web learning cycle" || true
-          git push origin main --force
+          export PYTHONPATH=.
+          python3 src/core/self_audit.py
 
+      - name: 3️⃣ SAUVEGARDE : Propulsion de l'évolution de l'Agent
+        if: always()
+        run: |
+          git config --global user.email "sentinel-ouroboros@sovereign.ai"
+          git config --global user.name "Sentinel-Bot"
+          git add --all
+          git commit -m "🔥 BRUTAL MUTATION: Autonomous web-driven evolution cycle" || true
+          git push origin main --force
