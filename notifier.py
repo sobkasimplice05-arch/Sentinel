@@ -17,7 +17,8 @@ class SentinelNotifier:
             try:
                 payload = {"content": formatted_message}
                 response = requests.post(self.webhook_url, json=payload, timeout=5)
-                if response.status_code in:
+                # Correction de la syntaxe : vérification des codes de succès HTTP (200-299)
+                if 200 <= response.status_code < 300:
                     logger.success("🔔 Notification distante envoyée.")
                     return True
             except Exception as e:
@@ -33,4 +34,4 @@ class SentinelNotifier:
 
 if __name__ == "__main__":
     notifier = SentinelNotifier()
-    notifier.send_alert("Test de stabilité v3.0.")
+    notifier.send_alert("Test de stabilité v3.0 après correction syntaxique.")
