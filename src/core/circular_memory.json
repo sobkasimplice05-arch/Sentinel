@@ -1,5 +1,5 @@
 {
-    "last_cycle_status": "CRASH_INFRASTRUCTURE",
+    "last_cycle_status": "STANDBY",
     "successful_mutations": 0,
     "consecutive_failures": 5,
     "preferred_model": "None",
