@@ -1,103 +1,77 @@
-🛡️ SENTINEL
+# 🛡️ Sentinel v3.0 — L'Orchestrateur d'IA Autonome Multi-LLM
 
-[![License: MIT](https://shields.io)](https://opensource.org)
-[![Python 3.11+](https://shields.io)](https://python.org)
-[![Status: Active Development](https://shields.io)]()
+**Sentinel v3.0** est une infrastructure de gouvernance et d'orchestration d'IA totalement décentralisée, résiliente et auto-évolutive. Inspiré du protocole de sécurité d'Elliot, ce système est conçu pour s'auto-évaluer, se nettoyer et se protéger contre les pannes ou les injections de code en temps réel toutes les 15 minutes.
 
-**Sentinel** is an open-source, local-first LLM governance and orchestration layer designed to enforce absolute transparency, multi-layered security, and unbiased alignment. 
-
-Unlike commercial AI assistants that optimize for user compliance (sycophancy), Sentinel optimizes for strict factuality and structural audibility.
+Contrairement aux systèmes rigides, Sentinel v3.0 utilise une architecture en microservices autonomes pilotée par une matrice d'IA.
 
 ---
 
-## 🎯 Value Proposition
+## ⚡ Architecture Visuelle des Microservices v3.0
 
-* **Zero Complacency (Anti-Sycophancy):** Detects and neutralizes AI brown-noser behaviors, ensuring objective, raw outputs.
-* **Deterministic Auditing:** Logs 100% of pipeline decisions, execution metadata, and confidence scores into verifiable local JSON schemas.
-* **Hardened Security Guardrails:** Intercepts jailbreaks, prompts injection, and hallucinations before execution and delivery.
-* **Sovereign & Local-First:** Orchestrates open-weight models locally via Ollama with zero data leakage, zero latency overhead, and $0 API costs.
+Chaque composant de Sentinel fonctionne désormais comme un organe indépendant connecté au système nerveux central :
 
----
-
-## ✨ Core Features
-
-* **Multi-Model Routing:** Intelligently maps incoming prompts to specialized local weights (e.g., Mistral for low-latency syntax, Qwen for technical execution).
-* **Pre/Post Execution Guardrails:** Features an advanced Input/Output pipeline using state-of-the-art tokenization and syntax parsers.
-* **5-Layer Quality Gate:** Dynamic evaluation framework covering *Syntax, Logic, Guardrails, Hallucination, and Structural Completeness*.
-* **Emergency Override Protocol:** Triggers isolated fallback mechanisms or human-in-the-loop escalation paths when structural confidence drops below threshold boundaries.
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-* Python 3.11+
-* Ollama Runtime (Running locally)
-* Minimum Hardware: 8GB RAM / Modern Multi-core CPU or Dedicated GPU
-
-### Installation
-```bash
-# Clone the repository
-git clone https://github.com
-cd Sentinel
-
-# Initialize virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows use: .\venv\Scripts\Activate.ps1
-
-# Install production and development dependencies
-pip install -r requirements.txt
+```text
+       [ Flux Cyber Réeel : GitHub & ArXiv ]
+                        │
+                        ▼ (Cycle 15 min)
+   1. 📡 DATA COLLECTOR (Désinfection anti-injection)
+                        │
+                        ▼
+   2. 🧠 LEARNING ENGINE (Détection des patterns)
+                        │
+                        ▼
+   3. 🤖 AI MATRIX (Matrice décisionnelle Qwen 2.5 1.5B)
+                        │
+                        ▼
+   4. 🛡️ EVOLUTION GUARD (Validation Pytest & Auto-Guérison Rollback)
+                        │
+                        ▼
+   5. 🗄️ MEMORY MANAGER (Base de données relationnelle SQL ACID)
+                        │
+                        ▼
+       [ 📢 NOTIFIER : Alertes locales et distantes ]
+                        │
+                        ▼
+       [ 🧼 JANITOR : Nettoyage automatique H24 ]
 ```
 
-### Execution
+---
 
-#### 1. Headless API Server (FastAPI)
+## ✨ Super-Pouvoirs de la Version 3.0
+
+- **🧬 Auto-Évolution Autonome Rapide :** Le cœur distribué s'exécute toutes les 15 minutes via GitHub Actions pour analyser le web cyber et faire muter ses connaissances.
+- **🛡️ Auto-Guérison Intégrée (Rollback) :** Si une modification de code casse les tests unitaires, `EvolutionGuard` intercepte l'erreur et déclenche une annulation instantanée (`git reset --hard`) pour revenir à l'état stable précédent.
+- **🗄️ Mémoire Blindée (SQL Relationnel) :** Abandon des fichiers JSON fragiles au profit d'un moteur SQLite transactionnel conforme aux normes de sécurité ACID.
+- **🧴 Protection Cyber Renforcée :** Désinfection automatique par expressions régulières de toutes les données du réseau pour bloquer les tentatives d'injection de scripts.
+- **🧼 Concierge Automatique (Janitor) :** Nettoyage quotidien automatique des fichiers de sauvegarde obsolètes (`.bak`) pour préserver l'espace de stockage.
+
+---
+
+## 🛠️ Composition Technique du Dépôt
+
+Le système s'articule autour de modules hautement spécialisés :
+- `sentinel_v3_core.py` : Le chef d'orchestre central de l'infrastructure.
+- `memory_manager.py` : Le gestionnaire de la base de données SQL relationnelle.
+- `data_collector.py` : Le capteur cyber doté d'un filtre de nettoyage.
+- `learning_engine.py` : Le moteur d'analyse des patterns cyber.
+- `ai_matrix.py` : Le cerveau de routage multi-LLM (Qwen / Heuristique locale).
+- `evolution_guard.py` : Le bouclier d'intégrité logicielle et de rollback.
+- `notifier.py` : Le central d'alertes de mutations.
+- `sentinel_janitor.py` : Le robot d'entretien et de purge.
+- `dependency_guardian.py` : L'installateur dynamique de dépendances d'urgence.
+
+---
+
+## 🚀 Démarrage Rapide
+
+### Prérequis
+- Python 3.12+
+- Dépendances logicielles : `requests`, `loguru`, `pytest`
+
+### Lancement du cycle manuellement
+Pour simuler un cycle complet d'évolution en local et tester l'alignement des microservices, exécutez :
 ```bash
-python -m uvicorn src.api.app:app --host 127.0.0.1 --port 8000 --reload
+python sentinel_v3_core.py
 ```
-*Interactive Swagger Documentation available at:* `http://localhost:8000/docs`
 
-#### 2. Local Web Interface (Streamlit)
-```bash
-streamlit run streamlit_app.py
-```
-*User Interface available at:* `http://localhost:8501`
-
----
-
-## 📊 Pipeline Architecture
-User Prompt│▼ (Ingestion Layer)Input Guardrails (Syntax Validation & Token Sanitization)│▼ (Control Plane)Instruction Parser ──► Task Classifier ──► Predictive Model Router│▼ (Execution Engine)Local LLM (via Ollama)│▼ (Evaluation Plane)5-Layer Quality Gate│▼ (Post-Processing)Output Realignment & Calibration│▼ (Storage Engine)JSON Transparency Logger│┌──────────────────────────────────────────────┘▼Sanitized Operational Response
----
-
-## 💾 Tech Stack
-
-* **Core Engine:** Python 3.11+, FastAPI (Asynchronous Web Server)
-* **LLM Orchestration:** Ollama API Interface
-* **Supported Weights:** Mistral-7B, Qwen-7B, Phi-3
-* **Validation & NLP:** Hugging Face Transformers, spaCy, Pydantic (Data Validation)
-* **Observability:** Loguru & Structured JSON Stream Logging
-* **Frontend Sandbox:** Streamlit
-
----
-
-## 📋 Project Status & Roadmap
-For detailed granular tickets and implementation progress, please review [TASKS.md](./TASKS.md).
-
-- [x] Phase 0: Repository Scaffold & Environment Matrix Setup
-- [x] Phase 1: Input/Output Syntax realigners
-- [ ] Phase 2: Multi-Layer Quality Gate Integration (Active Development)
-- [ ] Phase 3: Model Routing Optimization 
-
----
-
-## 🤝 Contributing
-We welcome contributions from deep learning engineers, security researchers, and open-source advocates. Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a Pull Request.
-
-## 📄 License
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
-
-## 👤 Maintainer
-* **Sobka Patale Simplice** - *Lead Architect & Visionary*
-
----
-> *"An AI designed to say NO when it matters, and back it up with data."* 🛡️
+*"Une IA conçue pour résister, s'adapter et évoluer sans jamais s'effondrer."* 🛡️
