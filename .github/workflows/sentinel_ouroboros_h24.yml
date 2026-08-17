@@ -1,34 +1,34 @@
-name: Noyau d'évolution autonome Sentinelle
+name: 🌐 Noyau d'évolution autonome Sentinelle
 
 on:
-  schedule:
-    - cron: '0 * * * *'
-  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
 
 permissions:
-  contents: write
-  actions: write
-  packages: write
-  statuses: write
+  contents: write
+  actions: write
+  packages: write
+  statuses: write
 
 jobs:
-  run-sentinel:
-    runs-on: ubuntu-latest
-    env:
-      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-    steps:
-      - name: Restauration du Noyau
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
+  run-sentinel:
+    runs-on: ubuntu-latest
+    env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
+    steps:
+      - name: 📥 Restauration du Noyau
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-      - name: Configuration de Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+      - name: 🐍 Configuration de Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
-      - name: Installation des dépendances cyber
-        run: pip install requests loguru pytest -q
+      - name: 📦 Installation des dépendances cyber
+        run: pip install requests loguru pytest -q
 
-      - name: Exécution de l'auto-audit
-        run: python sentinel_v3_core.py
+      - name: 🚀 Exécution de l'auto-audit
+        run: python sentinel_v3_core.py
