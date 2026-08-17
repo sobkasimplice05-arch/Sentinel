@@ -25,3 +25,6 @@ jobs:
 
       - name: 📦 Installation des dépendances cyber
         run: pip install requests loguru -q
+
+      - name: ⚡ Exécution du Cœur Distribué v3.0
+        run: python sentinel_v3_core.py
