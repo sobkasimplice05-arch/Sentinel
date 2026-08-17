@@ -1,31 +1,32 @@
-name: Sentinel CI Pipeline
+name: 🧪 Validation CI Sentinel
 
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
-  test:
+  test-suite:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: 📥 Restauration du Noyau
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-    - name: Set up Python 3.12
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.12'
+      - name: 🐍 Configuration de Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
-    - name: Install critical packages
-      run: |
-        python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: 📦 Installation des dépendances cyber
+        run: pip install requests loguru pytest -q
 
-    - name: Pure Syntax Compilation Check
-      run: |
-        echo "🌀 SÉCURITÉ : Vérification de la viabilité technique uniquement..."
-        python3 -m py_compile src/core/self_audit.py
-        echo "✅ Le code compile. Carte blanche totale accordée à l'Ouroboros."
+      - name: 🚀 Exécution des Tests
+        run: pytest
