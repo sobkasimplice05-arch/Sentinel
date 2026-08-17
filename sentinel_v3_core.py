@@ -24,24 +24,15 @@ class SentinelV3Core:
         logger.info("⚡ Début du cycle d'évolution autonome rapide...")
         self.notifier.send_alert("Début du cycle d'évolution autonome (Fréquence : 15min).")
         
-        # 1. Maintenance du système (Nettoyage des résidus)
         self.janitor.purge_old_backups()
-        
-        # 2. Acquisition et désinfection des données
         raw_data = self.collector.fetch_all()
-        
-        # 3. Analyse initiale des patterns
         intelligence_report = self.engine.evaluate_threats(raw_data)
-        
-        # 4. Consultation du Cerveau Multi-LLM
         ai_decision = self.ai.consult_brain(intelligence_report)
         
-        # Enrichissement du rapport
         intelligence_report["intelligence_score"] = ai_decision["confidence"]
         intelligence_report["ai_source"] = ai_decision["source"]
         intelligence_report["decision_status"] = ai_decision["decision"]
         
-        # 5. Enregistrement transactionnel en Base de Données SQL ACID
         mutation_id = str(intelligence_report.get("mutations_suggested", "no_mutation"))
         self.memory.save_learning(
             mutation_id=mutation_id,
@@ -49,18 +40,14 @@ class SentinelV3Core:
             learnings_dict=intelligence_report
         )
         
-        # 6. Vérification de l'intégrité du code (Bouclier Anti-Crash d'Elliot)
         if not self.guard.verify_integrity():
             self.notifier.send_alert("🚨 Alerte : Code instable détecté ! Déclenchement du Rollback.")
             self.guard.execute_rollback()
             return
         
-        # 7. Rapport final de réussite
-        self.notifier.send_alert(
-            f"Cycle complet achevé avec succès. "
-            f"Décision : {ai_decision['decision']}. "
-            f"Intégrité du code : OK 🟢"
-        )
+        # Formatage de chaîne nettoyé et sécurisé en un seul bloc
+        report_msg = f"Cycle complet achevé avec succès par {ai_decision['source']}. Décision : {ai_decision['decision']}. Score : {ai_decision['confidence']}%. Intégrité : OK 🟢"
+        self.notifier.send_alert(report_msg)
         logger.success("🏁 Alignement global Sentinel v3.0 achevé avec succès.")
 
 if __name__ == "__main__":
