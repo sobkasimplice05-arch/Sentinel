@@ -1,3 +1,4 @@
+import dependency_guardian; dependency_guardian.enforce_dependencies()
 import logging
 from loguru import logger
 from data_collector import DataCollector
