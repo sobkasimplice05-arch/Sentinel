@@ -1,8 +1,8 @@
-name: 🌐 Worker Horaire Sentinelle
+name: 🌐 Worker Rapide Sentinelle v3.0
 
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '*/15 * * * *'
   workflow_dispatch:
 
 jobs:
