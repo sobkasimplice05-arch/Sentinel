@@ -12,16 +12,17 @@ jobs:
       contents: write
       actions: write
 
-steps:
-  - name: 📥 Restauration du Noyau
-    uses: actions/checkout@v4
-    with:
-      fetch-depth: 1
-      
+    steps:
+      - name: 📥 Restauration du Noyau
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
       - name: 🐍 Configuration de Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
 
       - name: 📦 Installation des dépendances cyber
         run: pip install requests loguru -q
