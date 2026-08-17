@@ -1,4 +1,4 @@
-name: 🌐 Sentinel Real Web Learning & Autonomous Evolution
+name: 🌐 Worker Horaire Sentinelle
 
 on:
   schedule:
@@ -23,30 +23,5 @@ jobs:
         with:
           python-version: '3.12'
 
-
       - name: 📦 Installation des dépendances cyber
         run: pip install requests loguru -q
-
-      - name: 1️⃣ LA CHASSE : Ingestion des menaces réelles du Web
-        run: |
-          export PYTHONPATH=.
-          python3 src/workflows/sentinel_learning_cycle.py || echo "⚠️ Échec partiel de la récolte, Sentinel avance quand même."
-
-      - name: 2️⃣ LA MUTATION : Réplication Libre de l'Ouroboros
-        env:
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-          SENTINEL_DISCORD_WEBHOOK: ${{ secrets.SENTINEL_DISCORD_WEBHOOK }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          export PYTHONPATH=.
-          python3 src/core/self_audit.py
-
-      - name: 3️⃣ SAUVEGARDE : Propulsion de l'évolution de l'Agent
-        if: always()
-        run: |
-          git config --global user.email "sentinel-ouroboros@sovereign.ai"
-          git config --global user.name "Sentinel-Bot"
-          git add --all
-          git commit -m "🔥 BRUTAL MUTATION: Autonomous web-driven evolution cycle" || true
-          git push origin main --force
