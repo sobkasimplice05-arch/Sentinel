@@ -1,8 +1,11 @@
 {
-    "last_cycle_status": "LEARNING_ACTIVE",
-    "successful_mutations": 0,
-    "consecutive_failures": 0,
-    "preferred_model": "qwen2.5:0.5b",
-    "sentinel_mood_notes": "Sentinel v3.0 relancée - Apprentissage en cours",
-    "session_start": "2026-08-17T21:00:00Z"
+  "last_cycle_status": "RECOVERED",
+  "successful_mutations": 50,
+  "consecutive_failures": 0,
+  "preferred_model": "qwen2.5:0.5b",
+  "sentinel_mood_notes": "M\u00e9moire restaur\u00e9e le 2026-08-18T07:50:24.802241",
+  "past_work_recovered": true,
+  "logs_loaded": 100,
+  "database_entries": 2,
+  "session_start": "2026-08-18T07:50:24.802253"
 }
