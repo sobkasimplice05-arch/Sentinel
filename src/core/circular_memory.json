@@ -1,7 +1,8 @@
 {
-    "last_cycle_status": "STANDBY",
+    "last_cycle_status": "LEARNING_ACTIVE",
     "successful_mutations": 0,
-    "consecutive_failures": 5,
-    "preferred_model": "None",
-    "sentinel_mood_notes": "Aucun mod\u00e8le disponible. Infrastructure fig\u00e9e \u00e0 2026-08-12T08:23:02.989916."
+    "consecutive_failures": 0,
+    "preferred_model": "qwen2.5:0.5b",
+    "sentinel_mood_notes": "Sentinel v3.0 relancée - Apprentissage en cours",
+    "session_start": "2026-08-17T21:00:00Z"
 }
