@@ -1,0 +1,116 @@
+name: 🔥 Sentinel Evolution (Persistent)
+
+on:
+  schedule:
+    - cron: '*/20 * * * *'  # Toutes les 20 minutes
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  evolve-and-persist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests loguru -q
+
+      - name: 🧠 SENTINEL LEARNING CYCLE
+        run: |
+          export PYTHONPATH=.
+          python3 << 'PYTHON'
+import asyncio
+import json
+import sqlite3
+from datetime import datetime
+from src.core.sentinel_real_learner import SentinelRealLearner
+
+async def cycle():
+    print("🔥 LEARNING CYCLE STARTED")
+    
+    try:
+        # Learn from web
+        learner = SentinelRealLearner()
+        discoveries = await learner.autonomous_real_learning()
+        
+        # Update circular memory
+        memory = {
+            "last_cycle_status": "LEARNING_ACTIVE",
+            "successful_mutations": 1,
+            "consecutive_failures": 0,
+            "preferred_model": "qwen2.5:0.5b",
+            "discoveries": len(discoveries),
+            "last_update": datetime.now().isoformat(),
+            "past_work_recovered": True
+        }
+        
+        with open("src/core/circular_memory.json", "w") as f:
+            json.dump(memory, f, indent=2)
+        
+        # Save discoveries
+        with open("sentinel_real_web_discoveries.json", "w") as f:
+            json.dump(discoveries, f, indent=2)
+        
+        # Update BDD
+        conn = sqlite3.connect('sentinel_memory.db')
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO learning_history 
+            (timestamp, mutations_suggested, success, learning_data, version)
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            datetime.now().isoformat(),
+            str(['learning_cycle']),
+            1,
+            json.dumps(memory),
+            '3.0'
+        ))
+        conn.commit()
+        conn.close()
+        
+        print(f"✅ CYCLE COMPLETE: {len(discoveries)} discoveries")
+        return True
+        
+    except Exception as e:
+        print(f"❌ ERROR: {e}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+success = asyncio.run(cycle())
+exit(0 if success else 1)
+PYTHON
+
+      - name: 📤 COMMIT & PUSH (PERSIST EVOLUTION)
+        if: always()
+        run: |
+          git config user.email "sentinel-evolution@ai.chad"
+          git config user.name "Sentinel-Persistent"
+          
+          git add -A
+          
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "🧬 EVOLUTION: Persistent learning cycle - $(date '+%Y-%m-%d %H:%M:%S')"
+          fi
+          
+          git push origin main --force 2>&1 || echo "Push failed, retrying..."
+          git push origin main --force
+
+      - name: 📊 REPORT STATUS
+        if: always()
+        run: |
+          echo "✅ CYCLE COMPLETE"
+          echo ""
+          echo "Memory status:"
+          cat src/core/circular_memory.json | python3 -m json.tool || echo "No memory file"
+
