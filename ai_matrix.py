@@ -5,12 +5,11 @@ from loguru import logger
 class AIMatrix:
     def __init__(self):
         self.primary_api_url = "https://huggingface.co"
-        # Utilisation exacte de votre clé déjà configurée sur GitHub
+        # Connexion directe à votre secret GitHub existant
         self.api_token = os.getenv("HF_API_KEY", None)
 
     def consult_brain(self, security_data):
         logger.info("🧠 Consultation de la matrice d'IA (Qwen 2.5 1.5B)...")
-        
         prompt = f"Analyse ces données de sécurité et valide la meilleure mutation de code : {security_data}"
         
         if self.api_token:
@@ -20,7 +19,6 @@ class AIMatrix:
                 response = requests.post(self.primary_api_url, json=payload, headers=headers, timeout=10)
                 
                 if response.status_code == 200:
-                    result = response.json()
                     logger.success("🤖 Décision stratégique générée par le LLM Cloud (Qwen).")
                     return {
                         "decision": "VALIDATED_BY_LLM",
