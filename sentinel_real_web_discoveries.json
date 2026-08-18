@@ -1,25 +1,25 @@
 [
   {
     "type": "real_cves",
-    "count": 1665,
-    "timestamp": "2026-08-15T14:27:11.200767",
+    "count": 1666,
+    "timestamp": "2026-08-18T08:49:06.995950",
     "source": "CISA KEV"
   },
   {
     "type": "real_exploits",
     "count": 30,
-    "timestamp": "2026-08-15T14:27:12.686395",
+    "timestamp": "2026-08-18T08:49:08.431002",
     "source": "GitHub"
   },
   {
     "type": "threat_intel",
     "sources": [],
-    "timestamp": "2026-08-15T14:27:13.294578"
+    "timestamp": "2026-08-18T08:49:08.872157"
   },
   {
     "type": "security_papers",
     "count": 30,
-    "timestamp": "2026-08-15T14:27:13.627777",
+    "timestamp": "2026-08-18T08:49:09.177348",
     "source": "arXiv"
   }
 ]
