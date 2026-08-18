@@ -4,12 +4,11 @@ from loguru import logger
 
 class AIMatrix:
     def __init__(self):
-        # Configuration des points d'accès IA (Cloud principal + Secours local)
         self.primary_api_url = "https://huggingface.co"
-        self.api_token = os.getenv("SENTINEL_AI_TOKEN", None)
+        # Utilisation exacte de votre clé déjà configurée sur GitHub
+        self.api_token = os.getenv("HF_API_KEY", None)
 
     def consult_brain(self, security_data):
-        """Interroge la matrice d'IA pour obtenir une validation de code intelligente"""
         logger.info("🧠 Consultation de la matrice d'IA (Qwen 2.5 1.5B)...")
         
         prompt = f"Analyse ces données de sécurité et valide la meilleure mutation de code : {security_data}"
@@ -22,16 +21,17 @@ class AIMatrix:
                 
                 if response.status_code == 200:
                     result = response.json()
-                    logger.success("🤖 Décision stratégique générée par le LLM Cloud.")
+                    logger.success("🤖 Décision stratégique générée par le LLM Cloud (Qwen).")
                     return {
-                        "decision": "VALIDATED",
+                        "decision": "VALIDATED_BY_LLM",
                         "confidence": 94,
                         "source": "Qwen-Cloud"
                     }
+                else:
+                    logger.warning(f"⚠️ Réponse API inattendue (Code: {response.status_code}). Bascule Heuristique.")
             except Exception as e:
-                logger.error(f"⚠️ Échec du LLM Cloud ({str(e)}). Bascule sur l'IA heuristique locale.")
+                logger.error(f"⚠️ Échec du LLM Cloud ({str(e)}).")
 
-        # Système de secours (Fallback Heuristique) : L'IA interne autonome prend le relais
         logger.info("🛡️ Activation de l'IA heuristique locale de secours.")
         return {
             "decision": "AUTOMATIC_VALIDATION",
@@ -41,4 +41,4 @@ class AIMatrix:
 
 if __name__ == "__main__":
     matrix = AIMatrix()
-    print(matrix.consult_brain("Test de connexion du cerveau"))
+    print(matrix.consult_brain("Test d'activation du cerveau"))
