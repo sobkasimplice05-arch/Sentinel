@@ -1,42 +1,30 @@
 {
-  "cycle_id": "self-mod-20260819T095617",
-  "decision": "PROVIDER_ERROR",
-  "provider": "PROVIDER_ERROR:HTTP_429",
-  "reason": "PROVIDER_ERROR:HTTP_429",
+  "cycle_id": "self-mod-20260819T095956",
+  "decision": "PROMOTED",
+  "provider": "GROQ",
+  "hypothesis": "En activant le mode WAL de SQLite et en limitant le nombre d'événements stockés, le noyau d'autonomie deviendra plus résilient aux interruptions et la taille de la base de données restera maîtrisée, ce qui devrait améliorer la fiabilité du système et réduire le temps moyen de traitement d'un cycle.",
+  "expected_gain": "fiabilité du stockage augmentée de ≥0.05 de confiance et réduction du temps moyen de cycle d'au moins 10 % grâce à la limitation du nombre d'événements (keep_last=1000).",
+  "baseline_score": 0.75,
+  "candidate_score": 0.85,
+  "changed_files": [
+    "autonomy_kernel.py"
+  ],
+  "target_file": "autonomy_kernel.py",
   "attempts": [
     {
       "target_file": "autonomy_kernel.py",
       "attempt": 1,
       "compact": false,
-      "prompt_chars": 10458,
+      "prompt_chars": 10500,
       "output_tokens": 4096,
-      "provider": "GROQ",
-      "parse_error": "Unterminated string starting at: line 7 column 18 (char 490)"
-    },
-    {
-      "target_file": "autonomy_kernel.py",
-      "attempt": 2,
-      "compact": true,
-      "prompt_chars": 10458,
-      "output_tokens": 2048,
-      "provider": "PROVIDER_ERROR:HTTP_429"
-    },
-    {
-      "target_file": "feedback_learning.py",
-      "attempt": 1,
-      "compact": false,
-      "prompt_chars": 14090,
-      "output_tokens": 4096,
-      "provider": "PROVIDER_ERROR:HTTP_429"
-    },
-    {
-      "target_file": "learning_engine.py",
-      "attempt": 1,
-      "compact": false,
-      "prompt_chars": 4967,
-      "output_tokens": 4096,
-      "provider": "PROVIDER_ERROR:HTTP_429"
+      "provider": "GROQ"
     }
   ],
-  "created_at": "2026-08-19T09:56:25.520190+00:00"
+  "tests": {
+    "compile_returncode": 0,
+    "compile_output": "",
+    "test_returncode": 0,
+    "test_output": "\n======================================================================\n🔧 PYTEST CONFIGURATION\n======================================================================\n📋 Mode: TEST (Réponses mock activées)\n======================================================================\n\n.......                                                                  [100%]\n"
+  },
+  "created_at": "2026-08-19T10:00:05.597121+00:00"
 }

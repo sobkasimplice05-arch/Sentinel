@@ -16,7 +16,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
 
-
 DEFAULT_STATE: dict[str, Any] = {
     "version": 1,
     "autonomy_mode": "MAXIMUM_CONTROLLED",
@@ -80,6 +79,8 @@ class AutonomyKernel:
                 )
                 """
             )
+            # Activer le mode WAL pour une meilleure durabilité et concurrence
+            connection.execute("PRAGMA journal_mode=WAL;")
             connection.commit()
 
     def _load_state(self) -> dict[str, Any]:
@@ -129,6 +130,20 @@ class AutonomyKernel:
         if decision == "NO_CHANGE_NEEDED":
             return ["wait_for_novel_observation", "maintain_current_policy"]
         return ["diagnose_infrastructure_failure", f"recheck_sources_{source_count}"]
+
+    def _prune_events(self, keep_last: int = 1000) -> None:
+        """Supprime les événements les plus anciens en conservant les `keep_last` plus récents."""
+        with sqlite3.connect(self.db_filename) as connection:
+            connection.execute(
+                """
+                DELETE FROM autonomy_events
+                WHERE id NOT IN (
+                    SELECT id FROM autonomy_events ORDER BY id DESC LIMIT ?
+                );
+                """,
+                (keep_last,),
+            )
+            connection.commit()
 
     def advance(
         self,
@@ -194,6 +209,8 @@ class AutonomyKernel:
                 ),
             )
             connection.commit()
+        # Nettoyer les anciens événements pour limiter la taille de la base de données
+        self._prune_events()
 
         # Les runners GitHub sont éphémères : la stratégie doit donc être
         # persistée à chaque cycle pour survivre au passage suivant. Un cycle
