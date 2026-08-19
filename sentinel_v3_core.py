@@ -13,6 +13,7 @@ from feedback_learning import AdaptiveFeedback
 from learning_engine import LearningEngine
 from memory_manager import SentinelMemory
 from notifier import SentinelNotifier
+from self_modification import SelfModificationEngine
 from sentinel_janitor import SentinelJanitor
 
 
@@ -26,13 +27,14 @@ class SentinelV3Core:
         self.memory = SentinelMemory()
         self.feedback = AdaptiveFeedback()
         self.autonomy = AutonomyKernel()
+        self.self_modifier = SelfModificationEngine()
         self.notifier = SentinelNotifier()
         self.ai = AIMatrix()
         self.guard = EvolutionGuard()
         self.janitor = SentinelJanitor()
 
-    def commit_memory(self) -> bool:
-        """Persiste uniquement les preuves du cycle; aucun force-push."""
+    def commit_memory(self, include_self_modification_report: bool = False) -> bool:
+        """Persiste les preuves et les patches approuvés; aucun force-push."""
         tracked_files = [
             "sentinel_memory.db",
             "src/core/circular_memory.json",
@@ -42,6 +44,15 @@ class SentinelV3Core:
             "sentinel_autonomy_state.json",
             "sentinel_autonomy_report.json",
         ]
+        if include_self_modification_report:
+            tracked_files.extend(
+                [
+                    "self_modification_report.json",
+                    "learning_engine.py",
+                    "feedback_learning.py",
+                    "autonomy_kernel.py",
+                ]
+            )
         try:
             subprocess.run(
                 ["git", "config", "user.email", "sentinel-v3@evolution.ai"],
@@ -105,19 +116,34 @@ class SentinelV3Core:
             preliminary_report["next_actions"] = autonomy_report["next_actions"]
             preliminary_report["strategy"] = autonomy_report["strategy"]
 
+            self_modification_report = self.self_modifier.run_cycle(
+                feedback=feedback_report,
+                autonomy=autonomy_report,
+            )
+            preliminary_report["self_modification"] = self_modification_report
+            self_modification_decision = self_modification_report["decision"]
+
             if feedback_decision != "NO_CHANGE_NEEDED":
                 self.memory.save_learning(
                     mutation_id=feedback_decision,
                     success=feedback_decision == "PROMOTED",
                     learnings_dict=preliminary_report,
                 )
-                persisted = self.commit_memory()
+                persisted = self.commit_memory(
+                    include_self_modification_report=self_modification_decision != "MODEL_UNAVAILABLE"
+                )
                 if not persisted:
                     return False
             elif autonomy_report["should_persist"]:
                 # Heartbeat stratégique périodique : la mémoire longue durée
                 # est conservée sans fabriquer un faux succès de mutation.
-                persisted = self.commit_memory()
+                persisted = self.commit_memory(
+                    include_self_modification_report=self_modification_decision != "MODEL_UNAVAILABLE"
+                )
+                if not persisted:
+                    return False
+            elif self_modification_decision in {"PROMOTED", "REJECTED"}:
+                persisted = self.commit_memory(include_self_modification_report=True)
                 if not persisted:
                     return False
             else:
@@ -127,7 +153,8 @@ class SentinelV3Core:
                 f"✅ Cycle: sources={active_sources}; décision={feedback_decision}; "
                 f"baseline={feedback_report['baseline_score']}; "
                 f"candidat={feedback_report['candidate_score']}; "
-                f"prochaines_actions={autonomy_report['next_actions']}"
+                f"prochaines_actions={autonomy_report['next_actions']}; "
+                f"auto_code={self_modification_decision}"
             )
             return True
         except Exception as exc:

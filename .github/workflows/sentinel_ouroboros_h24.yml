@@ -18,6 +18,9 @@ jobs:
     env:
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
       HF_API_KEY: ${{ secrets.HF_API_KEY }}
+      SELF_MODIFICATION_ENABLED: "true"
+      SELF_MODIFICATION_MODEL_URL: ${{ secrets.SELF_MODIFICATION_MODEL_URL }}
+      SELF_MODIFICATION_MODEL: ${{ vars.SELF_MODIFICATION_MODEL }}
     steps:
       - name: 📥 Restauration du Noyau
         uses: actions/checkout@v4
@@ -33,7 +36,7 @@ jobs:
         run: pip install requests loguru pytest -q
 
       - name: 🧪 Validation des moteurs autonomie et feedback
-        run: python -m py_compile autonomy_kernel.py feedback_learning.py learning_engine.py sentinel_v3_core.py tests/test_autonomy_kernel.py tests/test_feedback_learning.py
+        run: python -m py_compile autonomy_kernel.py feedback_learning.py learning_engine.py self_modification.py sentinel_v3_core.py tests/test_autonomy_kernel.py tests/test_feedback_learning.py tests/test_self_modification.py
 
       - name: 🚀 Exécution du cycle d'apprentissage vérifiable
         run: python sentinel_v3_core.py
@@ -49,4 +52,5 @@ jobs:
             sentinel_learning_state.json
             sentinel_autonomy_report.json
             sentinel_autonomy_state.json
+            self_modification_report.json
             sentinel_memory.db
