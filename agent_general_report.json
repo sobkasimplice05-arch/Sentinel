@@ -1,0 +1,98 @@
+{
+  "mode": "EXPERIMENTAL_GENERAL_AGENT",
+  "cycle_number": 1,
+  "objective": {
+    "id": 1,
+    "title": "improve_observation_and_transfer",
+    "context": "Sources observées: github, arxiv; chercher une compétence mesurable et transférable.",
+    "priority": 60,
+    "status": "PENDING"
+  },
+  "plan": [
+    {
+      "step": 1,
+      "name": "frame_objective",
+      "action": "formalize_success_criteria",
+      "status": "READY"
+    },
+    {
+      "step": 2,
+      "name": "retrieve_memory",
+      "action": "retrieve_relevant_episodes_and_skills",
+      "status": "READY"
+    },
+    {
+      "step": 3,
+      "name": "act_and_experiment",
+      "action": "execute_tools_or_candidate_patch_in_isolation",
+      "status": "READY"
+    },
+    {
+      "step": 4,
+      "name": "evaluate_transfer",
+      "action": "test_on_unseen_task_variant",
+      "status": "READY"
+    },
+    {
+      "step": 5,
+      "name": "consolidate",
+      "action": "promote_skill_or_record_failure",
+      "status": "READY"
+    }
+  ],
+  "episode": {
+    "created_at": "2026-08-19T09:14:12.283606+00:00",
+    "objective_id": 1,
+    "observation_hash": "91d73b999aabf6439054a917c23496de2796dca0cf53e8f6f3ca1807a14af99a",
+    "plan": [
+      {
+        "step": 1,
+        "name": "frame_objective",
+        "action": "formalize_success_criteria",
+        "status": "READY"
+      },
+      {
+        "step": 2,
+        "name": "retrieve_memory",
+        "action": "retrieve_relevant_episodes_and_skills",
+        "status": "READY"
+      },
+      {
+        "step": 3,
+        "name": "act_and_experiment",
+        "action": "execute_tools_or_candidate_patch_in_isolation",
+        "status": "READY"
+      },
+      {
+        "step": 4,
+        "name": "evaluate_transfer",
+        "action": "test_on_unseen_task_variant",
+        "status": "READY"
+      },
+      {
+        "step": 5,
+        "name": "consolidate",
+        "action": "promote_skill_or_record_failure",
+        "status": "READY"
+      }
+    ],
+    "action": "PROVIDER_ERROR",
+    "outcome": "NO_CHANGE_NEEDED",
+    "score": 0.663,
+    "transfer_status": "NOT_MEASURED"
+  },
+  "skill_learning": {
+    "status": "OBSERVATION_SKILL_UPDATED",
+    "transfer_status": "NOT_MEASURED",
+    "note": "Une compétence générale n'est promue qu'après un test sur une variante non vue."
+  },
+  "capability_profile": {
+    "observation": 0.0,
+    "memory": 0.0,
+    "planning": 0.0,
+    "tool_use": 0.0,
+    "source_modification": 0.0,
+    "transfer": 0.0
+  },
+  "transfer_verified": false
+}
