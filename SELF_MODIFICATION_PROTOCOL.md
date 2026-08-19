@@ -14,7 +14,7 @@ Un candidat n’est promu que si les tests ciblés réussissent et que son score
 
 ## Configuration optionnelle
 
-Pour activer une génération effective de patches, définir `SELF_MODIFICATION_MODEL_URL` comme secret GitHub et, si nécessaire, `SELF_MODIFICATION_MODEL` comme variable GitHub. Sans cette configuration, la boucle reste opérationnelle pour l’évaluation, la mémoire et le diagnostic, mais elle ne génère pas de code.
+Pour activer une génération effective de patches, Sentinel utilise `SELF_MODIFICATION_MODEL_URL` si ce secret est défini. Sinon, lorsque `HF_API_KEY` est disponible, elle tente l’endpoint Hugging Face Inference du modèle défini par `SELF_MODIFICATION_MODEL`, par défaut `Qwen/Qwen2.5-Coder-7B-Instruct`. Sans fournisseur disponible ou si l’API échoue, le résultat explicite est `MODEL_UNAVAILABLE` ou `PROVIDER_ERROR`; la boucle reste alors opérationnelle pour l’évaluation, la mémoire et le diagnostic, mais elle ne génère pas de code.
 
 ## Critère de réalité
 

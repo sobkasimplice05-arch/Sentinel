@@ -3,7 +3,11 @@ import json
 from self_modification import SelfModificationEngine
 
 
-def test_model_unavailable_is_explicit_and_non_mutating(tmp_path):
+def test_model_unavailable_is_explicit_and_non_mutating(tmp_path, monkeypatch):
+    monkeypatch.delenv("HF_API_KEY", raising=False)
+    monkeypatch.delenv("SELF_MODIFICATION_API_KEY", raising=False)
+    monkeypatch.delenv("SELF_MODIFICATION_MODEL_URL", raising=False)
+    monkeypatch.delenv("OLLAMA_BASE_URL", raising=False)
     engine = SelfModificationEngine(root=tmp_path)
     result = engine.run_cycle(feedback={"decision": "NO_CHANGE_NEEDED"}, autonomy={"next_actions": []})
 

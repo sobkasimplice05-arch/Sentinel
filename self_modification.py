@@ -98,11 +98,13 @@ Code actuel :
 """
 
     def _call_provider(self, prompt: str) -> tuple[str | None, str]:
+        model = os.getenv("SELF_MODIFICATION_MODEL") or "Qwen/Qwen2.5-Coder-7B-Instruct"
+        token = os.getenv("HF_API_KEY") or os.getenv("SELF_MODIFICATION_API_KEY")
         url = os.getenv("SELF_MODIFICATION_MODEL_URL") or os.getenv("OLLAMA_BASE_URL")
+        if not url and token:
+            url = f"https://api-inference.huggingface.co/models/{model}"
         if not url:
             return None, "MODEL_UNAVAILABLE"
-        model = os.getenv("SELF_MODIFICATION_MODEL", "qwen2.5-coder:7b")
-        token = os.getenv("HF_API_KEY") or os.getenv("SELF_MODIFICATION_API_KEY")
         headers = {"Content-Type": "application/json"}
         if token:
             headers["Authorization"] = f"Bearer {token}"
@@ -117,6 +119,28 @@ Code actuel :
                 )
                 response.raise_for_status()
                 return response.json().get("response"), "OLLAMA"
+
+            if "api-inference.huggingface.co" in url:
+                response = requests.post(
+                    url,
+                    headers=headers,
+                    json={
+                        "inputs": prompt,
+                        "parameters": {
+                            "max_new_tokens": 16000,
+                            "temperature": 0.1,
+                            "return_full_text": False,
+                        },
+                    },
+                    timeout=120,
+                )
+                response.raise_for_status()
+                payload = response.json()
+                if isinstance(payload, list) and payload and isinstance(payload[0], dict):
+                    return payload[0].get("generated_text"), "HUGGINGFACE_INFERENCE"
+                if isinstance(payload, dict):
+                    return payload.get("generated_text"), "HUGGINGFACE_INFERENCE"
+                return None, "EMPTY_HUGGINGFACE_RESPONSE"
 
             response = requests.post(
                 url,
