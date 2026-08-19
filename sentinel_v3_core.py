@@ -6,6 +6,7 @@ from typing import Any
 from loguru import logger
 
 from ai_matrix import AIMatrix
+from autonomy_kernel import AutonomyKernel
 from data_collector import DataCollector
 from evolution_guard import EvolutionGuard
 from feedback_learning import AdaptiveFeedback
@@ -24,6 +25,7 @@ class SentinelV3Core:
         self.engine = LearningEngine()
         self.memory = SentinelMemory()
         self.feedback = AdaptiveFeedback()
+        self.autonomy = AutonomyKernel()
         self.notifier = SentinelNotifier()
         self.ai = AIMatrix()
         self.guard = EvolutionGuard()
@@ -37,6 +39,8 @@ class SentinelV3Core:
             "sentinel_real_web_discoveries.json",
             "sentinel_learning_state.json",
             "feedback_report.json",
+            "sentinel_autonomy_state.json",
+            "sentinel_autonomy_report.json",
         ]
         try:
             subprocess.run(
@@ -87,6 +91,20 @@ class SentinelV3Core:
             preliminary_report["baseline_score"] = feedback_report["baseline_score"]
             preliminary_report["candidate_score"] = feedback_report["candidate_score"]
 
+            autonomy_report = self.autonomy.advance(
+                cycle_id=feedback_report["cycle_id"],
+                observation_hash=feedback_report["observation_hash"],
+                decision=feedback_decision,
+                baseline_score=feedback_report["baseline_score"],
+                candidate_score=feedback_report["candidate_score"],
+                source_count=len(raw_data),
+                feedback_report=feedback_report,
+            )
+            preliminary_report["autonomy_mode"] = autonomy_report["autonomy_mode"]
+            preliminary_report["autonomy_cycle_number"] = autonomy_report["cycle_number"]
+            preliminary_report["next_actions"] = autonomy_report["next_actions"]
+            preliminary_report["strategy"] = autonomy_report["strategy"]
+
             if feedback_decision != "NO_CHANGE_NEEDED":
                 self.memory.save_learning(
                     mutation_id=feedback_decision,
@@ -96,13 +114,20 @@ class SentinelV3Core:
                 persisted = self.commit_memory()
                 if not persisted:
                     return False
+            elif autonomy_report["should_persist"]:
+                # Heartbeat stratégique périodique : la mémoire longue durée
+                # est conservée sans fabriquer un faux succès de mutation.
+                persisted = self.commit_memory()
+                if not persisted:
+                    return False
             else:
                 logger.info("ℹ️ Observation déjà connue: aucun faux apprentissage ni commit généré.")
 
             logger.info(
                 f"✅ Cycle: sources={active_sources}; décision={feedback_decision}; "
                 f"baseline={feedback_report['baseline_score']}; "
-                f"candidat={feedback_report['candidate_score']}"
+                f"candidat={feedback_report['candidate_score']}; "
+                f"prochaines_actions={autonomy_report['next_actions']}"
             )
             return True
         except Exception as exc:
