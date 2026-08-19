@@ -86,10 +86,7 @@ class AutonomyKernel:
             )
             # Migrer les bases créées par les versions précédentes sans perdre
             # les événements historiques déjà persistés.
-            columns = {
-                row[1]
-                for row in connection.execute("PRAGMA table_info(autonomy_events)")
-            }
+            columns = {row[1] for row in connection.execute("PRAGMA table_info(autonomy_events)")}
             for name in ("baseline_score", "candidate_score"):
                 if name not in columns:
                     connection.execute(
@@ -97,6 +94,8 @@ class AutonomyKernel:
                     )
             # Activer le mode WAL pour une meilleure durabilité et concurrence.
             connection.execute("PRAGMA journal_mode=WAL;")
+            # Créer un index sur cycle_id pour accélérer les recherches ciblées.
+            connection.execute("CREATE INDEX IF NOT EXISTS idx_cycle_id ON autonomy_events(cycle_id);")
             connection.commit()
 
     def _load_state(self) -> dict[str, Any]:
@@ -259,3 +258,16 @@ class AutonomyKernel:
             "should_persist": should_persist,
             "previous_state": previous,
         }
+
+    def get_recent_events(self, limit: int = 10) -> list[dict[str, Any]]:
+        """Récupère les `limit` derniers événements sous forme de dictionnaires décodés.
+
+        Cette méthode facilite l'inspection rapide de l'historique sans charger
+        toute la table en mémoire.
+        """
+        with sqlite3.connect(self.db_filename) as connection:
+            cursor = connection.execute(
+                "SELECT report FROM autonomy_events ORDER BY id DESC LIMIT ?", (limit,)
+            )
+            rows = cursor.fetchall()
+        return [json.loads(row[0]) for row in rows]
