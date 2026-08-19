@@ -100,6 +100,8 @@ class AutonomyKernel:
             connection.execute("CREATE INDEX IF NOT EXISTS idx_observation_hash ON autonomy_events(observation_hash);")
             # Nouvel index sur la colonne decision pour optimiser les filtres futurs.
             connection.execute("CREATE INDEX IF NOT EXISTS idx_decision ON autonomy_events(decision);")
+            # Index supplémentaire sur created_at pour améliorer les requêtes récentes.
+            connection.execute("CREATE INDEX IF NOT EXISTS idx_created_at ON autonomy_events(created_at);")
             connection.commit()
 
     def _load_state(self) -> dict[str, Any]:
@@ -291,6 +293,8 @@ class AutonomyKernel:
         helper and stored under `backup_dir` with a filename that includes the
         current UTC timestamp.
         """
-        backup_path = Path(backup_dir) / f"sentinel_autonomy_state.{self._now()}.json"
+        # Replace characters that are unsafe for filenames (e.g., ':' on Windows).
+        safe_timestamp = self._now().replace(":", "_")
+        backup_path = Path(backup_dir) / f"sentinel_autonomy_state.{safe_timestamp}.json"
         self._atomic_write_json(backup_path, self.state)
         return backup_path
