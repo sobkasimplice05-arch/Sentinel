@@ -98,9 +98,31 @@ Code actuel :
 """
 
     def _call_provider(self, prompt: str) -> tuple[str | None, str]:
+        provider = (os.getenv("SELF_MODIFICATION_PROVIDER") or "auto").lower()
+        if provider == "auto":
+            if os.getenv("NVIDIA_API_KEY"):
+                provider = "nvidia"
+            elif os.getenv("GROQ_API_KEY"):
+                provider = "groq"
+            elif os.getenv("SELF_MODIFICATION_API_KEY") or os.getenv("MODEL_API_KEY"):
+                provider = "generic"
+            elif os.getenv("HF_API_KEY"):
+                provider = "huggingface"
         model = os.getenv("SELF_MODIFICATION_MODEL") or "Qwen/Qwen2.5-Coder-7B-Instruct"
-        token = os.getenv("HF_API_KEY") or os.getenv("SELF_MODIFICATION_API_KEY")
-        url = os.getenv("SELF_MODIFICATION_MODEL_URL") or os.getenv("OLLAMA_BASE_URL")
+        token = (
+            os.getenv("SELF_MODIFICATION_API_KEY")
+            or os.getenv("MODEL_API_KEY")
+            or os.getenv("GROQ_API_KEY")
+            or os.getenv("NVIDIA_API_KEY")
+            or os.getenv("HF_API_KEY")
+        )
+        url = os.getenv("SELF_MODIFICATION_MODEL_URL") or os.getenv("MODEL_API_URL") or os.getenv("OLLAMA_BASE_URL")
+        if not url and provider == "groq" and token:
+            url = "https://api.groq.com/openai/v1/chat/completions"
+            model = os.getenv("SELF_MODIFICATION_MODEL") or "openai/gpt-oss-120b"
+        if not url and provider in {"nvidia", "nim"} and token:
+            url = "https://integrate.api.nvidia.com/v1/chat/completions"
+            model = os.getenv("SELF_MODIFICATION_MODEL") or "qwen/qwen3-coder-480b-a35b-instruct"
         if not url and token:
             url = f"https://api-inference.huggingface.co/models/{model}"
         if not url:
@@ -119,6 +141,30 @@ Code actuel :
                 )
                 response.raise_for_status()
                 return response.json().get("response"), "OLLAMA"
+
+            if "/chat/completions" in url or "api.groq.com" in url or "integrate.api.nvidia.com" in url:
+                response = requests.post(
+                    url,
+                    headers=headers,
+                    json={
+                        "model": model,
+                        "messages": [
+                            {"role": "system", "content": "Return only the requested JSON candidate patch."},
+                            {"role": "user", "content": prompt},
+                        ],
+                        "temperature": 0.1,
+                        "max_tokens": 16000,
+                    },
+                    timeout=120,
+                )
+                response.raise_for_status()
+                payload = response.json()
+                choices = payload.get("choices", []) if isinstance(payload, dict) else []
+                if choices and isinstance(choices[0], dict):
+                    message = choices[0].get("message", {})
+                    if isinstance(message, dict):
+                        return message.get("content"), provider.upper() if provider != "auto" else "OPENAI_COMPATIBLE"
+                return None, "EMPTY_OPENAI_COMPATIBLE_RESPONSE"
 
             if "api-inference.huggingface.co" in url:
                 response = requests.post(

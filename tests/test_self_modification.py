@@ -56,3 +56,51 @@ def test_provider_error_is_reported_separately(tmp_path, monkeypatch):
 
     assert result["decision"] == "PROVIDER_ERROR"
     assert result["provider"] == "PROVIDER_ERROR:HTTPError"
+
+
+def test_openai_compatible_provider_extracts_message(tmp_path, monkeypatch):
+    class Response:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"choices": [{"message": {"content": '{"files":[]}'}}]}
+
+    monkeypatch.setenv("SELF_MODIFICATION_PROVIDER", "groq")
+    monkeypatch.setenv("GROQ_API_KEY", "test-key")
+    monkeypatch.delenv("SELF_MODIFICATION_MODEL_URL", raising=False)
+    monkeypatch.setattr("self_modification.requests.post", lambda *args, **kwargs: Response())
+    engine = SelfModificationEngine(root=tmp_path)
+
+    raw, provider = engine._call_provider("return json")
+
+    assert raw == '{"files":[]}'
+    assert provider == "GROQ"
+
+
+def test_auto_provider_prefers_nvidia_key(tmp_path, monkeypatch):
+    engine = SelfModificationEngine(root=tmp_path)
+    monkeypatch.setenv("SELF_MODIFICATION_PROVIDER", "auto")
+    monkeypatch.setenv("NVIDIA_API_KEY", "nvidia-test-key")
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
+    monkeypatch.delenv("HF_API_KEY", raising=False)
+
+    captured = {}
+
+    class Response:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"choices": [{"message": {"content": '{"files":[]}'}}]}
+
+    def fake_post(url, **kwargs):
+        captured["url"] = url
+        return Response()
+
+    monkeypatch.setattr("self_modification.requests.post", fake_post)
+    raw, provider = engine._call_provider("return json")
+
+    assert captured["url"] == "https://integrate.api.nvidia.com/v1/chat/completions"
+    assert provider == "NVIDIA"
+    assert raw == '{"files":[]}'

@@ -14,7 +14,9 @@ Un candidat n’est promu que si les tests ciblés réussissent et que son score
 
 ## Configuration optionnelle
 
-Pour activer une génération effective de patches, Sentinel utilise `SELF_MODIFICATION_MODEL_URL` si ce secret est défini. Sinon, lorsque `HF_API_KEY` est disponible, elle tente l’endpoint Hugging Face Inference du modèle défini par `SELF_MODIFICATION_MODEL`, par défaut `Qwen/Qwen2.5-Coder-7B-Instruct`. Sans fournisseur disponible ou si l’API échoue, le résultat explicite est `MODEL_UNAVAILABLE` ou `PROVIDER_ERROR`; la boucle reste alors opérationnelle pour l’évaluation, la mémoire et le diagnostic, mais elle ne génère pas de code.
+Pour activer une génération effective de patches, Sentinel utilise `SELF_MODIFICATION_MODEL_URL` si ce secret est défini. En mode `SELF_MODIFICATION_PROVIDER=auto`, elle choisit automatiquement `NVIDIA_API_KEY`, puis `GROQ_API_KEY`, puis `MODEL_API_KEY`/`SELF_MODIFICATION_API_KEY`, puis `HF_API_KEY`. Les endpoints par défaut sont NVIDIA NIM (`https://integrate.api.nvidia.com/v1/chat/completions`), Groq (`https://api.groq.com/openai/v1/chat/completions`) et Hugging Face Inference. Une installation Ollama peut être sélectionnée avec `SELF_MODIFICATION_MODEL_URL` ou `OLLAMA_BASE_URL`.
+
+Les offres gratuites NVIDIA et Groq sont utiles pour tester, mais leurs quotas et leur disponibilité ne garantissent pas un fournisseur permanent ou illimité. Pour une autonomie continue, utiliser un endpoint GPU persistant ou Ollama/vLLM sur une machine toujours active. Sans fournisseur disponible ou si l’API échoue, le résultat explicite est `MODEL_UNAVAILABLE` ou `PROVIDER_ERROR`; la boucle reste alors opérationnelle pour l’évaluation, la mémoire et le diagnostic, mais elle ne génère pas de code.
 
 ## Critère de réalité
 
