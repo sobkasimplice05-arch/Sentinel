@@ -50,6 +50,9 @@ class SelfModificationEngine:
         self.allowed_files = frozenset(allowed_files or self.DEFAULT_ALLOWED_FILES)
         self.max_file_bytes = 120_000
         self.max_changed_files = 2
+        self.max_prompt_chars = int(os.getenv("SELF_MODIFICATION_PROMPT_CHARS", "24000"))
+        self.default_output_tokens = int(os.getenv("SELF_MODIFICATION_MAX_OUTPUT_TOKENS", "4096"))
+        self.retry_output_tokens = (self.default_output_tokens, max(2048, self.default_output_tokens // 2), 1024)
 
     @staticmethod
     def _now() -> str:
@@ -68,8 +71,17 @@ class SelfModificationEngine:
         sources: Mapping[str, str],
         feedback: Mapping[str, Any],
         autonomy: Mapping[str, Any],
+        *,
+        target_file: str | None = None,
+        compact: bool = False,
     ) -> str:
-        source_text = "\n\n".join(f"### FILE: {name}\n{content}" for name, content in sources.items())
+        selected = {target_file: sources[target_file]} if target_file and target_file in sources else dict(sources)
+        source_text = "\n\n".join(f"### FILE: {name}\n{content}" for name, content in selected.items())
+        feedback_limit = 1800 if compact else 3500
+        autonomy_limit = 1400 if compact else 2600
+        source_limit = max(4000, self.max_prompt_chars - feedback_limit - autonomy_limit - 2600)
+        source_text = source_text[:source_limit]
+        truncation_note = "Le code affiché est complet." if len(source_text) < source_limit else "Le code est tronqué; retourne files=[] plutôt qu'un fichier incomplet."
         return f"""Tu es le générateur de candidats de Sentinel.
 
 Objectif : proposer au maximum deux améliorations de code limitées aux fichiers autorisés.
@@ -86,18 +98,22 @@ Retourne uniquement un JSON valide de la forme :
 Si aucune amélioration justifiée n'est possible, retourne files=[] et explique pourquoi.
 
 Dernier feedback :
-{json.dumps(dict(feedback), ensure_ascii=False, indent=2)[:12000]}
+{json.dumps(dict(feedback), ensure_ascii=False, separators=(",", ":"))[:feedback_limit]}
 
 État stratégique :
-{json.dumps(dict(autonomy), ensure_ascii=False, indent=2)[:8000]}
+{json.dumps(dict(autonomy), ensure_ascii=False, separators=(",", ":"))[:autonomy_limit]}
 
+Fichier cible : {target_file or 'sélectionner un fichier autorisé'}
 Fichiers autorisés : {sorted(self.allowed_files)}
 
 Code actuel :
-{source_text[:36000]}
+{source_text}
+
+{truncation_note}
 """
 
-    def _call_provider(self, prompt: str) -> tuple[str | None, str]:
+    def _call_provider(self, prompt: str, *, output_tokens: int | None = None) -> tuple[str | None, str]:
+        output_tokens = output_tokens or self.default_output_tokens
         provider = (os.getenv("SELF_MODIFICATION_PROVIDER") or "auto").lower()
         if provider == "auto":
             if os.getenv("NVIDIA_API_KEY"):
@@ -153,7 +169,7 @@ Code actuel :
                             {"role": "user", "content": prompt},
                         ],
                         "temperature": 0.1,
-                        "max_tokens": 16000,
+                        "max_tokens": output_tokens,
                     },
                     timeout=120,
                 )
@@ -173,7 +189,7 @@ Code actuel :
                     json={
                         "inputs": prompt,
                         "parameters": {
-                            "max_new_tokens": 16000,
+                            "max_new_tokens": output_tokens,
                             "temperature": 0.1,
                             "return_full_text": False,
                         },
@@ -303,26 +319,86 @@ Code actuel :
             return report
 
         sources = self._read_sources()
-        raw, provider = self._call_provider(self._build_prompt(sources, feedback, autonomy))
-        if raw is None:
-            decision = "MODEL_UNAVAILABLE" if provider == "MODEL_UNAVAILABLE" else "PROVIDER_ERROR"
+        attempts: list[dict[str, Any]] = []
+        proposal: PatchProposal | None = None
+        provider = "MODEL_UNAVAILABLE"
+        selected_target: str | None = None
+        last_error = "MODEL_UNAVAILABLE"
+
+        for target_file in sorted(sources):
+            for attempt_index, output_tokens in enumerate(self.retry_output_tokens):
+                compact = attempt_index > 0
+                prompt = self._build_prompt(
+                    sources,
+                    feedback,
+                    autonomy,
+                    target_file=target_file,
+                    compact=compact,
+                )
+                raw, provider = self._call_provider(prompt, output_tokens=output_tokens)
+                attempt = {
+                    "target_file": target_file,
+                    "attempt": attempt_index + 1,
+                    "compact": compact,
+                    "prompt_chars": len(prompt),
+                    "output_tokens": output_tokens,
+                    "provider": provider,
+                }
+                attempts.append(attempt)
+                if raw is None:
+                    last_error = provider
+                    if "HTTP_413" in provider:
+                        continue
+                    break
+                try:
+                    candidate = self._parse_proposal(raw)
+                except ValueError as exc:
+                    attempt["parse_error"] = str(exc)[:500]
+                    last_error = "INVALID_MODEL_JSON"
+                    if attempt_index < len(self.retry_output_tokens) - 1:
+                        continue
+                    break
+                valid_structure, structure_reason = self._validate_structure(candidate)
+                if not valid_structure:
+                    attempt["structure_reason"] = structure_reason
+                    last_error = structure_reason
+                    if structure_reason == "NO_CHANGE_PROPOSED":
+                        break
+                    report = {
+                        "cycle_id": cycle_id,
+                        "decision": "REJECTED",
+                        "provider": provider,
+                        "reason": structure_reason,
+                        "attempts": attempts,
+                        "created_at": self._now(),
+                    }
+                    self._write_report(report)
+                    return report
+                proposal = candidate
+                selected_target = target_file
+                break
+            if proposal is not None:
+                break
+
+        if proposal is None:
+            if last_error == "MODEL_UNAVAILABLE":
+                decision = "MODEL_UNAVAILABLE"
+            elif last_error == "NO_CHANGE_PROPOSED":
+                decision = "NO_CHANGE_PROPOSED"
+            else:
+                decision = "PROVIDER_ERROR"
             report = {
                 "cycle_id": cycle_id,
                 "decision": decision,
                 "provider": provider,
-                "reason": "Aucun fournisseur configuré" if decision == "MODEL_UNAVAILABLE" else provider,
+                "reason": "Aucun fournisseur configuré" if decision == "MODEL_UNAVAILABLE" else last_error,
+                "attempts": attempts,
                 "created_at": self._now(),
             }
             self._write_report(report)
             return report
-        try:
-            proposal = self._parse_proposal(raw)
-            valid_structure, structure_reason = self._validate_structure(proposal)
-            if not valid_structure:
-                report = {"cycle_id": cycle_id, "decision": "REJECTED", "provider": provider, "reason": structure_reason, "created_at": self._now()}
-                self._write_report(report)
-                return report
 
+        try:
             with tempfile.TemporaryDirectory(prefix="sentinel-candidate-") as directory:
                 candidate_root = Path(directory)
                 shutil.copytree(self.root, candidate_root, dirs_exist_ok=True, ignore=shutil.ignore_patterns(".git", "__pycache__", ".pytest_cache"))
@@ -343,6 +419,8 @@ Code actuel :
                     "expected_gain": proposal.expected_gain,
                     "baseline_score": baseline_score,
                     "candidate_score": score,
+                    "target_file": selected_target,
+                    "attempts": attempts,
                     "tests": test_details,
                     "created_at": self._now(),
                 }
@@ -360,6 +438,8 @@ Code actuel :
                 "baseline_score": baseline_score,
                 "candidate_score": score,
                 "changed_files": sorted(proposal.files),
+                "target_file": selected_target,
+                "attempts": attempts,
                 "tests": test_details,
                 "created_at": self._now(),
             }

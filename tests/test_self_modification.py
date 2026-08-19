@@ -49,8 +49,9 @@ def test_structure_rejects_unbounded_side_effects(tmp_path):
 
 
 def test_provider_error_is_reported_separately(tmp_path, monkeypatch):
+    (tmp_path / "learning_engine.py").write_text("def evaluate_threats(data, policy=None):\n    return {}\n")
     engine = SelfModificationEngine(root=tmp_path)
-    monkeypatch.setattr(engine, "_call_provider", lambda prompt: (None, "PROVIDER_ERROR:HTTPError"))
+    monkeypatch.setattr(engine, "_call_provider", lambda prompt, **kwargs: (None, "PROVIDER_ERROR:HTTPError"))
 
     result = engine.run_cycle(feedback={}, autonomy={})
 
@@ -114,10 +115,53 @@ def test_http_provider_error_keeps_status_code(tmp_path, monkeypatch):
 
     error = requests.HTTPError("unauthorized")
     error.response = Response()
+    (tmp_path / "learning_engine.py").write_text("def evaluate_threats(data, policy=None):\n    return {}\n")
     engine = SelfModificationEngine(root=tmp_path)
-    monkeypatch.setattr(engine, "_call_provider", lambda prompt: (None, "PROVIDER_ERROR:HTTP_401"))
+    monkeypatch.setattr(engine, "_call_provider", lambda prompt, **kwargs: (None, "PROVIDER_ERROR:HTTP_401"))
 
     result = engine.run_cycle(feedback={}, autonomy={})
 
     assert result["decision"] == "PROVIDER_ERROR"
     assert result["provider"] == "PROVIDER_ERROR:HTTP_401"
+
+
+def test_prompt_is_segmented_to_one_target_file(tmp_path):
+    engine = SelfModificationEngine(root=tmp_path)
+    sources = {
+        "learning_engine.py": "A" * 2000,
+        "feedback_learning.py": "B" * 2000,
+    }
+    prompt = engine._build_prompt(
+        sources,
+        {"decision": "NO_CHANGE_NEEDED"},
+        {"next_actions": []},
+        target_file="learning_engine.py",
+    )
+
+    assert "FILE: learning_engine.py" in prompt
+    assert "FILE: feedback_learning.py" not in prompt
+    assert len(prompt) <= engine.max_prompt_chars + 100
+
+
+def test_http_413_retries_with_compact_prompts(tmp_path, monkeypatch):
+    monkeypatch.setenv("SELF_MODIFICATION_ENABLED", "true")
+    (tmp_path / "learning_engine.py").write_text("def evaluate_threats(data, policy=None):\n    return {}\n")
+    engine = SelfModificationEngine(root=tmp_path, allowed_files={"learning_engine.py"})
+    calls = []
+
+    def fake_provider(prompt, *, output_tokens=None):
+        calls.append((len(prompt), output_tokens))
+        return None, "PROVIDER_ERROR:HTTP_413"
+
+    monkeypatch.setattr(engine, "_call_provider", fake_provider)
+    result = engine.run_cycle(
+        feedback={"context": "F" * 4000},
+        autonomy={"context": "A" * 3000},
+    )
+
+    assert result["decision"] == "PROVIDER_ERROR"
+    assert result["reason"] == "PROVIDER_ERROR:HTTP_413"
+    assert len(calls) == 3
+    assert calls[0][0] > calls[1][0]
+    assert calls[0][1] > calls[1][1] > calls[2][1]
+    assert [attempt["compact"] for attempt in result["attempts"]] == [False, True, True]

@@ -18,6 +18,12 @@ Pour activer une génération effective de patches, Sentinel utilise `SELF_MODIF
 
 Les offres gratuites NVIDIA et Groq sont utiles pour tester, mais leurs quotas et leur disponibilité ne garantissent pas un fournisseur permanent ou illimité. Pour une autonomie continue, utiliser un endpoint GPU persistant ou Ollama/vLLM sur une machine toujours active. Sans fournisseur disponible ou si l’API échoue, le résultat explicite est `MODEL_UNAVAILABLE` ou `PROVIDER_ERROR`; la boucle reste alors opérationnelle pour l’évaluation, la mémoire et le diagnostic, mais elle ne génère pas de code.
 
+## Segmentation et reprise HTTP 413
+
+Le générateur ne transmet plus tous les modules dans une seule requête. Il sélectionne un fichier autorisé par tentative, réduit les métadonnées et limite le budget de sortie. En cas de réponse `HTTP_413`, Sentinel réessaie jusqu’à trois fois avec un contexte et un budget de sortie réduits. Chaque tentative est enregistrée dans `self_modification_report.json`, avec le fichier cible, la taille du prompt, le budget de sortie et le fournisseur utilisé.
+
+La segmentation ne transforme pas une réponse incomplète en succès : si le modèle reçoit un code tronqué, si le JSON est invalide ou si les tests échouent, le candidat est rejeté et aucun fichier source n’est promu.
+
 ## Critère de réalité
 
 Un patch n’est pas considéré comme une évolution parce qu’un modèle l’a proposé. Il doit modifier réellement un fichier autorisé, compiler, passer les tests et fournir une preuve persistée. Un échec ou une absence de fournisseur doit rester visible dans le rapport et ne doit pas être présenté comme une amélioration.
