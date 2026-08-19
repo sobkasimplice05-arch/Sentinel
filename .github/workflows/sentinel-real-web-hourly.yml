@@ -35,8 +35,8 @@ jobs:
       - name: 📦 Installation des dépendances cyber
         run: pip install requests loguru pytest -q
 
-      - name: 🧪 Validation des moteurs autonomie et feedback
-        run: python -m py_compile autonomy_kernel.py feedback_learning.py learning_engine.py self_modification.py sentinel_v3_core.py tests/test_autonomy_kernel.py tests/test_feedback_learning.py tests/test_self_modification.py
+      - name: 🧪 Validation des moteurs autonomie, agent général et feedback
+        run: python -m py_compile agent_general_kernel.py autonomy_kernel.py feedback_learning.py learning_engine.py self_modification.py sentinel_v3_core.py tests/test_agent_general_kernel.py tests/test_autonomy_kernel.py tests/test_feedback_learning.py tests/test_self_modification.py
 
       - name: ⚡ Exécution du cycle d'apprentissage vérifiable
         run: python sentinel_v3_core.py
@@ -52,5 +52,7 @@ jobs:
             sentinel_learning_state.json
             sentinel_autonomy_report.json
             sentinel_autonomy_state.json
+            agent_general_report.json
+            agent_general_state.json
             self_modification_report.json
             sentinel_memory.db

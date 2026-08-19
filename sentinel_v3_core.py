@@ -5,6 +5,7 @@ from typing import Any
 
 from loguru import logger
 
+from agent_general_kernel import GeneralAgentKernel
 from ai_matrix import AIMatrix
 from autonomy_kernel import AutonomyKernel
 from data_collector import DataCollector
@@ -27,6 +28,7 @@ class SentinelV3Core:
         self.memory = SentinelMemory()
         self.feedback = AdaptiveFeedback()
         self.autonomy = AutonomyKernel()
+        self.agent_general = GeneralAgentKernel()
         self.self_modifier = SelfModificationEngine()
         self.notifier = SentinelNotifier()
         self.ai = AIMatrix()
@@ -43,6 +45,8 @@ class SentinelV3Core:
             "feedback_report.json",
             "sentinel_autonomy_state.json",
             "sentinel_autonomy_report.json",
+            "agent_general_state.json",
+            "agent_general_report.json",
         ]
         if include_self_modification_report:
             tracked_files.extend(
@@ -116,12 +120,26 @@ class SentinelV3Core:
             preliminary_report["next_actions"] = autonomy_report["next_actions"]
             preliminary_report["strategy"] = autonomy_report["strategy"]
 
+            objective = self.agent_general.select_objective(raw_data.keys())
+            capabilities = list(self.autonomy.state.get("capabilities", []))
+            capabilities.append("source_modification")
+            agent_plan = self.agent_general.build_plan(objective, capabilities)
+
             self_modification_report = self.self_modifier.run_cycle(
                 feedback=feedback_report,
                 autonomy=autonomy_report,
             )
             preliminary_report["self_modification"] = self_modification_report
             self_modification_decision = self_modification_report["decision"]
+
+            agent_general_report = self.agent_general.record_cycle(
+                objective=objective,
+                plan=agent_plan,
+                observation_hash=feedback_report["observation_hash"],
+                feedback=feedback_report,
+                self_modification=self_modification_report,
+            )
+            preliminary_report["agent_general"] = agent_general_report
 
             if feedback_decision != "NO_CHANGE_NEEDED":
                 self.memory.save_learning(
@@ -154,7 +172,8 @@ class SentinelV3Core:
                 f"baseline={feedback_report['baseline_score']}; "
                 f"candidat={feedback_report['candidate_score']}; "
                 f"prochaines_actions={autonomy_report['next_actions']}; "
-                f"auto_code={self_modification_decision}"
+                f"auto_code={self_modification_decision}; "
+                f"objectif={objective['title']}"
             )
             return True
         except Exception as exc:
