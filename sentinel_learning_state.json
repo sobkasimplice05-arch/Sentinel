@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "last_observation_hash": "91d73b999aabf6439054a917c23496de2796dca0cf53e8f6f3ca1807a14af99a",
+  "last_cycle_id": "cycle-20260819T082024-91d73b999aab",
+  "total_cycles": 1,
+  "successful_adaptations": 1,
+  "rejected_adaptations": 0,
+  "policy": {
+    "version": 2,
+    "confidence_threshold": 0.64,
+    "minimum_sources": 1,
+    "source_reliability": {
+      "arxiv": 0.58,
+      "github": 0.58
+    }
+  }
+}
