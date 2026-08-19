@@ -50,7 +50,7 @@ def test_autonomy_kernel_records_rejection_as_future_work(tmp_path):
     assert state["rejected_experiments"] == 1
 
 
-def test_no_change_is_not_persisted_until_heartbeat(tmp_path):
+def test_no_change_persists_strategy_without_counting_mutation(tmp_path):
     kernel = AutonomyKernel(
         state_filename=tmp_path / "autonomy_state.json",
         report_filename=tmp_path / "autonomy_report.json",
@@ -66,5 +66,8 @@ def test_no_change_is_not_persisted_until_heartbeat(tmp_path):
         feedback_report={"decision": "NO_CHANGE_NEEDED"},
     )
 
-    assert first["should_persist"] is False
-    assert not (tmp_path / "autonomy_state.json").exists()
+    assert first["should_persist"] is True
+    assert (tmp_path / "autonomy_state.json").exists()
+    state = json.loads((tmp_path / "autonomy_state.json").read_text())
+    assert state["successful_experiments"] == 0
+    assert state["strategy"]["last_outcome"] == "NO_CHANGE_NEEDED"

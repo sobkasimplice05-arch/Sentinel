@@ -195,9 +195,10 @@ class AutonomyKernel:
             )
             connection.commit()
 
-        # NO_CHANGE reste dédupliqué : on persiste périodiquement un heartbeat,
-        # mais on ne crée pas un commit Git à chaque passage identique.
-        should_persist = decision != "NO_CHANGE_NEEDED" or self.state["cycle_number"] % 6 == 0
+        # Les runners GitHub sont éphémères : la stratégie doit donc être
+        # persistée à chaque cycle pour survivre au passage suivant. Un cycle
+        # NO_CHANGE reste explicitement un heartbeat, jamais une mutation.
+        should_persist = True
         if should_persist:
             self._atomic_write_json(self.state_filename, self.state)
             self._atomic_write_json(self.report_filename, event)
