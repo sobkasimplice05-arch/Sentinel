@@ -104,3 +104,20 @@ def test_auto_provider_prefers_nvidia_key(tmp_path, monkeypatch):
     assert captured["url"] == "https://integrate.api.nvidia.com/v1/chat/completions"
     assert provider == "NVIDIA"
     assert raw == '{"files":[]}'
+
+
+def test_http_provider_error_keeps_status_code(tmp_path, monkeypatch):
+    import requests
+
+    class Response:
+        status_code = 401
+
+    error = requests.HTTPError("unauthorized")
+    error.response = Response()
+    engine = SelfModificationEngine(root=tmp_path)
+    monkeypatch.setattr(engine, "_call_provider", lambda prompt: (None, "PROVIDER_ERROR:HTTP_401"))
+
+    result = engine.run_cycle(feedback={}, autonomy={})
+
+    assert result["decision"] == "PROVIDER_ERROR"
+    assert result["provider"] == "PROVIDER_ERROR:HTTP_401"

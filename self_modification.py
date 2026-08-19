@@ -199,6 +199,9 @@ Code actuel :
             if isinstance(payload, dict):
                 return payload.get("response") or payload.get("generated_text") or payload.get("text"), "GENERIC_API"
             return None, "EMPTY_PROVIDER_RESPONSE"
+        except requests.HTTPError as exc:
+            status = exc.response.status_code if exc.response is not None else "unknown"
+            return None, f"PROVIDER_ERROR:HTTP_{status}"
         except (requests.RequestException, ValueError, TypeError) as exc:
             return None, f"PROVIDER_ERROR:{type(exc).__name__}"
 
