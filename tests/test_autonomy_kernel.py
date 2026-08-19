@@ -71,3 +71,37 @@ def test_no_change_persists_strategy_without_counting_mutation(tmp_path):
     state = json.loads((tmp_path / "autonomy_state.json").read_text())
     assert state["successful_experiments"] == 0
     assert state["strategy"]["last_outcome"] == "NO_CHANGE_NEEDED"
+
+
+def test_autonomy_kernel_migrates_legacy_event_schema(tmp_path):
+    import sqlite3
+
+    db_path = tmp_path / "sentinel_memory.db"
+    with sqlite3.connect(db_path) as connection:
+        connection.execute(
+            """
+            CREATE TABLE autonomy_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                cycle_id TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                observation_hash TEXT NOT NULL,
+                decision TEXT NOT NULL,
+                next_actions TEXT NOT NULL,
+                strategy TEXT NOT NULL,
+                report TEXT NOT NULL
+            )
+            """
+        )
+        connection.commit()
+
+    kernel = AutonomyKernel(
+        state_filename=tmp_path / "state.json",
+        report_filename=tmp_path / "report.json",
+        db_filename=db_path,
+    )
+
+    with sqlite3.connect(db_path) as connection:
+        columns = {row[1] for row in connection.execute("PRAGMA table_info(autonomy_events)")}
+
+    assert {"baseline_score", "candidate_score"}.issubset(columns)
+    assert kernel.db_filename == db_path

@@ -84,7 +84,18 @@ class AutonomyKernel:
                 )
                 """
             )
-            # Activer le mode WAL pour une meilleure durabilité et concurrence
+            # Migrer les bases créées par les versions précédentes sans perdre
+            # les événements historiques déjà persistés.
+            columns = {
+                row[1]
+                for row in connection.execute("PRAGMA table_info(autonomy_events)")
+            }
+            for name in ("baseline_score", "candidate_score"):
+                if name not in columns:
+                    connection.execute(
+                        f"ALTER TABLE autonomy_events ADD COLUMN {name} REAL NOT NULL DEFAULT 0.0"
+                    )
+            # Activer le mode WAL pour une meilleure durabilité et concurrence.
             connection.execute("PRAGMA journal_mode=WAL;")
             connection.commit()
 
