@@ -46,3 +46,13 @@ def test_structure_rejects_unbounded_side_effects(tmp_path):
     valid, reason = engine._validate_structure(proposal)
     assert valid is False
     assert reason == "forbidden_process_control"
+
+
+def test_provider_error_is_reported_separately(tmp_path, monkeypatch):
+    engine = SelfModificationEngine(root=tmp_path)
+    monkeypatch.setattr(engine, "_call_provider", lambda prompt: (None, "PROVIDER_ERROR:HTTPError"))
+
+    result = engine.run_cycle(feedback={}, autonomy={})
+
+    assert result["decision"] == "PROVIDER_ERROR"
+    assert result["provider"] == "PROVIDER_ERROR:HTTPError"

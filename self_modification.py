@@ -256,7 +256,14 @@ Code actuel :
         sources = self._read_sources()
         raw, provider = self._call_provider(self._build_prompt(sources, feedback, autonomy))
         if raw is None:
-            report = {"cycle_id": cycle_id, "decision": "MODEL_UNAVAILABLE", "provider": provider, "created_at": self._now()}
+            decision = "MODEL_UNAVAILABLE" if provider == "MODEL_UNAVAILABLE" else "PROVIDER_ERROR"
+            report = {
+                "cycle_id": cycle_id,
+                "decision": decision,
+                "provider": provider,
+                "reason": "Aucun fournisseur configuré" if decision == "MODEL_UNAVAILABLE" else provider,
+                "created_at": self._now(),
+            }
             self._write_report(report)
             return report
         try:
