@@ -1,7 +1,7 @@
 {
-  "cycle_id": "self-mod-20260819T092943",
+  "cycle_id": "self-mod-20260819T093559",
   "decision": "PROVIDER_ERROR",
   "provider": "PROVIDER_ERROR:ConnectionError",
   "reason": "PROVIDER_ERROR:ConnectionError",
-  "created_at": "2026-08-19T09:29:43.485180+00:00"
+  "created_at": "2026-08-19T09:35:59.557437+00:00"
 }
