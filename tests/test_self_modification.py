@@ -165,3 +165,12 @@ def test_http_413_retries_with_compact_prompts(tmp_path, monkeypatch):
     assert calls[0][0] > calls[1][0]
     assert calls[0][1] > calls[1][1] > calls[2][1]
     assert [attempt["compact"] for attempt in result["attempts"]] == [False, True, True]
+
+
+def test_extract_json_repairs_literal_newlines_in_file_content(tmp_path):
+    engine = SelfModificationEngine(root=tmp_path)
+    raw = '{"hypothesis":"h","expected_gain":"g","files":[{"path":"learning_engine.py","content":"def f():\n    return 1\n"}]}'
+
+    proposal = engine._parse_proposal(raw)
+
+    assert proposal.files["learning_engine.py"] == "def f():\n    return 1\n"

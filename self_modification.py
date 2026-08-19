@@ -53,6 +53,7 @@ class SelfModificationEngine:
         self.max_prompt_chars = int(os.getenv("SELF_MODIFICATION_PROMPT_CHARS", "24000"))
         self.default_output_tokens = int(os.getenv("SELF_MODIFICATION_MAX_OUTPUT_TOKENS", "4096"))
         self.retry_output_tokens = (self.default_output_tokens, max(2048, self.default_output_tokens // 2), 1024)
+        self.max_targets_per_cycle = max(1, int(os.getenv("SELF_MODIFICATION_MAX_TARGETS_PER_CYCLE", "1")))
 
     @staticmethod
     def _now() -> str:
@@ -88,7 +89,7 @@ Objectif : proposer au maximum deux améliorations de code limitées aux fichier
 Ne modifie jamais les workflows, les secrets, les permissions, les commandes système,
 les mécanismes de rollback, les tests de sécurité ou les règles d'intégrité.
 
-Retourne uniquement un JSON valide de la forme :
+Retourne uniquement un JSON valide, sans Markdown ni texte avant ou après, de la forme :
 {{
   "hypothesis": "hypothèse falsifiable",
   "expected_gain": "métrique attendue et seuil",
@@ -159,18 +160,21 @@ Code actuel :
                 return response.json().get("response"), "OLLAMA"
 
             if "/chat/completions" in url or "api.groq.com" in url or "integrate.api.nvidia.com" in url:
+                request_payload = {
+                    "model": model,
+                    "messages": [
+                        {"role": "system", "content": "Return only one valid JSON object. Never use Markdown fences. Escape every newline and quote inside file content."},
+                        {"role": "user", "content": prompt},
+                    ],
+                    "temperature": 0.1,
+                    "max_tokens": output_tokens,
+                }
+                if os.getenv("SELF_MODIFICATION_JSON_MODE", "true").lower() == "true":
+                    request_payload["response_format"] = {"type": "json_object"}
                 response = requests.post(
                     url,
                     headers=headers,
-                    json={
-                        "model": model,
-                        "messages": [
-                            {"role": "system", "content": "Return only the requested JSON candidate patch."},
-                            {"role": "user", "content": prompt},
-                        ],
-                        "temperature": 0.1,
-                        "max_tokens": output_tokens,
-                    },
+                    json=request_payload,
                     timeout=120,
                 )
                 response.raise_for_status()
@@ -231,7 +235,34 @@ Code actuel :
         end = text.rfind("}")
         if start < 0 or end <= start:
             raise ValueError("réponse sans objet JSON")
-        payload = json.loads(text[start : end + 1])
+        candidate = text[start : end + 1]
+        try:
+            payload = json.loads(candidate)
+        except json.JSONDecodeError as first_error:
+            # Certains modèles renvoient le contenu Python avec des retours à la
+            # ligne littéraux dans la chaîne `content`. On ne répare que cette
+            # anomalie, en respectant les séquences d’échappement existantes.
+            repaired: list[str] = []
+            in_string = False
+            escaped = False
+            for char in candidate:
+                if char == '"' and not escaped:
+                    in_string = not in_string
+                if char == "\n" and in_string:
+                    repaired.append("\\n")
+                elif char == "\r" and in_string:
+                    repaired.append("\\r")
+                elif char == "\t" and in_string:
+                    repaired.append("\\t")
+                else:
+                    repaired.append(char)
+                escaped = char == "\\" and not escaped
+                if char != "\\":
+                    escaped = False
+            try:
+                payload = json.loads("".join(repaired))
+            except json.JSONDecodeError:
+                raise first_error
         if not isinstance(payload, dict):
             raise ValueError("réponse JSON invalide")
         return payload
@@ -325,7 +356,7 @@ Code actuel :
         selected_target: str | None = None
         last_error = "MODEL_UNAVAILABLE"
 
-        for target_file in sorted(sources):
+        for target_file in sorted(sources)[: self.max_targets_per_cycle]:
             for attempt_index, output_tokens in enumerate(self.retry_output_tokens):
                 compact = attempt_index > 0
                 prompt = self._build_prompt(
