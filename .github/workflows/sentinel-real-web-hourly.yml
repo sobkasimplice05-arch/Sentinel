@@ -7,9 +7,10 @@ on:
 
 permissions:
   contents: write
-  actions: write
-  packages: write
-  statuses: write
+
+concurrency:
+  group: sentinel-feedback-main
+  cancel-in-progress: false
 
 jobs:
   real-web-singularity:
@@ -31,5 +32,19 @@ jobs:
       - name: 📦 Installation des dépendances cyber
         run: pip install requests loguru pytest -q
 
-      - name: ⚡ Exécution du Cœur Distribué v3.0
+      - name: 🧪 Validation du moteur feedback
+        run: python -m py_compile feedback_learning.py learning_engine.py sentinel_v3_core.py tests/test_feedback_learning.py
+
+      - name: ⚡ Exécution du cycle d'apprentissage vérifiable
         run: python sentinel_v3_core.py
+
+      - name: 📊 Publication des preuves du cycle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sentinel-feedback-${{ github.run_id }}
+          if-no-files-found: ignore
+          path: |
+            feedback_report.json
+            sentinel_learning_state.json
+            sentinel_memory.db

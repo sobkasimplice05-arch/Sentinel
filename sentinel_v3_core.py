@@ -1,83 +1,115 @@
-import dependency_guardian; dependency_guardian.enforce_dependencies()
-import logging
-import sqlite3
-import random
+#!/usr/bin/env python3
 import subprocess
+from datetime import datetime, timezone
+from typing import Any
+
 from loguru import logger
+
+from ai_matrix import AIMatrix
 from data_collector import DataCollector
+from evolution_guard import EvolutionGuard
+from feedback_learning import AdaptiveFeedback
 from learning_engine import LearningEngine
 from memory_manager import SentinelMemory
 from notifier import SentinelNotifier
-from ai_matrix import AIMatrix
-from evolution_guard import EvolutionGuard
 from sentinel_janitor import SentinelJanitor
 
+
 class SentinelV3Core:
+    """Cycle v3 : observer, mémoire, feedback et persistance contrôlée."""
+
     def __init__(self):
-        logger.info("🌐 Centralisation du Noyau Distribué Sentinel v3.0...")
+        logger.info("🌐 Centralisation du Noyau Distribué Sentinel v3.1...")
         self.collector = DataCollector()
         self.engine = LearningEngine()
         self.memory = SentinelMemory()
+        self.feedback = AdaptiveFeedback()
         self.notifier = SentinelNotifier()
         self.ai = AIMatrix()
         self.guard = EvolutionGuard()
         self.janitor = SentinelJanitor()
 
-    def commit_memory(self):
-        """CRITICAL: Save memory to git so it survives GitHub Actions purge"""
+    def commit_memory(self) -> bool:
+        """Persiste uniquement les preuves du cycle; aucun force-push."""
+        tracked_files = [
+            "sentinel_memory.db",
+            "src/core/circular_memory.json",
+            "sentinel_real_web_discoveries.json",
+            "sentinel_learning_state.json",
+            "feedback_report.json",
+        ]
         try:
-            subprocess.run(["git", "config", "user.email", "sentinel-v3@evolution.ai"], check=True)
-            subprocess.run(["git", "config", "user.name", "Sentinel-V3-Core"], check=True)
-            
-            subprocess.run(["git", "add", "sentinel_memory.db", "src/core/circular_memory.json", "sentinel_real_web_discoveries.json"], check=True)
-            subprocess.run(["git", "commit", "-m", f"🧬 EVOLUTION: V3 cycle - {logger.info('timestamp')}"], check=False)
-            subprocess.run(["git", "push", "origin", "main", "--force"], check=True)
-            
-            logger.info("✅ MEMORY COMMITTED TO GIT")
+            subprocess.run(
+                ["git", "config", "user.email", "sentinel-v3@evolution.ai"],
+                check=True,
+            )
+            subprocess.run(
+                ["git", "config", "user.name", "Sentinel-V3-Core"],
+                check=True,
+            )
+            subprocess.run(["git", "add", *tracked_files], check=True)
+            if subprocess.run(["git", "diff", "--cached", "--quiet"], check=False).returncode == 0:
+                logger.info("ℹ️ Aucun nouvel artefact à promouvoir; pas de commit artificiel.")
+                return True
+
+            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            subprocess.run(
+                ["git", "commit", "-m", f"🧬 FEEDBACK: cycle adaptatif vérifié {timestamp}"],
+                check=True,
+            )
+            subprocess.run(["git", "push", "origin", "main"], check=True)
+            logger.info("✅ Preuves du cycle poussées sur main sans écrasement d'historique.")
             return True
-        except Exception as e:
-            logger.error(f"❌ COMMIT FAILED: {e}")
+        except subprocess.CalledProcessError as exc:
+            logger.error(f"❌ Persistance Git échouée: {exc}")
             return False
 
-    def run_cycle(self):
-        logger.info("⚡ Début du cycle d'évolution autonome rapide...")
-        
+    def run_cycle(self) -> bool:
+        logger.info("⚡ Début du cycle d'apprentissage et de feedback...")
         try:
-            # 1. Maintenance
             self.janitor.purge_old_backups()
-            
-            # 2. Collecte
             raw_data = self.collector.fetch_all()
             active_sources = ", ".join(raw_data.keys()) if raw_data else "Aucune"
-            
-            # 3. Analyse et IA
-            intelligence_report = self.engine.evaluate_threats(raw_data)
-            ai_decision = self.ai.consult_brain(intelligence_report)
-            
-            intelligence_report["intelligence_score"] = ai_decision["confidence"]
-            intelligence_report["ai_source"] = ai_decision["source"]
-            intelligence_report["decision_status"] = ai_decision["decision"]
-            
-            # 4. Écriture BDD SQL
-            mutation_id = str(intelligence_report.get("mutations_suggested", "no_mutation"))
-            self.memory.save_learning(
-                mutation_id=mutation_id,
-                success=True,
-                learnings_dict=intelligence_report
+
+            # La décision API reste volontairement compatible avec la configuration actuelle.
+            # Elle ne devient pas une mutation tant qu'aucun patch n'est généré et mesuré.
+            preliminary_report: dict[str, Any] = self.engine.evaluate_threats(raw_data, self.feedback.policy)
+            ai_decision = self.ai.consult_brain(preliminary_report)
+            preliminary_report["intelligence_score"] = ai_decision.get("confidence", 0)
+            preliminary_report["ai_source"] = ai_decision.get("source", "unknown")
+            preliminary_report["decision_status"] = ai_decision.get("decision", "unknown")
+
+            feedback_report = self.feedback.run_cycle(raw_data, preliminary_report, ai_decision)
+            feedback_decision = feedback_report["decision"]
+            preliminary_report["feedback_decision"] = feedback_decision
+            preliminary_report["feedback_cycle_id"] = feedback_report["cycle_id"]
+            preliminary_report["observation_hash"] = feedback_report["observation_hash"]
+            preliminary_report["baseline_score"] = feedback_report["baseline_score"]
+            preliminary_report["candidate_score"] = feedback_report["candidate_score"]
+
+            if feedback_decision != "NO_CHANGE_NEEDED":
+                self.memory.save_learning(
+                    mutation_id=feedback_decision,
+                    success=feedback_decision == "PROMOTED",
+                    learnings_dict=preliminary_report,
+                )
+                persisted = self.commit_memory()
+                if not persisted:
+                    return False
+            else:
+                logger.info("ℹ️ Observation déjà connue: aucun faux apprentissage ni commit généré.")
+
+            logger.info(
+                f"✅ Cycle: sources={active_sources}; décision={feedback_decision}; "
+                f"baseline={feedback_report['baseline_score']}; "
+                f"candidat={feedback_report['candidate_score']}"
             )
-            
-            logger.info(f"✅ Cycle complet: {len(raw_data)} sources, mutation {mutation_id}")
-            
-            # 5. CRITICAL: COMMIT TO GIT!
-            self.commit_memory()
-            
             return True
-            
-        except Exception as e:
-            logger.error(f"❌ CYCLE FAILED: {e}")
+        except Exception as exc:
+            logger.exception(f"❌ CYCLE FAILED: {exc}")
             return False
+
 
 if __name__ == "__main__":
     sentinel = SentinelV3Core()
-    success = sentinel.run_cycle()
-    exit(0 if success else 1)
+    raise SystemExit(0 if sentinel.run_cycle() else 1)
