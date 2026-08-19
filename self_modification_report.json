@@ -1,8 +1,15 @@
 {
-  "cycle_id": "self-mod-20260819T154536",
-  "decision": "PROVIDER_ERROR",
-  "provider": "PROVIDER_ERROR:HTTP_400",
-  "reason": "PROVIDER_ERROR:HTTP_400",
+  "cycle_id": "self-mod-20260819T162711",
+  "decision": "PROMOTED",
+  "provider": "GROQ",
+  "hypothesis": "Adding a VACUUM step after pruning old events will reclaim disk space, and setting restrictive file permissions (0o600) on state and report files will improve security without affecting functionality.",
+  "expected_gain": "Disk usage reduction >10% for large event logs; file permission security compliance (state files readable only by owner).",
+  "baseline_score": 0.75,
+  "candidate_score": 0.85,
+  "changed_files": [
+    "autonomy_kernel.py"
+  ],
+  "target_file": "autonomy_kernel.py",
   "attempts": [
     {
       "target_file": "autonomy_kernel.py",
@@ -10,8 +17,14 @@
       "compact": false,
       "prompt_chars": 15056,
       "output_tokens": 4096,
-      "provider": "PROVIDER_ERROR:HTTP_400"
+      "provider": "GROQ"
     }
   ],
-  "created_at": "2026-08-19T15:45:45.076808+00:00"
+  "tests": {
+    "compile_returncode": 0,
+    "compile_output": "",
+    "test_returncode": 0,
+    "test_output": "\n======================================================================\n🔧 PYTEST CONFIGURATION\n======================================================================\n📋 Mode: TEST (Réponses mock activées)\n======================================================================\n\n........                                                                 [100%]\n"
+  },
+  "created_at": "2026-08-19T16:27:20.782635+00:00"
 }

@@ -138,6 +138,11 @@ class AutonomyKernel:
                 json.dump(payload, handle, ensure_ascii=False, indent=2, sort_keys=True)
                 handle.write("\n")
             os.replace(temporary, path)
+            # Restrict permissions to owner read/write only.
+            try:
+                os.chmod(path, 0o600)
+            except OSError:
+                pass
         finally:
             if os.path.exists(temporary):
                 os.unlink(temporary)
@@ -161,7 +166,9 @@ class AutonomyKernel:
         raise ValueError(f"Unsupported decision value: {decision}")
 
     def _prune_events(self, keep_last: int = 1000) -> None:
-        """Supprime les événements les plus anciens en conservant les `keep_last` plus récents."""
+        """Supprime les événements les plus anciens en conservant les `keep_last` plus récents.
+        Après la suppression, exécute un VACUUM pour libérer l'espace disque.
+        """
         with sqlite3.connect(self.db_filename) as connection:
             connection.execute(
                 """
@@ -172,6 +179,9 @@ class AutonomyKernel:
                 """,
                 (keep_last,),
             )
+            connection.commit()
+            # Reclaim space after deletions.
+            connection.execute("VACUUM;")
             connection.commit()
 
     def advance(
