@@ -1,11 +1,16 @@
 import os
+
 import requests
 from loguru import logger
 from datetime import datetime
 
 class SentinelNotifier:
           def __init__(self):
-                    self.webhook_url = "https://discord.com/api/webhooks/1538912523502489683/20VmZHXY5Ipg0NQpLPblF2AqrET8D2VGzRXN3ACLoLp5snnQDMUUxgj64lckedWO7iAA"
+                    self.webhook_url = (
+                              os.getenv("SENTINEL_DISCORD_WEBHOOK")
+                              or os.getenv("DISCORD_WEBHOOK_URL")
+                              or os.getenv("WEBTOON")
+                    )
                     os.makedirs("logs", exist_ok=True)
                     self.local_log_file = "logs/sentinel_mutations.log"
 

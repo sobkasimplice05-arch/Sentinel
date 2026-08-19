@@ -1,0 +1,48 @@
+name: 📊 Rapport quotidien Sentinel vers Discord
+
+on:
+  schedule:
+    # 08:00 en GMT+1 pendant la période actuelle de l’utilisateur.
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sentinel-discord-daily
+  cancel-in-progress: false
+
+jobs:
+  daily-report:
+    runs-on: ubuntu-latest
+    env:
+      SENTINEL_DISCORD_WEBHOOK: ${{ secrets.SENTINEL_DISCORD_WEBHOOK }}
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      WEBTOON: ${{ secrets.WEBTOON }}
+    steps:
+      - name: 📥 Restauration du dépôt
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🐍 Configuration de Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 📦 Installation minimale
+        run: pip install requests -q
+
+      - name: 📈 Génération et envoi de la synthèse
+        run: python daily_metrics_report.py --send-discord --require-discord
+
+      - name: 📎 Publication de la synthèse
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sentinel-daily-report-${{ github.run_id }}
+          if-no-files-found: ignore
+          path: |
+            daily_metrics_report.json
+            daily_metrics_report.md
