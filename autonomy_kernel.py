@@ -96,6 +96,8 @@ class AutonomyKernel:
             connection.execute("PRAGMA journal_mode=WAL;")
             # Créer un index sur cycle_id pour accélérer les recherches ciblées.
             connection.execute("CREATE INDEX IF NOT EXISTS idx_cycle_id ON autonomy_events(cycle_id);")
+            # Créer un index sur observation_hash pour accélérer les recherches par hash.
+            connection.execute("CREATE INDEX IF NOT EXISTS idx_observation_hash ON autonomy_events(observation_hash);")
             connection.commit()
 
     def _load_state(self) -> dict[str, Any]:
@@ -109,7 +111,15 @@ class AutonomyKernel:
             strategy.update(loaded.get("strategy", {}))
             state["strategy"] = strategy
             return state
-        except (OSError, ValueError, TypeError):
+        except (OSError, ValueError, TypeError) as exc:
+            # Sauvegarder le fichier corrompu pour analyse future.
+            backup_name = self.state_filename.with_name(
+                f"{self.state_filename.name}.corrupt.{int(datetime.now().timestamp())}"
+            )
+            try:
+                self.state_filename.rename(backup_name)
+            except OSError:
+                pass  # Si le renommage échoue, on ignore et continuons.
             return deepcopy(DEFAULT_STATE)
 
     @staticmethod

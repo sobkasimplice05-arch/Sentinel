@@ -1,9 +1,9 @@
 {
-  "cycle_id": "self-mod-20260819T120534",
+  "cycle_id": "self-mod-20260819T125118",
   "decision": "PROMOTED",
   "provider": "GROQ",
-  "hypothesis": "Adding an index on the `cycle_id` column and providing a helper method to fetch recent events will speed up look‑ups and enable downstream components to retrieve history without scanning the whole table, leading to faster query performance.",
-  "expected_gain": "query latency for fetching recent events reduced by ≥30% on a database with 10k+ rows (measured via timing of `get_recent_events`)",
+  "hypothesis": "Adding a backup of a corrupted state file and creating an index on observation_hash will increase robustness and query performance",
+  "expected_gain": "Zero load failures per 100 cycles and <5% reduction in query time for observation_hash lookups",
   "baseline_score": 0.75,
   "candidate_score": 0.85,
   "changed_files": [
@@ -15,7 +15,7 @@
       "target_file": "autonomy_kernel.py",
       "attempt": 1,
       "compact": false,
-      "prompt_chars": 12663,
+      "prompt_chars": 13388,
       "output_tokens": 4096,
       "provider": "GROQ"
     }
@@ -26,5 +26,5 @@
     "test_returncode": 0,
     "test_output": "\n======================================================================\n🔧 PYTEST CONFIGURATION\n======================================================================\n📋 Mode: TEST (Réponses mock activées)\n======================================================================\n\n........                                                                 [100%]\n"
   },
-  "created_at": "2026-08-19T12:05:43.632841+00:00"
+  "created_at": "2026-08-19T12:51:26.238330+00:00"
 }
