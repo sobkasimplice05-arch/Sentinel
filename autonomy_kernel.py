@@ -14,7 +14,7 @@ import tempfile
 from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Mapping, Literal
 
 DEFAULT_STATE: dict[str, Any] = {
     "version": 1,
@@ -45,6 +45,9 @@ DEFAULT_STATE: dict[str, Any] = {
     "next_actions": ["collect_novel_observations"],
     "known_failures": [],
 }
+
+# Decision values that the kernel understands.
+DecisionType = Literal["PROMOTED", "REJECTED", "NO_CHANGE_NEEDED"]
 
 
 class AutonomyKernel:
@@ -106,7 +109,7 @@ class AutonomyKernel:
         fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", dir=str(path.parent))
         try:
             with os.fdopen(fd, "w", encoding="utf-8") as handle:
-                json.dump(payload, handle, ensure_ascii=False, indent=2)
+                json.dump(payload, handle, ensure_ascii=False, indent=2, sort_keys=True)
                 handle.write("\n")
             os.replace(temporary, path)
         finally:
@@ -114,7 +117,7 @@ class AutonomyKernel:
                 os.unlink(temporary)
 
     @staticmethod
-    def _actions_for(decision: str, source_count: int) -> list[str]:
+    def _actions_for(decision: DecisionType, source_count: int) -> list[str]:
         if decision == "PROMOTED":
             return [
                 "reuse_promoted_policy_next_cycle",
@@ -129,7 +132,8 @@ class AutonomyKernel:
             ]
         if decision == "NO_CHANGE_NEEDED":
             return ["wait_for_novel_observation", "maintain_current_policy"]
-        return ["diagnose_infrastructure_failure", f"recheck_sources_{source_count}"]
+        # This branch is unreachable due to type checking, but kept for runtime safety.
+        raise ValueError(f"Unsupported decision value: {decision}")
 
     def _prune_events(self, keep_last: int = 1000) -> None:
         """Supprime les événements les plus anciens en conservant les `keep_last` plus récents."""
@@ -150,13 +154,27 @@ class AutonomyKernel:
         *,
         cycle_id: str,
         observation_hash: str,
-        decision: str,
+        decision: DecisionType,
         baseline_score: float,
         candidate_score: float,
         source_count: int,
         feedback_report: Mapping[str, Any],
     ) -> dict[str, Any]:
-        """Met à jour la stratégie et planifie la prochaine action autonome."""
+        """Met à jour la stratégie et planifie la prochaine action autonome.
+
+        Args:
+            cycle_id: Identifiant unique du cycle.
+            observation_hash: Hash de l'observation traitée.
+            decision: Décision prise par le moteur (PROMOTED, REJECTED ou NO_CHANGE_NEEDED).
+            baseline_score: Score de référence.
+            candidate_score: Score du candidat.
+            source_count: Nombre de sources d'information.
+            feedback_report: Rapport de feedback détaillé.
+        """
+        # Validate decision early to avoid silent mis‑behaviour.
+        if decision not in ("PROMOTED", "REJECTED", "NO_CHANGE_NEEDED"):
+            raise ValueError(f"Invalid decision '{decision}'. Expected one of PROMOTED, REJECTED, NO_CHANGE_NEEDED.")
+
         previous = deepcopy(self.state)
         self.state["cycle_number"] = int(self.state.get("cycle_number", 0)) + 1
         self.state["total_plans"] = int(self.state.get("total_plans", 0)) + 1
@@ -203,8 +221,8 @@ class AutonomyKernel:
                     event["created_at"],
                     observation_hash,
                     decision,
-                    json.dumps(actions, ensure_ascii=False),
-                    json.dumps(strategy, ensure_ascii=False),
+                    json.dumps(actions, ensure_ascii=False, sort_keys=True),
+                    json.dumps(strategy, ensure_ascii=False, sort_keys=True),
                     json.dumps(event, ensure_ascii=False, sort_keys=True),
                 ),
             )
