@@ -76,6 +76,8 @@ class AutonomyKernel:
                     created_at TEXT NOT NULL,
                     observation_hash TEXT NOT NULL,
                     decision TEXT NOT NULL,
+                    baseline_score REAL NOT NULL,
+                    candidate_score REAL NOT NULL,
                     next_actions TEXT NOT NULL,
                     strategy TEXT NOT NULL,
                     report TEXT NOT NULL
@@ -132,7 +134,6 @@ class AutonomyKernel:
             ]
         if decision == "NO_CHANGE_NEEDED":
             return ["wait_for_novel_observation", "maintain_current_policy"]
-        # This branch is unreachable due to type checking, but kept for runtime safety.
         raise ValueError(f"Unsupported decision value: {decision}")
 
     def _prune_events(self, keep_last: int = 1000) -> None:
@@ -171,7 +172,6 @@ class AutonomyKernel:
             source_count: Nombre de sources d'information.
             feedback_report: Rapport de feedback détaillé.
         """
-        # Validate decision early to avoid silent mis‑behaviour.
         if decision not in ("PROMOTED", "REJECTED", "NO_CHANGE_NEEDED"):
             raise ValueError(f"Invalid decision '{decision}'. Expected one of PROMOTED, REJECTED, NO_CHANGE_NEEDED.")
 
@@ -185,11 +185,13 @@ class AutonomyKernel:
         strategy = dict(self.state.get("strategy", {}))
         confidence = float(strategy.get("confidence", 0.50))
         if decision == "PROMOTED":
-            confidence = min(0.95, confidence + 0.05)
+            delta = 0.07 if source_count >= 3 else 0.05
+            confidence = min(0.95, confidence + delta)
             self.state["successful_experiments"] = int(self.state.get("successful_experiments", 0)) + 1
             strategy["last_outcome"] = "PROMOTED"
         elif decision == "REJECTED":
-            confidence = max(0.05, confidence - 0.03)
+            delta = 0.02 if source_count >= 3 else 0.03
+            confidence = max(0.05, confidence - delta)
             self.state["rejected_experiments"] = int(self.state.get("rejected_experiments", 0)) + 1
             strategy["last_outcome"] = "REJECTED"
         else:
@@ -213,26 +215,24 @@ class AutonomyKernel:
             connection.execute(
                 """
                 INSERT INTO autonomy_events
-                (cycle_id, created_at, observation_hash, decision, next_actions, strategy, report)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                (cycle_id, created_at, observation_hash, decision, baseline_score, candidate_score, next_actions, strategy, report)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     cycle_id,
                     event["created_at"],
                     observation_hash,
                     decision,
+                    baseline_score,
+                    candidate_score,
                     json.dumps(actions, ensure_ascii=False, sort_keys=True),
                     json.dumps(strategy, ensure_ascii=False, sort_keys=True),
                     json.dumps(event, ensure_ascii=False, sort_keys=True),
                 ),
             )
             connection.commit()
-        # Nettoyer les anciens événements pour limiter la taille de la base de données
         self._prune_events()
 
-        # Les runners GitHub sont éphémères : la stratégie doit donc être
-        # persistée à chaque cycle pour survivre au passage suivant. Un cycle
-        # NO_CHANGE reste explicitement un heartbeat, jamais une mutation.
         should_persist = True
         if should_persist:
             self._atomic_write_json(self.state_filename, self.state)
