@@ -102,6 +102,9 @@ class AutonomyKernel:
             connection.execute("CREATE INDEX IF NOT EXISTS idx_decision ON autonomy_events(decision);")
             # Index supplémentaire sur created_at pour améliorer les requêtes récentes.
             connection.execute("CREATE INDEX IF NOT EXISTS idx_created_at ON autonomy_events(created_at);")
+            # Indexes additionnels pour les scores afin de faciliter les analyses futures.
+            connection.execute("CREATE INDEX IF NOT EXISTS idx_baseline_score ON autonomy_events(baseline_score);")
+            connection.execute("CREATE INDEX IF NOT EXISTS idx_candidate_score ON autonomy_events(candidate_score);")
             connection.commit()
 
     def _load_state(self) -> dict[str, Any]:
@@ -167,9 +170,12 @@ class AutonomyKernel:
 
     def _prune_events(self, keep_last: int = 1000) -> None:
         """Supprime les événements les plus anciens en conservant les `keep_last` plus récents.
-        Après la suppression, exécute un VACUUM pour libérer l'espace disque.
+        Après la suppression, exécute un VACUUM uniquement si le nombre d'événements
+        supprimés dépasse un seuil (100) afin d'éviter des coûts I/O inutiles.
         """
         with sqlite3.connect(self.db_filename) as connection:
+            cursor = connection.execute("SELECT COUNT(*) FROM autonomy_events")
+            total = cursor.fetchone()[0]
             connection.execute(
                 """
                 DELETE FROM autonomy_events
@@ -179,10 +185,11 @@ class AutonomyKernel:
                 """,
                 (keep_last,),
             )
+            deleted = total - keep_last if total > keep_last else 0
             connection.commit()
-            # Reclaim space after deletions.
-            connection.execute("VACUUM;")
-            connection.commit()
+            if deleted > 100:
+                connection.execute("VACUUM;")
+                connection.commit()
 
     def advance(
         self,
