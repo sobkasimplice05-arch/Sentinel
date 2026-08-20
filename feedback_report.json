@@ -1,18 +1,20 @@
 {
-  "cycle_id": "cycle-20260819T082024-91d73b999aab",
-  "created_at": "2026-08-19T08:20:24.038559+00:00",
-  "decision": "PROMOTED",
-  "changed": true,
+  "cycle_id": "cycle-20260820T102533-91d73b999aab",
+  "created_at": "2026-08-20T10:25:33.113089+00:00",
+  "decision": "NO_CHANGE_NEEDED",
+  "changed": false,
   "observation_hash": "91d73b999aabf6439054a917c23496de2796dca0cf53e8f6f3ca1807a14af99a",
-  "baseline_score": 0.6,
+  "baseline_score": 0.663,
   "candidate_score": 0.663,
-  "hypothesis": "Ajuster la fiabilité des sources selon la fraîcheur observée et adapter le seuil selon la couverture des sources.",
-  "reason": "adaptation validée par la baseline",
+  "reason": "observation déjà traitée; aucune nouvelle preuve",
   "policy_before": {
-    "version": 1,
-    "confidence_threshold": 0.65,
+    "version": 2,
+    "confidence_threshold": 0.64,
     "minimum_sources": 1,
-    "source_reliability": {}
+    "source_reliability": {
+      "arxiv": 0.58,
+      "github": 0.58
+    }
   },
   "policy_after": {
     "version": 2,
