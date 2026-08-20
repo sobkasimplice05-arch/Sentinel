@@ -35,20 +35,26 @@ class SentinelV3Core:
         self.guard = EvolutionGuard()
         self.janitor = SentinelJanitor()
 
-    def commit_memory(self, include_self_modification_report: bool = False) -> bool:
+    def commit_memory(
+        self,
+        include_self_modification_report: bool = False,
+        include_runtime_state: bool = True,
+    ) -> bool:
         """Persiste les preuves et les patches approuvés; aucun force-push."""
-        tracked_files = [
-            "sentinel_memory.db",
-            "src/core/circular_memory.json",
-            "sentinel_real_web_discoveries.json",
-            "sentinel_learning_state.json",
-            "feedback_report.json",
-            "sentinel_autonomy_state.json",
-            "sentinel_autonomy_report.json",
-            "agent_general_state.json",
-            "agent_general_report.json",
-            "self_modification_provider_cooldown.json",
-        ]
+        tracked_files = ["self_modification_provider_cooldown.json"]
+        if include_runtime_state:
+            tracked_files = [
+                "sentinel_memory.db",
+                "src/core/circular_memory.json",
+                "sentinel_real_web_discoveries.json",
+                "sentinel_learning_state.json",
+                "feedback_report.json",
+                "sentinel_autonomy_state.json",
+                "sentinel_autonomy_report.json",
+                "agent_general_state.json",
+                "agent_general_report.json",
+                *tracked_files,
+            ]
         if include_self_modification_report:
             tracked_files.extend(
                 [
@@ -168,7 +174,10 @@ class SentinelV3Core:
             elif self_modification_decision == "PROVIDER_ERROR":
                 # Persiste uniquement les preuves nouvelles, notamment le fichier
                 # de cooldown, sans republier un rapport de mutation obsolète.
-                persisted = self.commit_memory(include_self_modification_report=False)
+                persisted = self.commit_memory(
+                    include_self_modification_report=False,
+                    include_runtime_state=False,
+                )
                 if not persisted:
                     return False
             else:
