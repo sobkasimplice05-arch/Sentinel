@@ -1,18 +1,18 @@
 {
   "baseline_score": 0.802019,
   "candidate_score": 0.802568,
-  "created_at": "2026-08-20T22:22:55.494435+00:00",
-  "cycle_id": "cycle-20260820T222255-6bfed734a118",
+  "created_at": "2026-08-20T22:29:56.369539+00:00",
+  "cycle_id": "cycle-20260820T222956-8c68c7bb6e22",
   "decision": "REJECTED",
   "feedback": {
     "baseline_score": 0.802019,
     "candidate_score": 0.802568,
     "changed": false,
-    "created_at": "2026-08-20T22:22:55.494234+00:00",
-    "cycle_id": "cycle-20260820T222255-6bfed734a118",
+    "created_at": "2026-08-20T22:29:56.369395+00:00",
+    "cycle_id": "cycle-20260820T222956-8c68c7bb6e22",
     "decision": "REJECTED",
     "hypothesis": "Ajuster la fiabilité des sources selon la fraîcheur observée et adapter le seuil selon la couverture des sources.",
-    "observation_hash": "6bfed734a118e595b998d5a3734cefd58af87b1d5633e9974539b18848c01a13",
+    "observation_hash": "8c68c7bb6e224e92951dd68350e0548f7a8899d103a22cfec45c0a39203665eb",
     "policy": {
       "confidence_threshold": 0.5,
       "minimum_sources": 1,
@@ -95,10 +95,10 @@
     "collect_more_evidence_before_retrying",
     "run_regression_checks"
   ],
-  "observation_hash": "6bfed734a118e595b998d5a3734cefd58af87b1d5633e9974539b18848c01a13",
+  "observation_hash": "8c68c7bb6e224e92951dd68350e0548f7a8899d103a22cfec45c0a39203665eb",
   "strategy": {
-    "confidence": 0.62,
-    "last_decision_at": "2026-08-20T22:22:55.494430+00:00",
+    "confidence": 0.59,
+    "last_decision_at": "2026-08-20T22:29:56.369536+00:00",
     "last_outcome": "REJECTED",
     "name": "evidence_driven_adaptation"
   }
