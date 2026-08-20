@@ -308,3 +308,46 @@ def test_auto_provider_uses_google_after_groq_cooldown(tmp_path, monkeypatch):
     assert provider == "GOOGLE"
     assert "generativelanguage.googleapis.com" in captured["url"]
     assert engine._provider_on_cooldown("groq") is True
+
+
+def test_auto_provider_falls_back_after_http_429(tmp_path, monkeypatch):
+    import requests
+
+    monkeypatch.setenv("SELF_MODIFICATION_PROVIDER", "auto")
+    monkeypatch.setenv("GROQ_API_KEY", "groq-test-key")
+    monkeypatch.setenv("HF_API_KEY", "hf-test-key")
+    for name in ("GOOGLE_API_KEY", "GEMINI_API_KEY", "GOOGLE_GEMINI_API_KEY", "NVIDIA_API_KEY", "MODEL_API_KEY", "MODEL_API_URL", "SELF_MODIFICATION_MODEL_URL", "OLLAMA_BASE_URL"):
+        monkeypatch.delenv(name, raising=False)
+    (tmp_path / "learning_engine.py").write_text("def evaluate_threats(data, policy=None):\n    return {}\n")
+
+    class RateLimitResponse:
+        status_code = 429
+        headers = {"retry-after": "120"}
+
+    rate_limit_error = requests.HTTPError("rate limited")
+    rate_limit_error.response = RateLimitResponse()
+
+    class SuccessResponse:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return [{"generated_text": '{"files":[]}'}]
+
+    calls = []
+
+    def fake_post(url, **kwargs):
+        calls.append(url)
+        if "api.groq.com" in url:
+            raise rate_limit_error
+        return SuccessResponse()
+
+    monkeypatch.setattr("self_modification.requests.post", fake_post)
+    engine = SelfModificationEngine(root=tmp_path, allowed_files={"learning_engine.py"})
+
+    result = engine.run_cycle(feedback={}, autonomy={})
+
+    assert result["decision"] == "NO_CHANGE_PROPOSED"
+    assert any("api.groq.com" in url for url in calls)
+    assert any("api-inference.huggingface.co" in url for url in calls)
+    assert [attempt["provider"] for attempt in result["attempts"]] == ["PROVIDER_ERROR:HTTP_429", "HUGGINGFACE_INFERENCE"]

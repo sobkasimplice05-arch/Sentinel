@@ -452,6 +452,12 @@ Code actuel :
                     last_error = provider
                     if "HTTP_413" in provider:
                         continue
+                    if (
+                        (os.getenv("SELF_MODIFICATION_PROVIDER") or "auto").lower() == "auto"
+                        and (provider.startswith("PROVIDER_ERROR:") or provider.startswith("PROVIDER_COOLDOWN:"))
+                        and attempt_index < len(self.retry_output_tokens) - 1
+                    ):
+                        continue
                     break
                 try:
                     candidate = self._parse_proposal(raw)
