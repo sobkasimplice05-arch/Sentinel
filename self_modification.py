@@ -140,53 +140,108 @@ Code actuel :
     def _call_provider(self, prompt: str, *, output_tokens: int | None = None) -> tuple[str | None, str]:
         output_tokens = output_tokens or self.default_output_tokens
         requested_provider = (os.getenv("SELF_MODIFICATION_PROVIDER") or "auto").lower()
+        configured_url = os.getenv("SELF_MODIFICATION_MODEL_URL") or os.getenv("MODEL_API_URL") or os.getenv("OLLAMA_BASE_URL")
+        google_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_GEMINI_API_KEY")
+        replicate_token = os.getenv("REPLICATE_API_TOKEN") or os.getenv("REPLICATE_API_KEY")
         provider = requested_provider
         if provider == "auto":
-            candidates = []
+            candidates: list[str] = []
+            if configured_url:
+                candidates.append("ollama" if ("/api/generate" in configured_url or "11434" in configured_url or os.getenv("OLLAMA_BASE_URL")) else "generic")
             if os.getenv("NVIDIA_API_KEY"):
                 candidates.append("nvidia")
+            if google_key:
+                candidates.append("google")
             if os.getenv("GROQ_API_KEY"):
                 candidates.append("groq")
+            if replicate_token and (os.getenv("REPLICATE_MODEL_VERSION") or os.getenv("REPLICATE_MODEL")):
+                candidates.append("replicate")
             if os.getenv("SELF_MODIFICATION_API_KEY") or os.getenv("MODEL_API_KEY"):
                 candidates.append("generic")
             if os.getenv("HF_API_KEY"):
                 candidates.append("huggingface")
-            provider = next((item for item in candidates if not self._provider_on_cooldown(item)), "")
+            provider = next((item for item in dict.fromkeys(candidates) if not self._provider_on_cooldown(item)), "")
             if not provider:
                 return None, "PROVIDER_COOLDOWN:all"
         elif self._provider_on_cooldown(provider):
             return None, f"PROVIDER_COOLDOWN:{provider.upper()}"
+
         model = os.getenv("SELF_MODIFICATION_MODEL") or "Qwen/Qwen2.5-Coder-7B-Instruct"
         token = (
-            os.getenv("SELF_MODIFICATION_API_KEY")
-            or os.getenv("MODEL_API_KEY")
-            or os.getenv("GROQ_API_KEY")
-            or os.getenv("NVIDIA_API_KEY")
-            or os.getenv("HF_API_KEY")
+            google_key if provider in {"google", "gemini"} else replicate_token if provider == "replicate" else
+            os.getenv("SELF_MODIFICATION_API_KEY") or os.getenv("MODEL_API_KEY") or
+            os.getenv("GROQ_API_KEY") or os.getenv("NVIDIA_API_KEY") or os.getenv("HF_API_KEY")
         )
-        url = os.getenv("SELF_MODIFICATION_MODEL_URL") or os.getenv("MODEL_API_URL") or os.getenv("OLLAMA_BASE_URL")
-        if not url and provider == "groq" and token:
+        url = configured_url
+        if provider in {"google", "gemini"}:
+            model = os.getenv("GOOGLE_MODEL") or os.getenv("GEMINI_MODEL") or os.getenv("SELF_MODIFICATION_MODEL") or "gemini-3.5-flash"
+            url = os.getenv("GOOGLE_API_URL") or f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+        elif provider == "replicate":
+            url = os.getenv("REPLICATE_API_URL") or "https://api.replicate.com/v1/predictions"
+            model = os.getenv("REPLICATE_MODEL") or model
+        elif provider == "ollama":
+            url = configured_url or os.getenv("OLLAMA_BASE_URL") or "http://127.0.0.1:11434/api/generate"
+            model = os.getenv("OLLAMA_MODEL") or os.getenv("SELF_MODIFICATION_MODEL") or "qwen2.5-coder:7b"
+        elif not url and provider == "groq" and token:
             url = "https://api.groq.com/openai/v1/chat/completions"
             model = os.getenv("SELF_MODIFICATION_MODEL") or "openai/gpt-oss-120b"
-        if not url and provider in {"nvidia", "nim"} and token:
+        elif not url and provider in {"nvidia", "nim"} and token:
             url = "https://integrate.api.nvidia.com/v1/chat/completions"
             model = os.getenv("SELF_MODIFICATION_MODEL") or "qwen/qwen3-coder-480b-a35b-instruct"
-        if not url and token:
+        elif not url and token:
             url = f"https://api-inference.huggingface.co/models/{model}"
-        if not url:
+        if not url or (provider in {"google", "gemini", "replicate"} and not token):
             return None, "MODEL_UNAVAILABLE"
+
         headers = {"Content-Type": "application/json"}
-        if token:
+        if token and provider not in {"google", "gemini"}:
             headers["Authorization"] = f"Bearer {token}"
         try:
+            if provider in {"google", "gemini"} or "generativelanguage.googleapis.com" in url:
+                headers["x-goog-api-key"] = token or ""
+                response = requests.post(
+                    url,
+                    headers=headers,
+                    json={
+                        "system_instruction": {"parts": [{"text": "Return only one valid JSON object. Never use Markdown fences."}]},
+                        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+                        "generationConfig": {
+                            "temperature": 0.1,
+                            "maxOutputTokens": output_tokens,
+                            "responseMimeType": "application/json" if os.getenv("SELF_MODIFICATION_JSON_MODE", "true").lower() == "true" else "text/plain",
+                        },
+                    },
+                    timeout=120,
+                )
+                response.raise_for_status()
+                payload = response.json()
+                candidates = payload.get("candidates", []) if isinstance(payload, dict) else []
+                parts = candidates[0].get("content", {}).get("parts", []) if candidates else []
+                text = "".join(str(part.get("text", "")) for part in parts if isinstance(part, dict))
+                return (text or None), "GOOGLE"
+
+            if provider == "replicate":
+                version = os.getenv("REPLICATE_MODEL_VERSION")
+                if not version:
+                    return None, "MODEL_UNAVAILABLE"
+                response = requests.post(
+                    url,
+                    headers={**headers, "Prefer": "wait=60"},
+                    json={"version": version, "input": {"prompt": prompt, "max_new_tokens": output_tokens, "temperature": 0.1}},
+                    timeout=120,
+                )
+                response.raise_for_status()
+                payload = response.json()
+                output = payload.get("output") if isinstance(payload, dict) else None
+                if isinstance(output, list):
+                    output = "".join(str(item) for item in output)
+                if isinstance(output, str):
+                    return output, "REPLICATE"
+                return None, "PROVIDER_ERROR:REPLICATE_ASYNC"
+
             if "/api/generate" in url or "11434" in url:
                 endpoint = url if "/api/generate" in url else f"{url.rstrip('/')}/api/generate"
-                response = requests.post(
-                    endpoint,
-                    headers=headers,
-                    json={"model": model, "prompt": prompt, "stream": False},
-                    timeout=90,
-                )
+                response = requests.post(endpoint, headers=headers, json={"model": model, "prompt": prompt, "stream": False}, timeout=90)
                 response.raise_for_status()
                 return response.json().get("response"), "OLLAMA"
 
@@ -202,12 +257,7 @@ Code actuel :
                 }
                 if os.getenv("SELF_MODIFICATION_JSON_MODE", "true").lower() == "true":
                     request_payload["response_format"] = {"type": "json_object"}
-                response = requests.post(
-                    url,
-                    headers=headers,
-                    json=request_payload,
-                    timeout=120,
-                )
+                response = requests.post(url, headers=headers, json=request_payload, timeout=120)
                 response.raise_for_status()
                 payload = response.json()
                 choices = payload.get("choices", []) if isinstance(payload, dict) else []
@@ -218,19 +268,7 @@ Code actuel :
                 return None, "EMPTY_OPENAI_COMPATIBLE_RESPONSE"
 
             if "api-inference.huggingface.co" in url:
-                response = requests.post(
-                    url,
-                    headers=headers,
-                    json={
-                        "inputs": prompt,
-                        "parameters": {
-                            "max_new_tokens": output_tokens,
-                            "temperature": 0.1,
-                            "return_full_text": False,
-                        },
-                    },
-                    timeout=120,
-                )
+                response = requests.post(url, headers=headers, json={"inputs": prompt, "parameters": {"max_new_tokens": output_tokens, "temperature": 0.1, "return_full_text": False}}, timeout=120)
                 response.raise_for_status()
                 payload = response.json()
                 if isinstance(payload, list) and payload and isinstance(payload[0], dict):
@@ -239,12 +277,7 @@ Code actuel :
                     return payload.get("generated_text"), "HUGGINGFACE_INFERENCE"
                 return None, "EMPTY_HUGGINGFACE_RESPONSE"
 
-            response = requests.post(
-                url,
-                headers=headers,
-                json={"model": model, "prompt": prompt, "temperature": 0.1},
-                timeout=90,
-            )
+            response = requests.post(url, headers=headers, json={"model": model, "prompt": prompt, "temperature": 0.1}, timeout=90)
             response.raise_for_status()
             payload = response.json()
             if isinstance(payload, dict):

@@ -4,10 +4,23 @@ from self_modification import SelfModificationEngine
 
 
 def test_model_unavailable_is_explicit_and_non_mutating(tmp_path, monkeypatch):
-    monkeypatch.delenv("HF_API_KEY", raising=False)
-    monkeypatch.delenv("SELF_MODIFICATION_API_KEY", raising=False)
-    monkeypatch.delenv("SELF_MODIFICATION_MODEL_URL", raising=False)
-    monkeypatch.delenv("OLLAMA_BASE_URL", raising=False)
+    monkeypatch.setenv("SELF_MODIFICATION_PROVIDER", "auto")
+    for name in (
+        "HF_API_KEY",
+        "SELF_MODIFICATION_API_KEY",
+        "MODEL_API_KEY",
+        "GOOGLE_API_KEY",
+        "GEMINI_API_KEY",
+        "GOOGLE_GEMINI_API_KEY",
+        "REPLICATE_API_TOKEN",
+        "REPLICATE_API_KEY",
+        "REPLICATE_MODEL",
+        "REPLICATE_MODEL_VERSION",
+        "SELF_MODIFICATION_MODEL_URL",
+        "MODEL_API_URL",
+        "OLLAMA_BASE_URL",
+    ):
+        monkeypatch.delenv(name, raising=False)
     engine = SelfModificationEngine(root=tmp_path)
     result = engine.run_cycle(feedback={"decision": "NO_CHANGE_NEEDED"}, autonomy={"next_actions": []})
 
@@ -203,3 +216,95 @@ def test_http_429_sets_provider_cooldown(tmp_path, monkeypatch):
     raw, provider = engine._call_provider("return json")
     assert raw is None
     assert provider == "PROVIDER_COOLDOWN:GROQ"
+
+
+def test_google_gemini_provider_extracts_structured_text(tmp_path, monkeypatch):
+    monkeypatch.setenv("SELF_MODIFICATION_PROVIDER", "google")
+    monkeypatch.setenv("GOOGLE_API_KEY", "google-test-key")
+    monkeypatch.setenv("GOOGLE_MODEL", "gemini-test")
+
+    class Response:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"candidates": [{"content": {"parts": [{"text": '{"files":[]}'}]}}]}
+
+    captured = {}
+
+    def fake_post(url, **kwargs):
+        captured["url"] = url
+        captured["headers"] = kwargs["headers"]
+        captured["json"] = kwargs["json"]
+        return Response()
+
+    monkeypatch.setattr("self_modification.requests.post", fake_post)
+    engine = SelfModificationEngine(root=tmp_path)
+
+    raw, provider = engine._call_provider("return json")
+
+    assert raw == '{"files":[]}'
+    assert provider == "GOOGLE"
+    assert captured["url"].endswith("/models/gemini-test:generateContent")
+    assert captured["headers"]["x-goog-api-key"] == "google-test-key"
+    assert captured["json"]["generationConfig"]["responseMimeType"] == "application/json"
+
+
+def test_ollama_provider_targets_local_qwen_endpoint(tmp_path, monkeypatch):
+    monkeypatch.setenv("SELF_MODIFICATION_PROVIDER", "ollama")
+    monkeypatch.setenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434/api/generate")
+    monkeypatch.setenv("OLLAMA_MODEL", "qwen2.5-coder:7b")
+
+    class Response:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"response": '{"files":[]}'}
+
+    captured = {}
+
+    def fake_post(url, **kwargs):
+        captured["url"] = url
+        captured["json"] = kwargs["json"]
+        return Response()
+
+    monkeypatch.setattr("self_modification.requests.post", fake_post)
+    engine = SelfModificationEngine(root=tmp_path)
+
+    raw, provider = engine._call_provider("return json")
+
+    assert raw == '{"files":[]}'
+    assert provider == "OLLAMA"
+    assert captured["url"] == "http://127.0.0.1:11434/api/generate"
+    assert captured["json"]["model"] == "qwen2.5-coder:7b"
+    assert captured["json"]["stream"] is False
+
+
+def test_auto_provider_uses_google_after_groq_cooldown(tmp_path, monkeypatch):
+    monkeypatch.setenv("SELF_MODIFICATION_PROVIDER", "auto")
+    monkeypatch.setenv("GROQ_API_KEY", "groq-test-key")
+    monkeypatch.setenv("GOOGLE_API_KEY", "google-test-key")
+    engine = SelfModificationEngine(root=tmp_path)
+    engine._set_provider_cooldown("groq", retry_after=1800)
+
+    class Response:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"candidates": [{"content": {"parts": [{"text": '{"files":[]}'}]}}]}
+
+    captured = {}
+
+    def fake_post(url, **kwargs):
+        captured["url"] = url
+        return Response()
+
+    monkeypatch.setattr("self_modification.requests.post", fake_post)
+    raw, provider = engine._call_provider("return json")
+
+    assert raw == '{"files":[]}'
+    assert provider == "GOOGLE"
+    assert "generativelanguage.googleapis.com" in captured["url"]
+    assert engine._provider_on_cooldown("groq") is True
