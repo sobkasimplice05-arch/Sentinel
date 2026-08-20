@@ -1,36 +1,64 @@
 {
-  "baseline_score": 0.663,
-  "candidate_score": 0.663,
-  "created_at": "2026-08-20T09:49:40.497942+00:00",
-  "cycle_id": "cycle-20260820T094940-91d73b999aab",
-  "decision": "NO_CHANGE_NEEDED",
+  "baseline_score": 0.74776,
+  "candidate_score": 0.78196,
+  "created_at": "2026-08-20T14:07:35.389677+00:00",
+  "cycle_id": "cycle-20260820T140735-ac9c81bdf26b",
+  "decision": "PROMOTED",
   "feedback": {
-    "baseline_score": 0.663,
-    "candidate_score": 0.663,
-    "changed": false,
-    "cycle_id": "cycle-20260820T094940-91d73b999aab",
-    "decision": "NO_CHANGE_NEEDED",
-    "observation_hash": "91d73b999aabf6439054a917c23496de2796dca0cf53e8f6f3ca1807a14af99a",
+    "baseline_score": 0.74776,
+    "candidate_score": 0.78196,
+    "changed": true,
+    "created_at": "2026-08-20T14:07:35.388623+00:00",
+    "cycle_id": "cycle-20260820T140735-ac9c81bdf26b",
+    "decision": "PROMOTED",
+    "hypothesis": "Ajuster la fiabilité des sources selon la fraîcheur observée et adapter le seuil selon la couverture des sources.",
+    "observation_hash": "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
     "policy": {
+      "confidence_threshold": 0.63,
+      "minimum_sources": 1,
+      "observation_history": [
+        "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8"
+      ],
+      "source_reliability": {
+        "arxiv": 0.644,
+        "github": 0.644
+      },
+      "version": 3
+    },
+    "policy_after": {
+      "confidence_threshold": 0.63,
+      "minimum_sources": 1,
+      "observation_history": [
+        "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8"
+      ],
+      "source_reliability": {
+        "arxiv": 0.644,
+        "github": 0.644
+      },
+      "version": 3
+    },
+    "policy_before": {
       "confidence_threshold": 0.64,
       "minimum_sources": 1,
+      "observation_history": [],
       "source_reliability": {
         "arxiv": 0.58,
         "github": 0.58
       },
       "version": 2
     },
-    "reason": "observation déjà traitée; aucune nouvelle preuve"
+    "reason": "adaptation validée par la baseline"
   },
   "next_actions": [
-    "wait_for_novel_observation",
-    "maintain_current_policy"
+    "reuse_promoted_policy_next_cycle",
+    "measure_source_reliability_again",
+    "search_for_new_observations"
   ],
-  "observation_hash": "91d73b999aabf6439054a917c23496de2796dca0cf53e8f6f3ca1807a14af99a",
+  "observation_hash": "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
   "strategy": {
-    "confidence": 0.5,
-    "last_decision_at": "2026-08-20T09:49:40.497936+00:00",
-    "last_outcome": "NO_CHANGE_NEEDED",
+    "confidence": 0.55,
+    "last_decision_at": "2026-08-20T14:07:35.389670+00:00",
+    "last_outcome": "PROMOTED",
     "name": "evidence_driven_adaptation"
   }
 }

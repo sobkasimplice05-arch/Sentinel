@@ -1,0 +1,15 @@
+{
+  "benchmark": "sentinel-transfer-v1",
+  "cases": {
+    "quality_discrimination": {
+      "passed": true
+    },
+    "feedback_deduplication": {
+      "passed": true
+    }
+  },
+  "passed": 2,
+  "total": 2,
+  "score": 1.0,
+  "transfer_verified": true
+}

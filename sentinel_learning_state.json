@@ -1,17 +1,20 @@
 {
   "version": 1,
-  "last_observation_hash": "91d73b999aabf6439054a917c23496de2796dca0cf53e8f6f3ca1807a14af99a",
-  "last_cycle_id": "cycle-20260819T082024-91d73b999aab",
-  "total_cycles": 1,
-  "successful_adaptations": 1,
+  "last_observation_hash": "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
+  "last_cycle_id": "cycle-20260820T140735-ac9c81bdf26b",
+  "total_cycles": 2,
+  "successful_adaptations": 2,
   "rejected_adaptations": 0,
   "policy": {
-    "version": 2,
-    "confidence_threshold": 0.64,
+    "version": 3,
+    "confidence_threshold": 0.63,
     "minimum_sources": 1,
     "source_reliability": {
-      "arxiv": 0.58,
-      "github": 0.58
-    }
+      "arxiv": 0.644,
+      "github": 0.644
+    },
+    "observation_history": [
+      "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8"
+    ]
   }
 }
