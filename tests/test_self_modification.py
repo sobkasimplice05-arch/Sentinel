@@ -156,6 +156,20 @@ def test_prompt_is_segmented_to_one_target_file(tmp_path):
     assert len(prompt) <= engine.max_prompt_chars + 100
 
 
+def test_ordered_targets_prefers_smallest_file(tmp_path):
+    engine = SelfModificationEngine(root=tmp_path)
+
+    ordered = engine._ordered_targets(
+        {
+            "autonomy_kernel.py": "A" * 4000,
+            "learning_engine.py": "L" * 400,
+            "feedback_learning.py": "F" * 1800,
+        }
+    )
+
+    assert ordered == ["learning_engine.py", "feedback_learning.py", "autonomy_kernel.py"]
+
+
 def test_http_413_retries_with_compact_prompts(tmp_path, monkeypatch):
     monkeypatch.setenv("SELF_MODIFICATION_ENABLED", "true")
     (tmp_path / "learning_engine.py").write_text("def evaluate_threats(data, policy=None):\n    return {}\n")
@@ -384,3 +398,25 @@ def test_cloudflare_workers_ai_provider_extracts_response(tmp_path, monkeypatch)
     assert captured["url"].endswith("/accounts/account-test/ai/run/@cf/qwen/qwen2.5-coder-32b-instruct")
     assert captured["headers"]["Authorization"] == "Bearer cf-test-token"
     assert captured["json"]["response_format"] == {"type": "json_object"}
+
+
+def test_cloudflare_invalid_json_gets_one_bounded_repair_attempt(tmp_path, monkeypatch):
+    monkeypatch.setenv("SELF_MODIFICATION_PROVIDER", "cloudflare")
+    (tmp_path / "learning_engine.py").write_text("def evaluate_threats(data, policy=None):\n    return {}\n")
+    engine = SelfModificationEngine(root=tmp_path, allowed_files={"learning_engine.py"})
+    calls = []
+    invalid = '{"hypothesis":"h","expected_gain":"g","files":[{"path":"learning_engine.py","content":"def f():\n    return "bad"\n"}]}'
+
+    def fake_provider(prompt, *, output_tokens=None):
+        calls.append((prompt, output_tokens))
+        if len(calls) == 1:
+            return invalid, "CLOUDFLARE"
+        return '{"hypothesis":"h","expected_gain":"g","files":[]}', "CLOUDFLARE"
+
+    monkeypatch.setattr(engine, "_call_provider", fake_provider)
+    result = engine.run_cycle(feedback={}, autonomy={})
+
+    assert result["decision"] == "NO_CHANGE_PROPOSED"
+    assert len(calls) == 2
+    assert "Réponse invalide à réparer" in calls[1][0]
+    assert result["attempts"][0]["repair_provider"] == "CLOUDFLARE"

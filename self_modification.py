@@ -69,6 +69,10 @@ class SelfModificationEngine:
                 sources[relative] = path.read_text(encoding="utf-8")
         return sources
 
+    def _ordered_targets(self, sources: Mapping[str, str]) -> list[str]:
+        """Privilégie les petits modules pour limiter une réponse JSON tronquée."""
+        return sorted(sources, key=lambda path: (len(sources[path].encode("utf-8")), path))
+
     def _build_prompt(
         self,
         sources: Mapping[str, str],
@@ -113,6 +117,21 @@ Code actuel :
 {source_text}
 
 {truncation_note}
+"""
+
+    @staticmethod
+    def _build_json_repair_prompt(raw: str, error: str) -> str:
+        """Demande une réémission structurée sans accepter ni exécuter la sortie invalide."""
+        return f"""La réponse candidate suivante devait être un unique objet JSON pour Sentinel,
+mais elle est invalide : {error}.
+
+Retourne uniquement une version JSON corrigée de cette même réponse, sans Markdown ni explication.
+Le champ `files` doit rester une liste d’objets {{"path": "fichier autorisé", "content": "texte Python complet"}}.
+Chaque retour à la ligne et chaque guillemet dans `content` doit être échappé selon JSON.
+N’ajoute aucun fichier, aucune commande, aucune URL, aucun secret ou changement de permission.
+
+Réponse invalide à réparer :
+{raw[:12000]}
 """
 
     def _load_cooldowns(self) -> dict[str, float]:
@@ -466,7 +485,7 @@ Code actuel :
         selected_target: str | None = None
         last_error = "MODEL_UNAVAILABLE"
 
-        for target_file in sorted(sources)[: self.max_targets_per_cycle]:
+        for target_file in self._ordered_targets(sources)[: self.max_targets_per_cycle]:
             for attempt_index, output_tokens in enumerate(self.retry_output_tokens):
                 compact = attempt_index > 0
                 prompt = self._build_prompt(
@@ -502,6 +521,40 @@ Code actuel :
                 except ValueError as exc:
                     attempt["parse_error"] = str(exc)[:500]
                     last_error = "INVALID_MODEL_JSON"
+                    repair_allowed = provider == "CLOUDFLARE" and attempt_index == 0 and len(raw) <= 12000
+                    if repair_allowed:
+                        repaired_raw, repair_provider = self._call_provider(
+                            self._build_json_repair_prompt(raw, str(exc)),
+                            output_tokens=min(2048, output_tokens),
+                        )
+                        attempt["repair_provider"] = repair_provider
+                        if repaired_raw:
+                            try:
+                                candidate = self._parse_proposal(repaired_raw)
+                                attempt["json_repaired"] = True
+                            except ValueError as repair_error:
+                                attempt["repair_error"] = str(repair_error)[:500]
+                                candidate = None
+                        if candidate is not None:
+                            valid_structure, structure_reason = self._validate_structure(candidate)
+                            if not valid_structure:
+                                attempt["structure_reason"] = structure_reason
+                                last_error = structure_reason
+                                if structure_reason == "NO_CHANGE_PROPOSED":
+                                    break
+                                report = {
+                                    "cycle_id": cycle_id,
+                                    "decision": "REJECTED",
+                                    "provider": provider,
+                                    "reason": structure_reason,
+                                    "attempts": attempts,
+                                    "created_at": self._now(),
+                                }
+                                self._write_report(report)
+                                return report
+                            proposal = candidate
+                            selected_target = target_file
+                            break
                     # Une réponse non structurée rend ce fournisseur impropre à
                     # cette série de tentatives; en mode auto, le prochain essai
                     # peut basculer vers le fournisseur suivant sans attendre le
