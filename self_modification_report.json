@@ -1,8 +1,8 @@
 {
-  "cycle_id": "self-mod-20260820T045226",
+  "cycle_id": "self-mod-20260820T052620",
   "decision": "PROVIDER_ERROR",
-  "provider": "PROVIDER_ERROR:HTTP_429",
-  "reason": "PROVIDER_ERROR:HTTP_429",
+  "provider": "PROVIDER_ERROR:HTTP_400",
+  "reason": "PROVIDER_ERROR:HTTP_400",
   "attempts": [
     {
       "target_file": "autonomy_kernel.py",
@@ -10,8 +10,8 @@
       "compact": false,
       "prompt_chars": 15427,
       "output_tokens": 4096,
-      "provider": "PROVIDER_ERROR:HTTP_429"
+      "provider": "PROVIDER_ERROR:HTTP_400"
     }
   ],
-  "created_at": "2026-08-20T04:52:27.152177+00:00"
+  "created_at": "2026-08-20T05:26:29.493400+00:00"
 }
