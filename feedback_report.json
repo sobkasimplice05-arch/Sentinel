@@ -1,28 +1,14 @@
 {
-  "cycle_id": "cycle-20260820T150434-5a284d9f7c81",
-  "created_at": "2026-08-20T15:04:34.170674+00:00",
+  "cycle_id": "cycle-20260820T153553-668498f0ce02",
+  "created_at": "2026-08-20T15:35:53.653224+00:00",
   "decision": "PROMOTED",
   "changed": true,
-  "observation_hash": "5a284d9f7c81638bd5837be7e79a8eba979635a424e6841e18922be0e8ad01fc",
-  "baseline_score": 0.830648,
-  "candidate_score": 0.84767,
+  "observation_hash": "668498f0ce02f89476b7f48ba9374a2319bccb694935006ffa7d0163751cf38a",
+  "baseline_score": 0.84767,
+  "candidate_score": 0.861088,
   "hypothesis": "Ajuster la fiabilité des sources selon la fraîcheur observée et adapter le seuil selon la couverture des sources.",
   "reason": "adaptation validée par la baseline",
   "policy_before": {
-    "version": 5,
-    "confidence_threshold": 0.61,
-    "minimum_sources": 1,
-    "source_reliability": {
-      "arxiv": 0.73616,
-      "github": 0.73616
-    },
-    "observation_history": [
-      "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
-      "d96afdbba3150fc86a164454539c02bb7f2fad4d14c915fcd15f606a0cc38550",
-      "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8"
-    ]
-  },
-  "policy_after": {
     "version": 6,
     "confidence_threshold": 0.6,
     "minimum_sources": 1,
@@ -35,6 +21,22 @@
       "d96afdbba3150fc86a164454539c02bb7f2fad4d14c915fcd15f606a0cc38550",
       "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
       "5a284d9f7c81638bd5837be7e79a8eba979635a424e6841e18922be0e8ad01fc"
+    ]
+  },
+  "policy_after": {
+    "version": 7,
+    "confidence_threshold": 0.59,
+    "minimum_sources": 1,
+    "source_reliability": {
+      "arxiv": 0.795142,
+      "github": 0.795142
+    },
+    "observation_history": [
+      "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
+      "d96afdbba3150fc86a164454539c02bb7f2fad4d14c915fcd15f606a0cc38550",
+      "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
+      "5a284d9f7c81638bd5837be7e79a8eba979635a424e6841e18922be0e8ad01fc",
+      "668498f0ce02f89476b7f48ba9374a2319bccb694935006ffa7d0163751cf38a"
     ]
   }
 }
