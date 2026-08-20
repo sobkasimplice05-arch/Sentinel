@@ -165,6 +165,12 @@ class SentinelV3Core:
                 persisted = self.commit_memory(include_self_modification_report=True)
                 if not persisted:
                     return False
+            elif self_modification_decision == "PROVIDER_ERROR":
+                # Persiste uniquement les preuves nouvelles, notamment le fichier
+                # de cooldown, sans republier un rapport de mutation obsolète.
+                persisted = self.commit_memory(include_self_modification_report=False)
+                if not persisted:
+                    return False
             else:
                 logger.info("ℹ️ Observation déjà connue: aucun faux apprentissage ni commit généré.")
 
