@@ -275,7 +275,7 @@ Réponse invalide à réparer :
                 candidates = payload.get("candidates", []) if isinstance(payload, dict) else []
                 parts = candidates[0].get("content", {}).get("parts", []) if candidates else []
                 text = "".join(str(part.get("text", "")) for part in parts if isinstance(part, dict))
-                return (text or None), "GOOGLE"
+                return (text, "GOOGLE") if text.strip() else (None, "EMPTY_GOOGLE_RESPONSE")
 
             if provider == "replicate":
                 version = os.getenv("REPLICATE_MODEL_VERSION")
@@ -300,7 +300,8 @@ Réponse invalide à réparer :
                 endpoint = url if "/api/generate" in url else f"{url.rstrip('/')}/api/generate"
                 response = requests.post(endpoint, headers=headers, json={"model": model, "prompt": prompt, "stream": False}, timeout=90)
                 response.raise_for_status()
-                return response.json().get("response"), "OLLAMA"
+                text = response.json().get("response")
+                return (text, "OLLAMA") if isinstance(text, str) and text.strip() else (None, "EMPTY_OLLAMA_RESPONSE")
 
             if "/chat/completions" in url or "api.groq.com" in url or "integrate.api.nvidia.com" in url:
                 request_payload = {
@@ -321,7 +322,10 @@ Réponse invalide à réparer :
                 if choices and isinstance(choices[0], dict):
                     message = choices[0].get("message", {})
                     if isinstance(message, dict):
-                        return message.get("content"), provider.upper() if provider != "auto" else "OPENAI_COMPATIBLE"
+                        text = message.get("content")
+                        if isinstance(text, str) and text.strip():
+                            return text, provider.upper() if provider != "auto" else "OPENAI_COMPATIBLE"
+                        return None, f"EMPTY_{provider.upper()}_RESPONSE"
                 return None, "EMPTY_OPENAI_COMPATIBLE_RESPONSE"
 
             if "api-inference.huggingface.co" in url:
@@ -329,16 +333,19 @@ Réponse invalide à réparer :
                 response.raise_for_status()
                 payload = response.json()
                 if isinstance(payload, list) and payload and isinstance(payload[0], dict):
-                    return payload[0].get("generated_text"), "HUGGINGFACE_INFERENCE"
+                    text = payload[0].get("generated_text")
+                    return (text, "HUGGINGFACE_INFERENCE") if isinstance(text, str) and text.strip() else (None, "EMPTY_HUGGINGFACE_RESPONSE")
                 if isinstance(payload, dict):
-                    return payload.get("generated_text"), "HUGGINGFACE_INFERENCE"
+                    text = payload.get("generated_text")
+                    return (text, "HUGGINGFACE_INFERENCE") if isinstance(text, str) and text.strip() else (None, "EMPTY_HUGGINGFACE_RESPONSE")
                 return None, "EMPTY_HUGGINGFACE_RESPONSE"
 
             response = requests.post(url, headers=headers, json={"model": model, "prompt": prompt, "temperature": 0.1}, timeout=90)
             response.raise_for_status()
             payload = response.json()
             if isinstance(payload, dict):
-                return payload.get("response") or payload.get("generated_text") or payload.get("text"), "GENERIC_API"
+                text = payload.get("response") or payload.get("generated_text") or payload.get("text")
+                return (text, "GENERIC_API") if isinstance(text, str) and text.strip() else (None, "EMPTY_GENERIC_API_RESPONSE")
             return None, "EMPTY_PROVIDER_RESPONSE"
         except requests.HTTPError as exc:
             status = exc.response.status_code if exc.response is not None else "unknown"
@@ -511,9 +518,16 @@ Réponse invalide à réparer :
                         continue
                     if (
                         (os.getenv("SELF_MODIFICATION_PROVIDER") or "auto").lower() == "auto"
-                        and (provider.startswith("PROVIDER_ERROR:") or provider.startswith("PROVIDER_COOLDOWN:"))
+                        and (
+                            provider.startswith("PROVIDER_ERROR:")
+                            or provider.startswith("PROVIDER_COOLDOWN:")
+                            or provider.startswith("EMPTY_")
+                        )
                         and attempt_index < len(self.retry_output_tokens) - 1
                     ):
+                        if provider.startswith("EMPTY_"):
+                            empty_provider = provider.removeprefix("EMPTY_").split("_", 1)[0].lower()
+                            self._set_provider_cooldown(empty_provider)
                         continue
                     break
                 try:

@@ -420,3 +420,45 @@ def test_cloudflare_invalid_json_gets_one_bounded_repair_attempt(tmp_path, monke
     assert len(calls) == 2
     assert "Réponse invalide à réparer" in calls[1][0]
     assert result["attempts"][0]["repair_provider"] == "CLOUDFLARE"
+
+
+def test_auto_provider_falls_back_after_empty_cloudflare_response(tmp_path, monkeypatch):
+    monkeypatch.setenv("SELF_MODIFICATION_PROVIDER", "auto")
+    monkeypatch.setenv("CLOUDFLARE_API_TOKEN", "cf-test-token")
+    monkeypatch.setenv("CLOUDFLARE_ACCOUNT_ID", "account-test")
+    monkeypatch.setenv("GOOGLE_API_KEY", "google-test-key")
+    for name in ("GROQ_API_KEY", "HF_API_KEY", "NVIDIA_API_KEY", "MODEL_API_KEY", "MODEL_API_URL", "SELF_MODIFICATION_MODEL_URL", "OLLAMA_BASE_URL"):
+        monkeypatch.delenv(name, raising=False)
+    (tmp_path / "learning_engine.py").write_text("def evaluate_threats(data, policy=None):\n    return {}\n")
+
+    class EmptyCloudflareResponse:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"success": True, "result": {}}
+
+    class GoogleResponse:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"candidates": [{"content": {"parts": [{"text": '{"hypothesis":"h","expected_gain":"g","files":[]}' }]}}]}
+
+    calls = []
+
+    def fake_post(url, **kwargs):
+        calls.append(url)
+        if "api.cloudflare.com" in url:
+            return EmptyCloudflareResponse()
+        return GoogleResponse()
+
+    monkeypatch.setattr("self_modification.requests.post", fake_post)
+    engine = SelfModificationEngine(root=tmp_path, allowed_files={"learning_engine.py"})
+    result = engine.run_cycle(feedback={}, autonomy={})
+
+    assert result["decision"] == "NO_CHANGE_PROPOSED"
+    assert [attempt["provider"] for attempt in result["attempts"]] == ["EMPTY_CLOUDFLARE_RESPONSE", "GOOGLE"]
+    assert engine._provider_on_cooldown("cloudflare") is True
+    assert any("api.cloudflare.com" in url for url in calls)
+    assert any("generativelanguage.googleapis.com" in url for url in calls)
