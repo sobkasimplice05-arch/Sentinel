@@ -1,20 +1,20 @@
 {
-  "baseline_score": 0.87985,
-  "candidate_score": 0.886232,
-  "created_at": "2026-08-20T16:10:03.777132+00:00",
-  "cycle_id": "cycle-20260820T161003-8715a4ad6dba",
+  "baseline_score": 0.886232,
+  "candidate_score": 0.891138,
+  "created_at": "2026-08-20T16:30:33.344625+00:00",
+  "cycle_id": "cycle-20260820T163033-d6cd60255e43",
   "decision": "PROMOTED",
   "feedback": {
-    "baseline_score": 0.87985,
-    "candidate_score": 0.886232,
+    "baseline_score": 0.886232,
+    "candidate_score": 0.891138,
     "changed": true,
-    "created_at": "2026-08-20T16:10:03.776921+00:00",
-    "cycle_id": "cycle-20260820T161003-8715a4ad6dba",
+    "created_at": "2026-08-20T16:30:33.344486+00:00",
+    "cycle_id": "cycle-20260820T163033-d6cd60255e43",
     "decision": "PROMOTED",
     "hypothesis": "Ajuster la fiabilité des sources selon la fraîcheur observée et adapter le seuil selon la couverture des sources.",
-    "observation_hash": "8715a4ad6dbac6c3ef7911f31e7896289bba1a8823180bba2fc0fbbb7ac63b91",
+    "observation_hash": "d6cd60255e438598f78461b18eb9ec2597e806321ff25cefb6dcd5f64e1e6f80",
     "policy": {
-      "confidence_threshold": 0.56,
+      "confidence_threshold": 0.55,
       "minimum_sources": 1,
       "observation_history": [
         "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
@@ -24,15 +24,36 @@
         "668498f0ce02f89476b7f48ba9374a2319bccb694935006ffa7d0163751cf38a",
         "6c0b59bf4de2f057f46ebc2b7fb370313a2dd71cf76683746856f1a7d0054963",
         "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
-        "8715a4ad6dbac6c3ef7911f31e7896289bba1a8823180bba2fc0fbbb7ac63b91"
+        "8715a4ad6dbac6c3ef7911f31e7896289bba1a8823180bba2fc0fbbb7ac63b91",
+        "d6cd60255e438598f78461b18eb9ec2597e806321ff25cefb6dcd5f64e1e6f80"
       ],
       "source_reliability": {
-        "arxiv": 0.846313,
-        "github": 0.846313
+        "arxiv": 0.85705,
+        "github": 0.85705
       },
-      "version": 10
+      "version": 11
     },
     "policy_after": {
+      "confidence_threshold": 0.55,
+      "minimum_sources": 1,
+      "observation_history": [
+        "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
+        "d96afdbba3150fc86a164454539c02bb7f2fad4d14c915fcd15f606a0cc38550",
+        "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
+        "5a284d9f7c81638bd5837be7e79a8eba979635a424e6841e18922be0e8ad01fc",
+        "668498f0ce02f89476b7f48ba9374a2319bccb694935006ffa7d0163751cf38a",
+        "6c0b59bf4de2f057f46ebc2b7fb370313a2dd71cf76683746856f1a7d0054963",
+        "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
+        "8715a4ad6dbac6c3ef7911f31e7896289bba1a8823180bba2fc0fbbb7ac63b91",
+        "d6cd60255e438598f78461b18eb9ec2597e806321ff25cefb6dcd5f64e1e6f80"
+      ],
+      "source_reliability": {
+        "arxiv": 0.85705,
+        "github": 0.85705
+      },
+      "version": 11
+    },
+    "policy_before": {
       "confidence_threshold": 0.56,
       "minimum_sources": 1,
       "observation_history": [
@@ -50,24 +71,6 @@
         "github": 0.846313
       },
       "version": 10
-    },
-    "policy_before": {
-      "confidence_threshold": 0.57,
-      "minimum_sources": 1,
-      "observation_history": [
-        "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
-        "d96afdbba3150fc86a164454539c02bb7f2fad4d14c915fcd15f606a0cc38550",
-        "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
-        "5a284d9f7c81638bd5837be7e79a8eba979635a424e6841e18922be0e8ad01fc",
-        "668498f0ce02f89476b7f48ba9374a2319bccb694935006ffa7d0163751cf38a",
-        "6c0b59bf4de2f057f46ebc2b7fb370313a2dd71cf76683746856f1a7d0054963",
-        "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8"
-      ],
-      "source_reliability": {
-        "arxiv": 0.832891,
-        "github": 0.832891
-      },
-      "version": 9
     },
     "reason": "adaptation validée par la baseline"
   },
@@ -76,10 +79,10 @@
     "measure_source_reliability_again",
     "search_for_new_observations"
   ],
-  "observation_hash": "8715a4ad6dbac6c3ef7911f31e7896289bba1a8823180bba2fc0fbbb7ac63b91",
+  "observation_hash": "d6cd60255e438598f78461b18eb9ec2597e806321ff25cefb6dcd5f64e1e6f80",
   "strategy": {
-    "confidence": 0.9,
-    "last_decision_at": "2026-08-20T16:10:03.777126+00:00",
+    "confidence": 0.95,
+    "last_decision_at": "2026-08-20T16:30:33.344618+00:00",
     "last_outcome": "PROMOTED",
     "name": "evidence_driven_adaptation"
   }
