@@ -53,7 +53,7 @@ jobs:
         run: pip install requests loguru pytest -q
 
       - name: 🧪 Validation des moteurs autonomie, agent général et feedback
-        run: python -m py_compile agent_general_kernel.py autonomy_kernel.py feedback_learning.py learning_engine.py self_modification.py sentinel_v3_core.py tests/test_agent_general_kernel.py tests/test_autonomy_kernel.py tests/test_feedback_learning.py tests/test_self_modification.py
+        run: python -m py_compile agent_general_kernel.py ai_matrix.py autonomy_kernel.py feedback_learning.py learning_engine.py self_modification.py sentinel_v3_core.py transfer_benchmark.py tests/test_agent_general_kernel.py tests/test_ai_matrix.py tests/test_autonomy_kernel.py tests/test_feedback_learning.py tests/test_self_modification.py tests/test_transfer_benchmark.py
 
       - name: 🚀 Exécution du cycle d'apprentissage vérifiable
         run: python sentinel_v3_core.py
@@ -72,4 +72,5 @@ jobs:
             agent_general_report.json
             agent_general_state.json
             self_modification_report.json
+            transfer_benchmark_report.json
             sentinel_memory.db

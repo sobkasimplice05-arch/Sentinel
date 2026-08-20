@@ -1,42 +1,105 @@
-import os
-import requests
+"""Décision stratégique structurée pour le cycle Sentinel V3.
+
+La matrice ne promeut jamais de code. Elle produit uniquement une recommandation
+JSON traçable; la promotion reste confiée au moteur d'auto-modification isolé.
+"""
+from __future__ import annotations
+
+import json
+from typing import Any, Mapping
+
 from loguru import logger
 
+from self_modification import SelfModificationEngine
+
+
 class AIMatrix:
-    def __init__(self):
-        self.primary_api_url = "https://huggingface.co"
-        # Connexion directe à votre secret GitHub existant
-        self.api_token = os.getenv("HF_API_KEY", None)
+    """Interroge le routeur V3 et refuse les validations non vérifiables."""
 
-    def consult_brain(self, security_data):
-        logger.info("🧠 Consultation de la matrice d'IA (Qwen 2.5 1.5B)...")
-        prompt = f"Analyse ces données de sécurité et valide la meilleure mutation de code : {security_data}"
-        
-        if self.api_token:
+    def __init__(self) -> None:
+        self.provider_engine = SelfModificationEngine()
+
+    @staticmethod
+    def _decode_json(raw: str) -> dict[str, Any] | None:
+        text = str(raw).strip()
+        if text.startswith("```"):
+            text = text.strip("`")
+            if text.startswith("json"):
+                text = text[4:].lstrip()
+        try:
+            payload = json.loads(text)
+        except (TypeError, ValueError):
+            start, end = text.find("{"), text.rfind("}")
+            if start < 0 or end <= start:
+                return None
             try:
-                headers = {"Authorization": f"Bearer {self.api_token}"}
-                payload = {"inputs": prompt}
-                response = requests.post(self.primary_api_url, json=payload, headers=headers, timeout=10)
-                
-                if response.status_code == 200:
-                    logger.success("🤖 Décision stratégique générée par le LLM Cloud (Qwen).")
-                    return {
-                        "decision": "VALIDATED_BY_LLM",
-                        "confidence": 94,
-                        "source": "Qwen-Cloud"
-                    }
-                else:
-                    logger.warning(f"⚠️ Réponse API inattendue (Code: {response.status_code}). Bascule Heuristique.")
-            except Exception as e:
-                logger.error(f"⚠️ Échec du LLM Cloud ({str(e)}).")
+                payload = json.loads(text[start : end + 1])
+            except (TypeError, ValueError):
+                return None
+        return payload if isinstance(payload, dict) else None
 
-        logger.info("🛡️ Activation de l'IA heuristique locale de secours.")
+    @staticmethod
+    def _confidence(value: Any) -> float:
+        try:
+            confidence = float(value)
+        except (TypeError, ValueError):
+            return 0.0
+        if 0.0 <= confidence <= 1.0:
+            confidence *= 100.0
+        return round(max(0.0, min(100.0, confidence)), 2)
+
+    @staticmethod
+    def _unavailable(provider: str, report: Mapping[str, Any]) -> dict[str, Any]:
         return {
-            "decision": "AUTOMATIC_VALIDATION",
-            "confidence": 78,
-            "source": "Sentinel-Local-Heuristics"
+            "decision": provider if provider.startswith(("MODEL_", "PROVIDER_", "INVALID_")) else "MODEL_UNAVAILABLE",
+            "confidence": 0.0,
+            "source": provider,
+            "hypothesis": "Aucune recommandation IA exploitable pour ce cycle.",
+            "risks": ["absence de sortie structurée"],
+            "evidence": {"input_keys": sorted(str(key) for key in report)},
         }
 
+    def consult_brain(self, security_data: Mapping[str, Any]) -> dict[str, Any]:
+        logger.info("🧠 Consultation structurée de la matrice IA Sentinel...")
+        prompt = (
+            "Analyse le rapport suivant sans modifier de fichier. Retourne uniquement un objet JSON "
+            "avec les champs decision, confidence (0 à 100), hypothesis, risks (liste) et evidence. "
+            "decision doit être l'une de MODEL_RECOMMENDATION, NO_CHANGE_NEEDED ou RISK_REVIEW.\n\n"
+            f"RAPPORT:\n{json.dumps(dict(security_data), ensure_ascii=False, sort_keys=True)[:12000]}"
+        )
+        raw, provider = self.provider_engine._call_provider(prompt, output_tokens=1024)
+        if raw is None:
+            logger.warning(f"⚠️ Matrice IA indisponible: {provider}")
+            return self._unavailable(provider, security_data)
+
+        payload = self._decode_json(raw)
+        if payload is None:
+            logger.warning(f"⚠️ Réponse non structurée du fournisseur {provider}; décision refusée.")
+            return self._unavailable("INVALID_MODEL_JSON", security_data)
+
+        decision = str(payload.get("decision", "MODEL_RECOMMENDATION")).strip() or "MODEL_RECOMMENDATION"
+        if decision not in {"MODEL_RECOMMENDATION", "NO_CHANGE_NEEDED", "RISK_REVIEW"}:
+            decision = "RISK_REVIEW"
+        risks = payload.get("risks", [])
+        if not isinstance(risks, list):
+            risks = [str(risks)]
+        evidence = payload.get("evidence", {})
+        if not isinstance(evidence, (dict, list, str, int, float, bool)):
+            evidence = {"raw_type": type(evidence).__name__}
+        result = {
+            "decision": decision,
+            "confidence": self._confidence(payload.get("confidence", 0)),
+            "source": provider,
+            "hypothesis": str(payload.get("hypothesis", ""))[:2000],
+            "risks": [str(item)[:500] for item in risks[:10]],
+            "evidence": evidence,
+        }
+        logger.success(f"🤖 Décision structurée reçue depuis {provider}: {decision}")
+        return result
+
+
 if __name__ == "__main__":
-    matrix = AIMatrix()
-    print(matrix.consult_brain("Test d'activation du cerveau"))
+    print(json.dumps(AIMatrix().consult_brain({"status": "test"}), ensure_ascii=False, indent=2))
+
+
+__all__ = ["AIMatrix"]

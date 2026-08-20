@@ -21,6 +21,7 @@ DEFAULT_POLICY: dict[str, Any] = {
     "confidence_threshold": 0.65,
     "minimum_sources": 1,
     "source_reliability": {},
+    "observation_history": [],
 }
 
 DEFAULT_STATE: dict[str, Any] = {
@@ -79,6 +80,7 @@ class AdaptiveFeedback:
             policy = deepcopy(DEFAULT_POLICY)
             policy.update(loaded.get("policy", {}))
             policy["source_reliability"] = dict(policy.get("source_reliability", {}))
+            policy["observation_history"] = list(policy.get("observation_history", []))[-200:]
             state["policy"] = policy
             return state
         except (OSError, ValueError, TypeError):
@@ -113,11 +115,17 @@ class AdaptiveFeedback:
             "suggestions": intelligence_report.get("mutations_suggested", []),
             "ai_source": ai_decision.get("source", "unknown"),
             "ai_decision": ai_decision.get("decision", "unknown"),
+            "ai_confidence": float(ai_decision.get("confidence", 0.0) or 0.0),
+            "quality_metrics": intelligence_report.get("quality_metrics", {}),
         }
+        observation_hash = self._hash_payload(payload)
+        history = set(self.state.get("policy", {}).get("observation_history", []))
         return {
-            "observation_hash": self._hash_payload(payload),
+            "observation_hash": observation_hash,
             "sources": sources,
             "source_count": len(sources),
+            "novelty_score": 0.0 if observation_hash in history else 1.0,
+            "quality_metrics": dict(payload.get("quality_metrics", {})),
             "payload": payload,
         }
 
@@ -129,8 +137,16 @@ class AdaptiveFeedback:
         reliability = policy.get("source_reliability", {})
         values = [float(reliability.get(name, 0.5)) for name in sources]
         coverage = min(1.0, len(sources) / 2.0)
+        metrics = observation.get("quality_metrics", {})
+        quality_values = [
+            float(metrics.get(name, 0.5))
+            for name in ("content_quality", "source_diversity", "freshness")
+        ]
+        quality_score = sum(max(0.0, min(1.0, value)) for value in quality_values) / len(quality_values)
+        novelty = max(0.0, min(1.0, float(observation.get("novelty_score", 1.0))))
         stability_penalty = abs(float(policy.get("confidence_threshold", 0.65)) - 0.65) * 0.1
-        return round((sum(values) / len(values)) * 0.8 + coverage * 0.2 - stability_penalty, 6)
+        reliability_score = sum(values) / len(values)
+        return round(reliability_score * 0.55 + coverage * 0.15 + quality_score * 0.20 + novelty * 0.10 - stability_penalty, 6)
 
     @staticmethod
     def _propose_policy(
@@ -151,6 +167,9 @@ class AdaptiveFeedback:
             threshold += 0.01
         candidate["confidence_threshold"] = round(threshold, 6)
         candidate["source_reliability"] = reliability
+        history = list(candidate.get("observation_history", []))
+        history.append(str(observation.get("observation_hash", "")))
+        candidate["observation_history"] = [item for item in history if item][-200:]
         candidate["version"] = int(candidate.get("version", 1)) + 1
         hypothesis = (
             "Ajuster la fiabilité des sources selon la fraîcheur observée et "
@@ -169,6 +188,9 @@ class AdaptiveFeedback:
         for source, value in dict(policy.get("source_reliability", {})).items():
             if not isinstance(source, str) or not 0.0 <= float(value) <= 1.0:
                 return False, f"fiabilité invalide pour {source}"
+        history = policy.get("observation_history", [])
+        if not isinstance(history, list) or len(history) > 200 or any(not isinstance(item, str) or not item for item in history):
+            return False, "observation_history invalide"
         return True, "policy_valid"
 
     def _record_event(

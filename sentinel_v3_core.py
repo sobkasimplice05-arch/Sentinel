@@ -16,6 +16,7 @@ from memory_manager import SentinelMemory
 from notifier import SentinelNotifier
 from self_modification import SelfModificationEngine
 from sentinel_janitor import SentinelJanitor
+from transfer_benchmark import run_transfer_benchmark
 
 
 class SentinelV3Core:
@@ -53,6 +54,7 @@ class SentinelV3Core:
                 "sentinel_autonomy_report.json",
                 "agent_general_state.json",
                 "agent_general_report.json",
+                "transfer_benchmark_report.json",
                 *tracked_files,
             ]
         if include_self_modification_report:
@@ -104,6 +106,8 @@ class SentinelV3Core:
             preliminary_report["intelligence_score"] = ai_decision.get("confidence", 0)
             preliminary_report["ai_source"] = ai_decision.get("source", "unknown")
             preliminary_report["decision_status"] = ai_decision.get("decision", "unknown")
+            transfer_report = run_transfer_benchmark()
+            preliminary_report["transfer_benchmark"] = transfer_report
 
             feedback_report = self.feedback.run_cycle(raw_data, preliminary_report, ai_decision)
             feedback_decision = feedback_report["decision"]
