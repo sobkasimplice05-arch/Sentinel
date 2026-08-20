@@ -351,3 +351,36 @@ def test_auto_provider_falls_back_after_http_429(tmp_path, monkeypatch):
     assert any("api.groq.com" in url for url in calls)
     assert any("api-inference.huggingface.co" in url for url in calls)
     assert [attempt["provider"] for attempt in result["attempts"]] == ["PROVIDER_ERROR:HTTP_429", "HUGGINGFACE_INFERENCE"]
+
+
+def test_cloudflare_workers_ai_provider_extracts_response(tmp_path, monkeypatch):
+    monkeypatch.setenv("SELF_MODIFICATION_PROVIDER", "cloudflare")
+    monkeypatch.setenv("CLOUDFLARE_API_TOKEN", "cf-test-token")
+    monkeypatch.setenv("CLOUDFLARE_ACCOUNT_ID", "account-test")
+    monkeypatch.setenv("CLOUDFLARE_MODEL", "@cf/qwen/qwen2.5-coder-32b-instruct")
+
+    class Response:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"success": True, "result": {"response": '{"files":[]}'}}
+
+    captured = {}
+
+    def fake_post(url, **kwargs):
+        captured["url"] = url
+        captured["headers"] = kwargs["headers"]
+        captured["json"] = kwargs["json"]
+        return Response()
+
+    monkeypatch.setattr("self_modification.requests.post", fake_post)
+    engine = SelfModificationEngine(root=tmp_path)
+
+    raw, provider = engine._call_provider("return json")
+
+    assert raw == '{"files":[]}'
+    assert provider == "CLOUDFLARE"
+    assert captured["url"].endswith("/accounts/account-test/ai/run/@cf/qwen/qwen2.5-coder-32b-instruct")
+    assert captured["headers"]["Authorization"] == "Bearer cf-test-token"
+    assert captured["json"]["response_format"] == {"type": "json_object"}

@@ -142,12 +142,16 @@ Code actuel :
         requested_provider = (os.getenv("SELF_MODIFICATION_PROVIDER") or "auto").lower()
         configured_url = os.getenv("SELF_MODIFICATION_MODEL_URL") or os.getenv("MODEL_API_URL") or os.getenv("OLLAMA_BASE_URL")
         google_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_GEMINI_API_KEY")
+        cloudflare_token = os.getenv("CLOUDFLARE_API_TOKEN") or os.getenv("CF_API_TOKEN")
+        cloudflare_account = os.getenv("CLOUDFLARE_ACCOUNT_ID") or os.getenv("CF_ACCOUNT_ID")
         replicate_token = os.getenv("REPLICATE_API_TOKEN") or os.getenv("REPLICATE_API_KEY")
         provider = requested_provider
         if provider == "auto":
             candidates: list[str] = []
             if configured_url:
                 candidates.append("ollama" if ("/api/generate" in configured_url or "11434" in configured_url or os.getenv("OLLAMA_BASE_URL")) else "generic")
+            if cloudflare_token and cloudflare_account:
+                candidates.append("cloudflare")
             if os.getenv("NVIDIA_API_KEY"):
                 candidates.append("nvidia")
             if google_key:
@@ -168,7 +172,9 @@ Code actuel :
 
         model = os.getenv("SELF_MODIFICATION_MODEL") or "Qwen/Qwen2.5-Coder-7B-Instruct"
         token = (
-            google_key if provider in {"google", "gemini"} else replicate_token if provider == "replicate" else
+            google_key if provider in {"google", "gemini"} else
+            cloudflare_token if provider in {"cloudflare", "workers_ai"} else
+            replicate_token if provider == "replicate" else
             os.getenv("SELF_MODIFICATION_API_KEY") or os.getenv("MODEL_API_KEY") or
             os.getenv("GROQ_API_KEY") or os.getenv("NVIDIA_API_KEY") or os.getenv("HF_API_KEY")
         )
@@ -176,6 +182,12 @@ Code actuel :
         if provider in {"google", "gemini"}:
             model = os.getenv("GOOGLE_MODEL") or os.getenv("GEMINI_MODEL") or os.getenv("SELF_MODIFICATION_MODEL") or "gemini-3.5-flash"
             url = os.getenv("GOOGLE_API_URL") or f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+        elif provider in {"cloudflare", "workers_ai"}:
+            model = os.getenv("CLOUDFLARE_MODEL") or "@cf/qwen/qwen2.5-coder-32b-instruct"
+            url = os.getenv("CLOUDFLARE_API_URL") or (
+                f"https://api.cloudflare.com/client/v4/accounts/{cloudflare_account}/ai/run/{model}"
+                if cloudflare_account else ""
+            )
         elif provider == "replicate":
             url = os.getenv("REPLICATE_API_URL") or "https://api.replicate.com/v1/predictions"
             model = os.getenv("REPLICATE_MODEL") or model
@@ -190,13 +202,39 @@ Code actuel :
             model = os.getenv("SELF_MODIFICATION_MODEL") or "qwen/qwen3-coder-480b-a35b-instruct"
         elif not url and token:
             url = f"https://api-inference.huggingface.co/models/{model}"
-        if not url or (provider in {"google", "gemini", "replicate"} and not token):
+        if not url or (provider in {"google", "gemini", "replicate"} and not token) or (provider in {"cloudflare", "workers_ai"} and not token):
             return None, "MODEL_UNAVAILABLE"
 
         headers = {"Content-Type": "application/json"}
         if token and provider not in {"google", "gemini"}:
             headers["Authorization"] = f"Bearer {token}"
         try:
+            if provider in {"cloudflare", "workers_ai"} or "api.cloudflare.com/client/v4/accounts/" in url and "/ai/run/" in url:
+                request_payload = {
+                    "messages": [
+                        {"role": "system", "content": "Return only one valid JSON object. Never use Markdown fences. Escape every newline and quote inside file content."},
+                        {"role": "user", "content": prompt},
+                    ],
+                    "temperature": 0.1,
+                    "max_tokens": output_tokens,
+                }
+                if os.getenv("SELF_MODIFICATION_JSON_MODE", "true").lower() == "true":
+                    request_payload["response_format"] = {"type": "json_object"}
+                response = requests.post(url, headers=headers, json=request_payload, timeout=120)
+                response.raise_for_status()
+                payload = response.json()
+                result = payload.get("result", payload) if isinstance(payload, dict) else {}
+                if isinstance(result, dict):
+                    text = result.get("response") or result.get("text")
+                    if isinstance(text, str):
+                        return text, "CLOUDFLARE"
+                    choices = result.get("choices", [])
+                    if choices and isinstance(choices[0], dict):
+                        message = choices[0].get("message", {})
+                        if isinstance(message, dict) and isinstance(message.get("content"), str):
+                            return message["content"], "CLOUDFLARE"
+                return None, "EMPTY_CLOUDFLARE_RESPONSE"
+
             if provider in {"google", "gemini"} or "generativelanguage.googleapis.com" in url:
                 headers["x-goog-api-key"] = token or ""
                 response = requests.post(
