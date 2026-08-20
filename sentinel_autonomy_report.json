@@ -1,20 +1,20 @@
 {
-  "baseline_score": 0.861088,
-  "candidate_score": 0.871623,
-  "created_at": "2026-08-20T15:46:28.714344+00:00",
-  "cycle_id": "cycle-20260820T154628-6c0b59bf4de2",
+  "baseline_score": 0.771623,
+  "candidate_score": 0.77985,
+  "created_at": "2026-08-20T15:48:35.935618+00:00",
+  "cycle_id": "cycle-20260820T154835-ac9c81bdf26b",
   "decision": "PROMOTED",
   "feedback": {
-    "baseline_score": 0.861088,
-    "candidate_score": 0.871623,
+    "baseline_score": 0.771623,
+    "candidate_score": 0.77985,
     "changed": true,
-    "created_at": "2026-08-20T15:46:28.714161+00:00",
-    "cycle_id": "cycle-20260820T154628-6c0b59bf4de2",
+    "created_at": "2026-08-20T15:48:35.934374+00:00",
+    "cycle_id": "cycle-20260820T154835-ac9c81bdf26b",
     "decision": "PROMOTED",
     "hypothesis": "Ajuster la fiabilité des sources selon la fraîcheur observée et adapter le seuil selon la couverture des sources.",
-    "observation_hash": "6c0b59bf4de2f057f46ebc2b7fb370313a2dd71cf76683746856f1a7d0054963",
+    "observation_hash": "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
     "policy": {
-      "confidence_threshold": 0.58,
+      "confidence_threshold": 0.57,
       "minimum_sources": 1,
       "observation_history": [
         "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
@@ -22,15 +22,34 @@
         "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
         "5a284d9f7c81638bd5837be7e79a8eba979635a424e6841e18922be0e8ad01fc",
         "668498f0ce02f89476b7f48ba9374a2319bccb694935006ffa7d0163751cf38a",
-        "6c0b59bf4de2f057f46ebc2b7fb370313a2dd71cf76683746856f1a7d0054963"
+        "6c0b59bf4de2f057f46ebc2b7fb370313a2dd71cf76683746856f1a7d0054963",
+        "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8"
       ],
       "source_reliability": {
-        "arxiv": 0.816114,
-        "github": 0.816114
+        "arxiv": 0.832891,
+        "github": 0.832891
       },
-      "version": 8
+      "version": 9
     },
     "policy_after": {
+      "confidence_threshold": 0.57,
+      "minimum_sources": 1,
+      "observation_history": [
+        "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
+        "d96afdbba3150fc86a164454539c02bb7f2fad4d14c915fcd15f606a0cc38550",
+        "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
+        "5a284d9f7c81638bd5837be7e79a8eba979635a424e6841e18922be0e8ad01fc",
+        "668498f0ce02f89476b7f48ba9374a2319bccb694935006ffa7d0163751cf38a",
+        "6c0b59bf4de2f057f46ebc2b7fb370313a2dd71cf76683746856f1a7d0054963",
+        "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8"
+      ],
+      "source_reliability": {
+        "arxiv": 0.832891,
+        "github": 0.832891
+      },
+      "version": 9
+    },
+    "policy_before": {
       "confidence_threshold": 0.58,
       "minimum_sources": 1,
       "observation_history": [
@@ -46,22 +65,6 @@
         "github": 0.816114
       },
       "version": 8
-    },
-    "policy_before": {
-      "confidence_threshold": 0.59,
-      "minimum_sources": 1,
-      "observation_history": [
-        "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
-        "d96afdbba3150fc86a164454539c02bb7f2fad4d14c915fcd15f606a0cc38550",
-        "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
-        "5a284d9f7c81638bd5837be7e79a8eba979635a424e6841e18922be0e8ad01fc",
-        "668498f0ce02f89476b7f48ba9374a2319bccb694935006ffa7d0163751cf38a"
-      ],
-      "source_reliability": {
-        "arxiv": 0.795142,
-        "github": 0.795142
-      },
-      "version": 7
     },
     "reason": "adaptation validée par la baseline"
   },
@@ -70,10 +73,10 @@
     "measure_source_reliability_again",
     "search_for_new_observations"
   ],
-  "observation_hash": "6c0b59bf4de2f057f46ebc2b7fb370313a2dd71cf76683746856f1a7d0054963",
+  "observation_hash": "ac9c81bdf26bef005c868a92d1170d71d2794e8f079eb73b145de58285318dc8",
   "strategy": {
-    "confidence": 0.8,
-    "last_decision_at": "2026-08-20T15:46:28.714339+00:00",
+    "confidence": 0.85,
+    "last_decision_at": "2026-08-20T15:48:35.935611+00:00",
     "last_outcome": "PROMOTED",
     "name": "evidence_driven_adaptation"
   }
