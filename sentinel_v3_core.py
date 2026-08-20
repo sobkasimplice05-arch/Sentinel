@@ -47,6 +47,7 @@ class SentinelV3Core:
             "sentinel_autonomy_report.json",
             "agent_general_state.json",
             "agent_general_report.json",
+            "self_modification_provider_cooldown.json",
         ]
         if include_self_modification_report:
             tracked_files.extend(
@@ -148,7 +149,7 @@ class SentinelV3Core:
                     learnings_dict=preliminary_report,
                 )
                 persisted = self.commit_memory(
-                    include_self_modification_report=self_modification_decision != "MODEL_UNAVAILABLE"
+                    include_self_modification_report=self_modification_decision in {"PROMOTED", "REJECTED"}
                 )
                 if not persisted:
                     return False
@@ -156,7 +157,7 @@ class SentinelV3Core:
                 # Heartbeat stratégique périodique : la mémoire longue durée
                 # est conservée sans fabriquer un faux succès de mutation.
                 persisted = self.commit_memory(
-                    include_self_modification_report=self_modification_decision != "MODEL_UNAVAILABLE"
+                    include_self_modification_report=self_modification_decision in {"PROMOTED", "REJECTED"}
                 )
                 if not persisted:
                     return False

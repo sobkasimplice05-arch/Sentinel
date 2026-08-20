@@ -40,16 +40,41 @@ def git_recent() -> dict[str, Any]:
         check=False,
     )
     lines = [line.strip() for line in result.stdout.splitlines() if line.strip()]
-    commits = [line for line in lines if "\t" in line]
-    changed_files = [line for line in lines if "\t" not in line]
+    source_names = {"learning_engine.py", "feedback_learning.py", "autonomy_kernel.py", "self_modification.py"}
+    commits: list[dict[str, Any]] = []
+    current: dict[str, Any] | None = None
+    for line in lines:
+        if "\t" in line:
+            if current is not None:
+                commits.append(current)
+            sha, subject = line.split("\t", 1)
+            current = {
+                "sha": sha,
+                "subject": subject,
+                "autonomous": "FEEDBACK" in subject.upper(),
+                "source_changed": False,
+                "files": [],
+            }
+        elif current is not None:
+            current["files"].append(line)
+            if line in source_names:
+                current["source_changed"] = True
+    if current is not None:
+        commits.append(current)
+    autonomous = [commit for commit in commits if commit["autonomous"]]
+    source_promotions = [commit for commit in autonomous if commit["source_changed"]]
     source_files = sorted({
-        path for path in changed_files
-        if path in {"learning_engine.py", "feedback_learning.py", "autonomy_kernel.py", "self_modification.py"}
+        path
+        for commit in commits
+        for path in commit["files"]
+        if path in source_names
     })
     return {
         "commit_count": len(commits),
-        "autonomous_commit_count": sum("FEEDBACK" in line.upper() for line in commits),
-        "latest_commit": commits[0] if commits else "Aucun commit sur les dernières 24 heures",
+        "autonomous_commit_count": len(autonomous),
+        "memory_only_commit_count": max(0, len(autonomous) - len(source_promotions)),
+        "source_promotion_count": len(source_promotions),
+        "latest_commit": f"{commits[0]['sha']}\t{commits[0]['subject']}" if commits else "Aucun commit sur les dernières 24 heures",
         "source_files_changed": source_files,
     }
 
@@ -83,6 +108,18 @@ def collect_metrics() -> dict[str, Any]:
     autonomy = load_json("sentinel_autonomy_state.json")
     agent = load_json("agent_general_state.json")
     self_mod = load_json("self_modification_report.json")
+    cooldowns = load_json("self_modification_provider_cooldown.json")
+    now_timestamp = datetime.now(timezone.utc).timestamp()
+    active_cooldowns = sorted(
+        str(provider).upper()
+        for provider, until in cooldowns.items()
+        if isinstance(until, (int, float)) and float(until) > now_timestamp
+    )
+    self_mod_decision = self_mod.get("decision", "UNKNOWN")
+    self_mod_provider = self_mod.get("provider", "UNKNOWN")
+    if active_cooldowns:
+        self_mod_decision = "PROVIDER_COOLDOWN"
+        self_mod_provider = ", ".join(active_cooldowns)
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "window": "24h",
@@ -106,9 +143,10 @@ def collect_metrics() -> dict[str, Any]:
             "transfer_verified": agent.get("transfer_verified", False),
             "objective": agent.get("current_objective", {}).get("title", "UNKNOWN"),
         },
+        "active_cooldowns": active_cooldowns,
         "self_modification": {
-            "decision": self_mod.get("decision", "UNKNOWN"),
-            "provider": self_mod.get("provider", "UNKNOWN"),
+            "decision": self_mod_decision,
+            "provider": self_mod_provider,
             "changed_files": self_mod.get("changed_files", []),
             "candidate_score": self_mod.get("candidate_score"),
             "attempt_count": len(self_mod.get("attempts", [])),
@@ -129,10 +167,11 @@ def render_discord(metrics: dict[str, Any]) -> str:
         "**Sentinel — synthèse des dernières 24 h**\n"
         f"Cycle autonomie : **{autonomy['cycle_number']}** | confiance : **{autonomy['confidence']}**\n"
         f"Auto-évolution source : **{mutation['decision']}** | fournisseur : `{mutation['provider']}`\n"
+        f"Cooldowns actifs : `{', '.join(metrics.get('active_cooldowns', [])) or 'aucun'}`\n"
         f"Fichiers promus : `{changed}` | score candidat : **{mutation['candidate_score']}**\n"
         f"Feedback : **{feedback['decision']}** | baseline → candidat : `{feedback['baseline_score']} → {feedback['candidate_score']}`\n"
         f"Objectif agent général : `{agent['objective']}` | transfert vérifié : **{agent['transfer_verified']}**\n"
-        f"Commits sur 24 h : **{git['commit_count']}** dont autonomes : **{git['autonomous_commit_count']}**\n"
+        f"Commits sur 24 h : **{git.get('commit_count', 0)}** | mémoire seule : **{git.get('memory_only_commit_count', 0)}** | code promu : **{git.get('source_promotion_count', 0)}**\n"
         f"Prochaines actions : `{next_actions}`"
     )
     return text[:1950]

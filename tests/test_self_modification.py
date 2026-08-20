@@ -174,3 +174,32 @@ def test_extract_json_repairs_literal_newlines_in_file_content(tmp_path):
     proposal = engine._parse_proposal(raw)
 
     assert proposal.files["learning_engine.py"] == "def f():\n    return 1\n"
+
+
+def test_http_429_sets_provider_cooldown(tmp_path, monkeypatch):
+    import requests
+
+    monkeypatch.setenv("SELF_MODIFICATION_PROVIDER", "groq")
+    monkeypatch.setenv("GROQ_API_KEY", "test-key")
+    monkeypatch.setenv("SELF_MODIFICATION_COOLDOWN_SECONDS", "1800")
+
+    class Response:
+        status_code = 429
+        headers = {"retry-after": "120"}
+
+    error = requests.HTTPError("rate limited")
+    error.response = Response()
+
+    def fail_post(*args, **kwargs):
+        raise error
+
+    monkeypatch.setattr("self_modification.requests.post", fail_post)
+    engine = SelfModificationEngine(root=tmp_path)
+    raw, provider = engine._call_provider("return json")
+
+    assert raw is None
+    assert provider == "PROVIDER_ERROR:HTTP_429"
+    assert engine._provider_on_cooldown("groq") is True
+    raw, provider = engine._call_provider("return json")
+    assert raw is None
+    assert provider == "PROVIDER_COOLDOWN:GROQ"

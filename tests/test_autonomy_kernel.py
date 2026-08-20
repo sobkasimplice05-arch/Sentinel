@@ -105,3 +105,34 @@ def test_autonomy_kernel_migrates_legacy_event_schema(tmp_path):
 
     assert {"baseline_score", "candidate_score"}.issubset(columns)
     assert kernel.db_filename == db_path
+
+
+def test_repeated_no_change_does_not_require_commit(tmp_path, monkeypatch):
+    monkeypatch.setenv("SENTINEL_HEARTBEAT_COMMIT_HOURS", "6")
+    kernel = AutonomyKernel(
+        state_filename=tmp_path / "state.json",
+        report_filename=tmp_path / "report.json",
+        db_filename=tmp_path / "memory.db",
+    )
+    first = kernel.advance(
+        cycle_id="cycle-first",
+        observation_hash="same-hash",
+        decision="NO_CHANGE_NEEDED",
+        baseline_score=0.6,
+        candidate_score=0.6,
+        source_count=2,
+        feedback_report={},
+    )
+    second = kernel.advance(
+        cycle_id="cycle-second",
+        observation_hash="same-hash",
+        decision="NO_CHANGE_NEEDED",
+        baseline_score=0.6,
+        candidate_score=0.6,
+        source_count=2,
+        feedback_report={},
+    )
+
+    assert first["should_persist"] is True
+    assert second["should_persist"] is False
+    assert second["heartbeat_due"] is False

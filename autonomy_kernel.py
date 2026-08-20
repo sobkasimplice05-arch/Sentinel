@@ -217,6 +217,8 @@ class AutonomyKernel:
             raise ValueError(f"Invalid decision '{decision}'. Expected one of PROMOTED, REJECTED, NO_CHANGE_NEEDED.")
 
         previous = deepcopy(self.state)
+        previous_strategy = dict(previous.get("strategy", {}))
+        previous_decision_at = previous_strategy.get("last_decision_at")
         self.state["cycle_number"] = int(self.state.get("cycle_number", 0)) + 1
         self.state["total_plans"] = int(self.state.get("total_plans", 0)) + 1
         self.state["last_observation_hash"] = observation_hash
@@ -274,7 +276,15 @@ class AutonomyKernel:
             connection.commit()
         self._prune_events()
 
-        should_persist = True
+        heartbeat_hours = max(1, int(os.getenv("SENTINEL_HEARTBEAT_COMMIT_HOURS", "6")))
+        heartbeat_due = not previous_decision_at
+        if previous_decision_at:
+            try:
+                previous_dt = datetime.fromisoformat(str(previous_decision_at))
+                heartbeat_due = (datetime.now(timezone.utc) - previous_dt).total_seconds() >= heartbeat_hours * 3600
+            except ValueError:
+                heartbeat_due = True
+        should_persist = decision != "NO_CHANGE_NEEDED" or heartbeat_due
         if should_persist:
             self._atomic_write_json(self.state_filename, self.state)
             self._atomic_write_json(self.report_filename, event)
@@ -287,6 +297,7 @@ class AutonomyKernel:
             "strategy": strategy,
             "cycle_number": self.state["cycle_number"],
             "should_persist": should_persist,
+            "heartbeat_due": heartbeat_due,
             "previous_state": previous,
         }
 

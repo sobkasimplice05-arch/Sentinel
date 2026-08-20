@@ -54,6 +54,8 @@ class SelfModificationEngine:
         self.default_output_tokens = int(os.getenv("SELF_MODIFICATION_MAX_OUTPUT_TOKENS", "4096"))
         self.retry_output_tokens = (self.default_output_tokens, max(2048, self.default_output_tokens // 2), 1024)
         self.max_targets_per_cycle = max(1, int(os.getenv("SELF_MODIFICATION_MAX_TARGETS_PER_CYCLE", "1")))
+        self.cooldown_filename = self.root / "self_modification_provider_cooldown.json"
+        self.cooldown_seconds = max(60, int(os.getenv("SELF_MODIFICATION_COOLDOWN_SECONDS", "1800")))
 
     @staticmethod
     def _now() -> str:
@@ -113,18 +115,47 @@ Code actuel :
 {truncation_note}
 """
 
+    def _load_cooldowns(self) -> dict[str, float]:
+        try:
+            payload = json.loads(self.cooldown_filename.read_text(encoding="utf-8"))
+            return {str(key): float(value) for key, value in payload.items()}
+        except (OSError, ValueError, TypeError):
+            return {}
+
+    def _save_cooldowns(self, cooldowns: Mapping[str, float]) -> None:
+        self.cooldown_filename.write_text(
+            json.dumps(dict(cooldowns), ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
+    def _provider_on_cooldown(self, provider: str) -> bool:
+        return self._load_cooldowns().get(provider.lower(), 0.0) > datetime.now(timezone.utc).timestamp()
+
+    def _set_provider_cooldown(self, provider: str, retry_after: int | None = None) -> None:
+        seconds = max(60, min(3600, retry_after or self.cooldown_seconds))
+        cooldowns = self._load_cooldowns()
+        cooldowns[provider.lower()] = datetime.now(timezone.utc).timestamp() + seconds
+        self._save_cooldowns(cooldowns)
+
     def _call_provider(self, prompt: str, *, output_tokens: int | None = None) -> tuple[str | None, str]:
         output_tokens = output_tokens or self.default_output_tokens
-        provider = (os.getenv("SELF_MODIFICATION_PROVIDER") or "auto").lower()
+        requested_provider = (os.getenv("SELF_MODIFICATION_PROVIDER") or "auto").lower()
+        provider = requested_provider
         if provider == "auto":
+            candidates = []
             if os.getenv("NVIDIA_API_KEY"):
-                provider = "nvidia"
-            elif os.getenv("GROQ_API_KEY"):
-                provider = "groq"
-            elif os.getenv("SELF_MODIFICATION_API_KEY") or os.getenv("MODEL_API_KEY"):
-                provider = "generic"
-            elif os.getenv("HF_API_KEY"):
-                provider = "huggingface"
+                candidates.append("nvidia")
+            if os.getenv("GROQ_API_KEY"):
+                candidates.append("groq")
+            if os.getenv("SELF_MODIFICATION_API_KEY") or os.getenv("MODEL_API_KEY"):
+                candidates.append("generic")
+            if os.getenv("HF_API_KEY"):
+                candidates.append("huggingface")
+            provider = next((item for item in candidates if not self._provider_on_cooldown(item)), "")
+            if not provider:
+                return None, "PROVIDER_COOLDOWN:all"
+        elif self._provider_on_cooldown(provider):
+            return None, f"PROVIDER_COOLDOWN:{provider.upper()}"
         model = os.getenv("SELF_MODIFICATION_MODEL") or "Qwen/Qwen2.5-Coder-7B-Instruct"
         token = (
             os.getenv("SELF_MODIFICATION_API_KEY")
@@ -221,6 +252,14 @@ Code actuel :
             return None, "EMPTY_PROVIDER_RESPONSE"
         except requests.HTTPError as exc:
             status = exc.response.status_code if exc.response is not None else "unknown"
+            if status == 429:
+                retry_after = None
+                if exc.response is not None:
+                    try:
+                        retry_after = int(exc.response.headers.get("retry-after", ""))
+                    except (ValueError, TypeError):
+                        retry_after = None
+                self._set_provider_cooldown(provider, retry_after)
             return None, f"PROVIDER_ERROR:HTTP_{status}"
         except (requests.RequestException, ValueError, TypeError) as exc:
             return None, f"PROVIDER_ERROR:{type(exc).__name__}"

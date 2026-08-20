@@ -216,16 +216,24 @@ class AdaptiveFeedback:
         current_policy = deepcopy(self.state["policy"])
 
         if observation_hash == self.state.get("last_observation_hash"):
-            return {
+            score = self._policy_score(current_policy, observation)
+            report = {
                 "cycle_id": cycle_id,
+                "created_at": self._now(),
                 "decision": "NO_CHANGE_NEEDED",
                 "changed": False,
                 "observation_hash": observation_hash,
-                "baseline_score": self._policy_score(current_policy, observation),
-                "candidate_score": self._policy_score(current_policy, observation),
+                "baseline_score": score,
+                "candidate_score": score,
                 "reason": "observation déjà traitée; aucune nouvelle preuve",
-                "policy": current_policy,
+                "policy_before": current_policy,
+                "policy_after": current_policy,
             }
+            self.report_filename.write_text(
+                json.dumps(report, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            return {**report, "policy": current_policy}
 
         candidate_policy, hypothesis = self._propose_policy(current_policy, observation)
         valid, validation_reason = self._validate_policy(candidate_policy)
