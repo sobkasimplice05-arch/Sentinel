@@ -458,6 +458,12 @@ Code actuel :
                 except ValueError as exc:
                     attempt["parse_error"] = str(exc)[:500]
                     last_error = "INVALID_MODEL_JSON"
+                    # Une réponse non structurée rend ce fournisseur impropre à
+                    # cette série de tentatives; en mode auto, le prochain essai
+                    # peut basculer vers le fournisseur suivant sans attendre le
+                    # prochain runner éphémère.
+                    if (os.getenv("SELF_MODIFICATION_PROVIDER") or "auto").lower() == "auto" and provider:
+                        self._set_provider_cooldown(provider)
                     if attempt_index < len(self.retry_output_tokens) - 1:
                         continue
                     break
