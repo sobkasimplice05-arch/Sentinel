@@ -54,10 +54,19 @@ class LearningEngine:
         quality_values: list[float] = []
         for source, content in collected_data.items():
             text = str(content or "")
-            source_reliability = max(0.0, min(1.0, float(reliability.get(source, 0.5))))
+            stripped_text = text.strip()
+            
+            # Robust float conversion for reliability
+            try:
+                raw_reliability = float(reliability.get(source, 0.5))
+            except (ValueError, TypeError):
+                raw_reliability = 0.5
+                
+            source_reliability = max(0.0, min(1.0, raw_reliability))
             weighted_scores.append(source_reliability)
-            content_length = len(text.strip())
-            non_empty = bool(text.strip())
+            
+            content_length = len(stripped_text)
+            non_empty = content_length > 0
             length_quality = min(1.0, content_length / 1000.0)
             content_quality = round((0.45 if non_empty else 0.0) + (0.55 * length_quality), 6)
             content_hash = hashlib.sha256(text.encode("utf-8")).hexdigest()
@@ -89,7 +98,7 @@ class LearningEngine:
                 "freshness": round(freshness, 6),
                 "coverage": round(coverage, 6),
             }
-            analysis_result["intelligence_score"] = round(
+            analysis_result["intelligence_score" ] = round(
                 100 * (
                     reliability_score * 0.40
                     + content_quality * 0.25
