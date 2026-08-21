@@ -13,22 +13,22 @@
     "evaluate_feedback",
     "self_diagnose_failures"
   ],
-  "cycle_number": 104,
+  "cycle_number": 105,
   "known_failures": [],
-  "last_observation_hash": "8715a4ad6dbac6c3ef7911f31e7896289bba1a8823180bba2fc0fbbb7ac63b91",
+  "last_observation_hash": "8c68c7bb6e224e92951dd68350e0548f7a8899d103a22cfec45c0a39203665eb",
   "next_actions": [
     "record_rejection_reason",
     "collect_more_evidence_before_retrying",
     "run_regression_checks"
   ],
-  "rejected_experiments": 21,
+  "rejected_experiments": 22,
   "strategy": {
-    "confidence": 0.32,
-    "last_decision_at": "2026-08-21T03:35:21.744717+00:00",
+    "confidence": 0.29,
+    "last_decision_at": "2026-08-21T05:03:49.928669+00:00",
     "last_outcome": "REJECTED",
     "name": "evidence_driven_adaptation"
   },
   "successful_experiments": 14,
-  "total_plans": 104,
+  "total_plans": 105,
   "version": 1
 }
