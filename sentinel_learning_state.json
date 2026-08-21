@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "last_observation_hash": "8715a4ad6dbac6c3ef7911f31e7896289bba1a8823180bba2fc0fbbb7ac63b91",
-  "last_cycle_id": "cycle-20260821T023702-8715a4ad6dba",
-  "total_cycles": 34,
+  "last_observation_hash": "6bfed734a118e595b998d5a3734cefd58af87b1d5633e9974539b18848c01a13",
+  "last_cycle_id": "cycle-20260821T030457-6bfed734a118",
+  "total_cycles": 35,
   "successful_adaptations": 15,
-  "rejected_adaptations": 19,
+  "rejected_adaptations": 20,
   "policy": {
     "version": 16,
     "confidence_threshold": 0.5,
