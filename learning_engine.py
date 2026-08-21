@@ -75,7 +75,8 @@ class LearningEngine:
             reliability_score = sum(weighted_scores) / len(weighted_scores)
             content_quality = sum(quality_values) / len(quality_values)
             source_diversity = len(content_hashes) / len(weighted_scores)
-            freshness = 1.0 if any(quality >= 0.55 for quality in quality_values) else 0.25
+            # Utilisation d'une fraîcheur continue basée sur la qualité maximale observée
+            freshness = max(quality_values) if quality_values else 0.0
             coverage = min(1.0, len(weighted_scores) / max(1, minimum_sources * 2))
             analysis_result["quality_metrics"] = {
                 "content_quality": round(content_quality, 6),
@@ -83,11 +84,13 @@ class LearningEngine:
                 "freshness": round(freshness, 6),
                 "coverage": round(coverage, 6),
             }
-            analysis_result["intelligence_score"] = round(
+            # Intégration de la fraîcheur continue dans le score d'intelligence
+            analysis_result["intelligence_score" ] = round(
                 100 * (
-                    reliability_score * 0.45
-                    + content_quality * 0.30
+                    reliability_score * 0.40
+                    + content_quality * 0.25
                     + source_diversity * 0.15
+                    + freshness * 0.10
                     + coverage * 0.10
                 ),
                 2,

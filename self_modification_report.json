@@ -1,9 +1,9 @@
 {
-  "cycle_id": "self-mod-20260821T112149",
+  "cycle_id": "self-mod-20260821T123907",
   "decision": "PROMOTED",
-  "provider": "GROQ",
-  "hypothesis": "En déplaçant l'importation de hashlib hors de la boucle et en ne déclenchant la sauvegarde mémoire que lorsqu'il y a réellement de nouvelles données, le moteur d'apprentissage devrait consommer moins de CPU et d'I/O, ce qui se traduira par un temps d'évaluation plus court et moins d'opérations de sauvegarde inutiles.",
-  "expected_gain": "Temps moyen d'évaluation réduit d'au moins 5 % et nombre d'appels à backup_memory diminué d'au moins 30 % sur les cycles où aucune donnée n'est fournie.",
+  "provider": "GOOGLE",
+  "hypothesis": "Intégrer une mesure continue de la fraîcheur basée sur la qualité maximale observée et l'inclure directement dans le calcul pondéré de l'intelligence_score pour affiner l'évaluation des menaces.",
+  "expected_gain": "Amélioration de la précision du score d'intelligence, augmentation du score de validation d'au moins 0.0005.",
   "baseline_score": 0.75,
   "candidate_score": 0.85,
   "changed_files": [
@@ -15,18 +15,9 @@
       "target_file": "learning_engine.py",
       "attempt": 1,
       "compact": false,
-      "prompt_chars": 9951,
+      "prompt_chars": 10341,
       "output_tokens": 4096,
-      "provider": "GOOGLE",
-      "parse_error": "Unterminated string starting at: line 7 column 18 (char 453)"
-    },
-    {
-      "target_file": "learning_engine.py",
-      "attempt": 2,
-      "compact": true,
-      "prompt_chars": 8251,
-      "output_tokens": 2048,
-      "provider": "GROQ"
+      "provider": "GOOGLE"
     }
   ],
   "tests": {
@@ -35,5 +26,5 @@
     "test_returncode": 0,
     "test_output": "\n======================================================================\n🔧 PYTEST CONFIGURATION\n======================================================================\n📋 Mode: TEST (Réponses mock activées)\n======================================================================\n\n.........                                                                [100%]\n"
   },
-  "created_at": "2026-08-21T11:22:07.947761+00:00"
+  "created_at": "2026-08-21T12:39:19.987615+00:00"
 }
