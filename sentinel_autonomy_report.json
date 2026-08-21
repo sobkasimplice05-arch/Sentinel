@@ -1,18 +1,18 @@
 {
-  "baseline_score": 0.888725,
-  "candidate_score": 0.888891,
-  "created_at": "2026-08-21T12:52:04.658341+00:00",
-  "cycle_id": "cycle-20260821T125204-ed7fb6d459c5",
+  "baseline_score": 0.888891,
+  "candidate_score": 0.889024,
+  "created_at": "2026-08-21T13:31:56.827485+00:00",
+  "cycle_id": "cycle-20260821T133156-b707dd549088",
   "decision": "PROMOTED",
   "feedback": {
-    "baseline_score": 0.888725,
-    "candidate_score": 0.888891,
+    "baseline_score": 0.888891,
+    "candidate_score": 0.889024,
     "changed": true,
-    "created_at": "2026-08-21T12:52:04.656830+00:00",
-    "cycle_id": "cycle-20260821T125204-ed7fb6d459c5",
+    "created_at": "2026-08-21T13:31:56.826136+00:00",
+    "cycle_id": "cycle-20260821T133156-b707dd549088",
     "decision": "PROMOTED",
     "hypothesis": "Ajuster la fiabilité des sources selon la fraîcheur observée et adapter le seuil selon la couverture des sources.",
-    "observation_hash": "ed7fb6d459c5934174fd89cdc10a8528d8659f5c2a0604ace610a235391d8d0b",
+    "observation_hash": "b707dd5490889f30925568ba31fdd0f60e7106a8e0ac5660b56081818572fac8",
     "policy": {
       "confidence_threshold": 0.5,
       "minimum_sources": 1,
@@ -41,13 +41,14 @@
         "e5b990b19f942f6d444d9c1179dd2525d128ef59b86fb85d77c2eb626fd05068",
         "6bfed734a118e595b998d5a3734cefd58af87b1d5633e9974539b18848c01a13",
         "e5b990b19f942f6d444d9c1179dd2525d128ef59b86fb85d77c2eb626fd05068",
-        "ed7fb6d459c5934174fd89cdc10a8528d8659f5c2a0604ace610a235391d8d0b"
+        "ed7fb6d459c5934174fd89cdc10a8528d8659f5c2a0604ace610a235391d8d0b",
+        "b707dd5490889f30925568ba31fdd0f60e7106a8e0ac5660b56081818572fac8"
       ],
       "source_reliability": {
-        "arxiv": 0.89879,
-        "github": 0.89879
+        "arxiv": 0.899032,
+        "github": 0.899032
       },
-      "version": 27
+      "version": 28
     },
     "policy_after": {
       "confidence_threshold": 0.5,
@@ -77,13 +78,14 @@
         "e5b990b19f942f6d444d9c1179dd2525d128ef59b86fb85d77c2eb626fd05068",
         "6bfed734a118e595b998d5a3734cefd58af87b1d5633e9974539b18848c01a13",
         "e5b990b19f942f6d444d9c1179dd2525d128ef59b86fb85d77c2eb626fd05068",
-        "ed7fb6d459c5934174fd89cdc10a8528d8659f5c2a0604ace610a235391d8d0b"
+        "ed7fb6d459c5934174fd89cdc10a8528d8659f5c2a0604ace610a235391d8d0b",
+        "b707dd5490889f30925568ba31fdd0f60e7106a8e0ac5660b56081818572fac8"
       ],
       "source_reliability": {
-        "arxiv": 0.89879,
-        "github": 0.89879
+        "arxiv": 0.899032,
+        "github": 0.899032
       },
-      "version": 27
+      "version": 28
     },
     "policy_before": {
       "confidence_threshold": 0.5,
@@ -112,13 +114,14 @@
         "142805fce8efdc841c13f5233e97395a80931c45ab29a00e542e69ba80d43282",
         "e5b990b19f942f6d444d9c1179dd2525d128ef59b86fb85d77c2eb626fd05068",
         "6bfed734a118e595b998d5a3734cefd58af87b1d5633e9974539b18848c01a13",
-        "e5b990b19f942f6d444d9c1179dd2525d128ef59b86fb85d77c2eb626fd05068"
+        "e5b990b19f942f6d444d9c1179dd2525d128ef59b86fb85d77c2eb626fd05068",
+        "ed7fb6d459c5934174fd89cdc10a8528d8659f5c2a0604ace610a235391d8d0b"
       ],
       "source_reliability": {
-        "arxiv": 0.898488,
-        "github": 0.898488
+        "arxiv": 0.89879,
+        "github": 0.89879
       },
-      "version": 26
+      "version": 27
     },
     "reason": "adaptation validée par la baseline"
   },
@@ -127,10 +130,10 @@
     "measure_source_reliability_again",
     "search_for_new_observations"
   ],
-  "observation_hash": "ed7fb6d459c5934174fd89cdc10a8528d8659f5c2a0604ace610a235391d8d0b",
+  "observation_hash": "b707dd5490889f30925568ba31fdd0f60e7106a8e0ac5660b56081818572fac8",
   "strategy": {
-    "confidence": 0.6,
-    "last_decision_at": "2026-08-21T12:52:04.658331+00:00",
+    "confidence": 0.65,
+    "last_decision_at": "2026-08-21T13:31:56.827478+00:00",
     "last_outcome": "PROMOTED",
     "name": "evidence_driven_adaptation"
   }
