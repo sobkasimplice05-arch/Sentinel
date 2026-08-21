@@ -1,6 +1,6 @@
 {
   "mode": "EXPERIMENTAL_GENERAL_AGENT",
-  "cycle_number": 111,
+  "cycle_number": 112,
   "objective": {
     "id": 1,
     "title": "improve_observation_and_transfer",
@@ -41,9 +41,9 @@
     }
   ],
   "episode": {
-    "created_at": "2026-08-21T08:57:43.081433+00:00",
+    "created_at": "2026-08-21T09:37:16.705944+00:00",
     "objective_id": 1,
-    "observation_hash": "6bfed734a118e595b998d5a3734cefd58af87b1d5633e9974539b18848c01a13",
+    "observation_hash": "8715a4ad6dbac6c3ef7911f31e7896289bba1a8823180bba2fc0fbbb7ac63b91",
     "plan": [
       {
         "step": 1,
@@ -77,14 +77,36 @@
       }
     ],
     "action": "PROVIDER_ERROR",
-    "outcome": "REJECTED",
-    "score": 0.802568,
-    "transfer_status": "NOT_MEASURED"
+    "outcome": "PROMOTED",
+    "score": 0.803568,
+    "transfer_status": "VERIFIED"
   },
   "skill_learning": {
-    "status": "OBSERVATION_SKILL_UPDATED",
-    "transfer_status": "NOT_MEASURED",
-    "note": "Une compétence générale n'est promue qu'après un test sur une variante non vue."
+    "status": "PROMOTED",
+    "transfer_status": "VERIFIED",
+    "note": "Compétence de diagnostic fournisseur promue après trois variantes déterministes distinctes.",
+    "skill": {
+      "name": "provider_failure_diagnosis",
+      "version": 1,
+      "status": "PROMOTED",
+      "competence_score": 1.0,
+      "transfer_score": 1.0
+    },
+    "diagnostic": {
+      "attempt_count": 3,
+      "provider_sequence": [
+        "EMPTY_CLOUDFLARE_RESPONSE",
+        "GOOGLE",
+        "PROVIDER_ERROR:HTTP_400"
+      ],
+      "recommended_actions": [
+        "cooldown_empty_provider_and_fallback",
+        "response_received_validate_structure",
+        "inspect_request_contract_before_retry"
+      ],
+      "fallback_observed": true,
+      "diagnostic_score": 1.0
+    }
   },
   "capability_profile": {
     "observation": 0.0,
@@ -92,7 +114,7 @@
     "planning": 0.0,
     "tool_use": 0.0,
     "source_modification": 0.0,
-    "transfer": 0.0
+    "transfer": 1.0
   },
-  "transfer_verified": false
+  "transfer_verified": true
 }

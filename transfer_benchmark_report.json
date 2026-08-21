@@ -6,10 +6,13 @@
     },
     "feedback_deduplication": {
       "passed": true
+    },
+    "provider_failure_diagnosis": {
+      "passed": true
     }
   },
-  "passed": 2,
-  "total": 2,
+  "passed": 3,
+  "total": 3,
   "score": 1.0,
   "transfer_verified": true
 }

@@ -1,0 +1,63 @@
+{
+  "skill_name": "provider_failure_diagnosis",
+  "observed_diagnostic": {
+    "attempt_count": 3,
+    "provider_sequence": [
+      "EMPTY_CLOUDFLARE_RESPONSE",
+      "GOOGLE",
+      "PROVIDER_ERROR:HTTP_400"
+    ],
+    "recommended_actions": [
+      "cooldown_empty_provider_and_fallback",
+      "response_received_validate_structure",
+      "inspect_request_contract_before_retry"
+    ],
+    "fallback_observed": true,
+    "diagnostic_score": 1.0
+  },
+  "transfer_variants": [
+    {
+      "name": "empty_response_variant",
+      "score": 1.0
+    },
+    {
+      "name": "rate_limit_variant",
+      "score": 1.0
+    },
+    {
+      "name": "invalid_json_variant",
+      "score": 1.0
+    }
+  ],
+  "transfer_score": 1.0,
+  "transfer_verified": true,
+  "procedure": "Classifier les erreurs fournisseur, appliquer une action bornée et poursuivre uniquement avec un fallback disponible.",
+  "transfer": {
+    "skill": {
+      "name": "provider_failure_diagnosis",
+      "version": 1,
+      "status": "PROMOTED",
+      "competence_score": 1.0,
+      "transfer_score": 1.0
+    },
+    "variants": [
+      {
+        "name": "empty_response_variant",
+        "score": 1.0
+      },
+      {
+        "name": "rate_limit_variant",
+        "score": 1.0
+      },
+      {
+        "name": "invalid_json_variant",
+        "score": 1.0
+      }
+    ],
+    "baseline": 0.65,
+    "transfer_score": 1.0,
+    "decision": "PROMOTED"
+  },
+  "new_learning": true,
+  "status": "PROMOTED"
+}
