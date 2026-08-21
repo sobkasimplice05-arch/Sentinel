@@ -44,6 +44,11 @@ class LearningEngine:
             "source_metrics": {},
         }
 
+        # Early exit if not enough sources – avoids unnecessary work and memory backup
+        if len(collected_data) < minimum_sources:
+            logger.warning("📝 Nombre de sources insuffisant (%d < %d). Analyse interrompue.", len(collected_data), minimum_sources)
+            return analysis_result
+
         weighted_scores: list[float] = []
         content_hashes: set[str] = set()
         quality_values: list[float] = []
@@ -66,17 +71,17 @@ class LearningEngine:
             }
             if non_empty and source_reliability >= 0.45:
                 analysis_result["mutations_suggested"].append(f"optimize_defense_{source}")
-                logger.success(f"🎯 Pattern d'intelligence détecté pour la source : {source}")
+                logger.success("🎯 Pattern d'intelligence détecté pour la source : %s", source)
             elif source:
                 analysis_result["mutations_suggested"].append(f"monitor_source_{source}")
-                logger.warning(f"📝 Source à surveiller selon la mémoire : {source}")
+                logger.warning("📝 Source à surveiller selon la mémoire : %s", source)
 
         if weighted_scores:
             reliability_score = sum(weighted_scores) / len(weighted_scores)
             content_quality = sum(quality_values) / len(quality_values)
             source_diversity = len(content_hashes) / len(weighted_scores)
-            # Utilisation d'une fraîcheur continue basée sur la qualité maximale observée
-            freshness = max(quality_values) if quality_values else 0.0
+            # Freshness now uses the average quality to reduce noise from outliers
+            freshness = content_quality
             coverage = min(1.0, len(weighted_scores) / max(1, minimum_sources * 2))
             analysis_result["quality_metrics"] = {
                 "content_quality": round(content_quality, 6),
@@ -84,8 +89,7 @@ class LearningEngine:
                 "freshness": round(freshness, 6),
                 "coverage": round(coverage, 6),
             }
-            # Intégration de la fraîcheur continue dans le score d'intelligence
-            analysis_result["intelligence_score" ] = round(
+            analysis_result["intelligence_score"] = round(
                 100 * (
                     reliability_score * 0.40
                     + content_quality * 0.25
