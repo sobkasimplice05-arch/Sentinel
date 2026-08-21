@@ -1,0 +1,31 @@
+{
+  "task": "compact_http_413_recovery",
+  "target_file": "provider_diagnostics.py",
+  "created_at": "2026-08-21T09:44:54.094980+00:00",
+  "transfer_variants": [
+    "PROVIDER_ERROR:HTTP_413",
+    "HTTP_413:oversized_prompt"
+  ],
+  "constraints": [
+    "aucun workflow, secret, permission ou garde-fou modifié",
+    "compilation et transfert isolés requis",
+    "candidate_score strictement supérieur à baseline_score"
+  ],
+  "baseline_score": 0.0,
+  "candidate_score": 1.0,
+  "baseline_cases": {
+    "PROVIDER_ERROR:HTTP_413": false,
+    "HTTP_413:oversized_prompt": false
+  },
+  "candidate_cases": {
+    "PROVIDER_ERROR:HTTP_413": true,
+    "HTTP_413:oversized_prompt": true
+  },
+  "compile_returncode": 0,
+  "compile_output": "",
+  "decision": "PROMOTED",
+  "changed_files": [
+    "provider_diagnostics.py"
+  ],
+  "reason": "gain mesuré sur variantes inédites et compilation isolée réussie"
+}

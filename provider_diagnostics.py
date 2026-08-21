@@ -15,6 +15,8 @@ def classify_provider_status(status: str) -> str:
         return "cooldown_empty_provider_and_fallback"
     if "HTTP_429" in normalized or "PROVIDER_COOLDOWN" in normalized:
         return "respect_cooldown_and_fallback"
+    if "HTTP_413" in normalized:
+        return "shrink_prompt_then_retry"
     if "INVALID_MODEL_JSON" in normalized:
         return "repair_once_then_cooldown"
     if "HTTP_400" in normalized:
