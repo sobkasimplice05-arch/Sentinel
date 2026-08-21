@@ -17,6 +17,7 @@ from notifier import SentinelNotifier
 from provider_diagnostics import run_provider_diagnostic
 from self_modification import SelfModificationEngine
 from sentinel_janitor import SentinelJanitor
+from source_evolution_curriculum import run_source_evolution_curriculum
 from transfer_benchmark import run_transfer_benchmark
 
 
@@ -40,6 +41,7 @@ class SentinelV3Core:
     def commit_memory(
         self,
         include_self_modification_report: bool = False,
+        include_source_evolution_report: bool = False,
         include_runtime_state: bool = True,
     ) -> bool:
         """Persiste les preuves et les patches approuvés; aucun force-push."""
@@ -68,6 +70,8 @@ class SentinelV3Core:
                     "autonomy_kernel.py",
                 ]
             )
+        if include_source_evolution_report:
+            tracked_files.extend(["source_evolution_report.json", "provider_diagnostics.py"])
         try:
             subprocess.run(
                 ["git", "config", "user.email", "sentinel-v3@evolution.ai"],
@@ -145,6 +149,10 @@ class SentinelV3Core:
             preliminary_report["self_modification"] = self_modification_report
             self_modification_decision = self_modification_report["decision"]
 
+            source_evolution_report = run_source_evolution_curriculum()
+            source_evolution_decision = source_evolution_report["decision"]
+            preliminary_report["source_evolution"] = source_evolution_report
+
             provider_learning = run_provider_diagnostic(self_modification_report)
             existing_skill = self.agent_general.get_skill(provider_learning["skill_name"])
             provider_learning_new = False
@@ -186,15 +194,24 @@ class SentinelV3Core:
             )
             preliminary_report["agent_general"] = agent_general_report
 
-            meaningful_learning = feedback_decision == "PROMOTED" or provider_learning_new
+            meaningful_learning = (
+                feedback_decision == "PROMOTED"
+                or provider_learning_new
+                or source_evolution_decision == "PROMOTED"
+            )
             if meaningful_learning:
                 self.memory.save_learning(
-                    mutation_id="PROVIDER_DIAGNOSTIC_PROMOTED" if provider_learning_new else feedback_decision,
+                    mutation_id=(
+                        "SOURCE_EVOLUTION_PROMOTED"
+                        if source_evolution_decision == "PROMOTED"
+                        else "PROVIDER_DIAGNOSTIC_PROMOTED" if provider_learning_new else feedback_decision
+                    ),
                     success=True,
                     learnings_dict=preliminary_report,
                 )
                 persisted = self.commit_memory(
-                    include_self_modification_report=self_modification_decision in {"PROMOTED", "REJECTED"}
+                    include_self_modification_report=self_modification_decision in {"PROMOTED", "REJECTED"},
+                    include_source_evolution_report=source_evolution_decision == "PROMOTED",
                 )
                 if not persisted:
                     return False
