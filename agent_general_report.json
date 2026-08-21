@@ -1,6 +1,6 @@
 {
   "mode": "EXPERIMENTAL_GENERAL_AGENT",
-  "cycle_number": 119,
+  "cycle_number": 120,
   "objective": {
     "id": 1,
     "title": "improve_observation_and_transfer",
@@ -41,9 +41,9 @@
     }
   ],
   "episode": {
-    "created_at": "2026-08-21T11:22:07.951936+00:00",
+    "created_at": "2026-08-21T11:28:18.790198+00:00",
     "objective_id": 1,
-    "observation_hash": "e5b990b19f942f6d444d9c1179dd2525d128ef59b86fb85d77c2eb626fd05068",
+    "observation_hash": "6bfed734a118e595b998d5a3734cefd58af87b1d5633e9974539b18848c01a13",
     "plan": [
       {
         "step": 1,
@@ -76,9 +76,9 @@
         "status": "READY"
       }
     ],
-    "action": "PROMOTED",
+    "action": "PROVIDER_ERROR",
     "outcome": "PROMOTED",
-    "score": 0.908461,
+    "score": 0.808721,
     "transfer_status": "VERIFIED"
   },
   "skill_learning": {
@@ -93,17 +93,19 @@
       "transfer_score": 1.0
     },
     "diagnostic": {
-      "attempt_count": 2,
+      "attempt_count": 3,
       "provider_sequence": [
-        "GOOGLE",
-        "GROQ"
+        "PROVIDER_ERROR:HTTP_429",
+        "PROVIDER_ERROR:ConnectionError",
+        "PROVIDER_ERROR:ConnectionError"
       ],
       "recommended_actions": [
-        "response_received_validate_structure",
-        "response_received_validate_structure"
+        "respect_cooldown_and_fallback",
+        "retry_next_provider_with_bounded_attempts",
+        "retry_next_provider_with_bounded_attempts"
       ],
-      "fallback_observed": false,
-      "diagnostic_score": 0.8
+      "fallback_observed": true,
+      "diagnostic_score": 1.0
     }
   },
   "capability_profile": {
