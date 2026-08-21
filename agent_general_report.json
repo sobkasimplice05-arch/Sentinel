@@ -1,6 +1,6 @@
 {
   "mode": "EXPERIMENTAL_GENERAL_AGENT",
-  "cycle_number": 147,
+  "cycle_number": 148,
   "objective": {
     "id": 1,
     "title": "improve_observation_and_transfer",
@@ -41,9 +41,9 @@
     }
   ],
   "episode": {
-    "created_at": "2026-08-21T22:21:27.193942+00:00",
+    "created_at": "2026-08-21T22:27:23.334881+00:00",
     "objective_id": 1,
-    "observation_hash": "1277c86d3e84499c515266e7e49efa9e8546eaa813cc8bec9c02615b3cc11134",
+    "observation_hash": "897324bb56a80b34ee9363f2f6b4a935c732b007e693f561875ae62613dff030",
     "plan": [
       {
         "step": 1,
@@ -78,7 +78,7 @@
     ],
     "action": "PROVIDER_ERROR",
     "outcome": "PROMOTED",
-    "score": 0.789515,
+    "score": 0.789516,
     "transfer_status": "VERIFIED"
   },
   "skill_learning": {
@@ -95,14 +95,14 @@
     "diagnostic": {
       "attempt_count": 3,
       "provider_sequence": [
-        "EMPTY_CLOUDFLARE_RESPONSE",
-        "GOOGLE",
-        "PROVIDER_ERROR:HTTP_400"
+        "PROVIDER_ERROR:HTTP_429",
+        "PROVIDER_ERROR:ConnectionError",
+        "PROVIDER_ERROR:ConnectionError"
       ],
       "recommended_actions": [
-        "cooldown_empty_provider_and_fallback",
-        "response_received_validate_structure",
-        "inspect_request_contract_before_retry"
+        "respect_cooldown_and_fallback",
+        "retry_next_provider_with_bounded_attempts",
+        "retry_next_provider_with_bounded_attempts"
       ],
       "fallback_observed": true,
       "diagnostic_score": 1.0
