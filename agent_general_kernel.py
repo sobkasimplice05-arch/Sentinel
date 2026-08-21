@@ -215,6 +215,19 @@ class GeneralAgentKernel:
             self.state["transfer_verified"] = True
         return {"name": name, "version": version, "status": status, "competence_score": score, "transfer_score": transfer_score}
 
+    def get_skill(self, name: str) -> dict[str, Any] | None:
+        with sqlite3.connect(self.db_filename) as connection:
+            row = connection.execute(
+                "SELECT name, version, competence_score, transfer_score, successes, failures, status, updated_at FROM agent_skills WHERE name = ?",
+                (name,),
+            ).fetchone()
+        if not row:
+            return None
+        return {
+            "name": row[0], "version": row[1], "competence_score": row[2], "transfer_score": row[3],
+            "successes": row[4], "failures": row[5], "status": row[6], "updated_at": row[7],
+        }
+
     def record_cycle(
         self,
         *,
@@ -223,12 +236,14 @@ class GeneralAgentKernel:
         observation_hash: str,
         feedback: Mapping[str, Any],
         self_modification: Mapping[str, Any],
+        skill_learning: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
         self.state["cycle_number"] = int(self.state.get("cycle_number", 0)) + 1
         feedback_decision = str(feedback.get("decision", "UNKNOWN"))
         score = float(feedback.get("candidate_score", 0.0))
         action = str(self_modification.get("decision", "NO_SOURCE_PATCH"))
-        transfer_status = "NOT_MEASURED"
+        learning = dict(skill_learning or {})
+        transfer_status = str(learning.get("transfer_status", "NOT_MEASURED"))
         episode = {
             "created_at": self._now(),
             "objective_id": objective.get("id"),
@@ -263,9 +278,11 @@ class GeneralAgentKernel:
             "plan": list(plan),
             "episode": episode,
             "skill_learning": {
-                "status": "OBSERVATION_SKILL_UPDATED",
+                "status": learning.get("status", "OBSERVATION_SKILL_UPDATED"),
                 "transfer_status": transfer_status,
-                "note": "Une compétence générale n'est promue qu'après un test sur une variante non vue.",
+                "note": learning.get("note", "Une compétence générale n'est promue qu'après un test sur une variante non vue."),
+                "skill": learning.get("skill"),
+                "diagnostic": learning.get("diagnostic"),
             },
             "capability_profile": self.state["capability_profile"],
             "transfer_verified": self.state["transfer_verified"],

@@ -14,6 +14,7 @@ from feedback_learning import AdaptiveFeedback
 from learning_engine import LearningEngine
 from memory_manager import SentinelMemory
 from notifier import SentinelNotifier
+from provider_diagnostics import run_provider_diagnostic
 from self_modification import SelfModificationEngine
 from sentinel_janitor import SentinelJanitor
 from transfer_benchmark import run_transfer_benchmark
@@ -55,6 +56,7 @@ class SentinelV3Core:
                 "agent_general_state.json",
                 "agent_general_report.json",
                 "transfer_benchmark_report.json",
+                "provider_learning_report.json",
                 *tracked_files,
             ]
         if include_self_modification_report:
@@ -143,19 +145,52 @@ class SentinelV3Core:
             preliminary_report["self_modification"] = self_modification_report
             self_modification_decision = self_modification_report["decision"]
 
+            provider_learning = run_provider_diagnostic(self_modification_report)
+            existing_skill = self.agent_general.get_skill(provider_learning["skill_name"])
+            provider_learning_new = False
+            if existing_skill and existing_skill.get("status") == "PROMOTED":
+                provider_transfer = {
+                    "decision": "ALREADY_PROMOTED",
+                    "skill": existing_skill,
+                    "transfer_score": existing_skill.get("transfer_score"),
+                }
+            else:
+                provider_transfer = self.agent_general.evaluate_transfer(
+                    provider_learning["skill_name"],
+                    provider_learning["transfer_variants"],
+                    baseline=0.65,
+                )
+                provider_learning_new = provider_transfer["decision"] == "PROMOTED"
+            provider_learning["transfer"] = provider_transfer
+            provider_learning["new_learning"] = provider_learning_new
+            provider_learning["status"] = provider_transfer["decision"]
+            with open("provider_learning_report.json", "w", encoding="utf-8") as handle:
+                import json
+                json.dump(provider_learning, handle, ensure_ascii=False, indent=2)
+                handle.write("\n")
+            preliminary_report["provider_learning"] = provider_learning
+
             agent_general_report = self.agent_general.record_cycle(
                 objective=objective,
                 plan=agent_plan,
                 observation_hash=feedback_report["observation_hash"],
                 feedback=feedback_report,
                 self_modification=self_modification_report,
+                skill_learning={
+                    "status": provider_transfer["decision"],
+                    "transfer_status": "VERIFIED" if provider_transfer.get("decision") in {"PROMOTED", "ALREADY_PROMOTED"} else "REJECTED",
+                    "note": "Compétence de diagnostic fournisseur promue après trois variantes déterministes distinctes.",
+                    "skill": provider_transfer.get("skill"),
+                    "diagnostic": provider_learning["observed_diagnostic"],
+                },
             )
             preliminary_report["agent_general"] = agent_general_report
 
-            if feedback_decision != "NO_CHANGE_NEEDED":
+            meaningful_learning = feedback_decision == "PROMOTED" or provider_learning_new
+            if meaningful_learning:
                 self.memory.save_learning(
-                    mutation_id=feedback_decision,
-                    success=feedback_decision == "PROMOTED",
+                    mutation_id="PROVIDER_DIAGNOSTIC_PROMOTED" if provider_learning_new else feedback_decision,
+                    success=True,
                     learnings_dict=preliminary_report,
                 )
                 persisted = self.commit_memory(

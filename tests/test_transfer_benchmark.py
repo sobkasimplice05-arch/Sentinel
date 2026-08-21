@@ -6,4 +6,5 @@ def test_transfer_benchmark_verifies_quality_and_deduplication(tmp_path):
 
     assert report["benchmark"] == "sentinel-transfer-v1"
     assert report["transfer_verified"] is True
-    assert report["passed"] == report["total"] == 2
+    assert report["passed"] == report["total"] == 3
+    assert report["cases"]["provider_failure_diagnosis"]["passed"] is True

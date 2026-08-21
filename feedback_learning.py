@@ -81,6 +81,10 @@ class AdaptiveFeedback:
             policy.update(loaded.get("policy", {}))
             policy["source_reliability"] = dict(policy.get("source_reliability", {}))
             policy["observation_history"] = list(policy.get("observation_history", []))[-200:]
+            policy["confidence_threshold"] = round(
+                max(0.50, min(0.90, float(policy.get("confidence_threshold", 0.65)))),
+                6,
+            )
             state["policy"] = policy
             return state
         except (OSError, ValueError, TypeError):
@@ -165,7 +169,7 @@ class AdaptiveFeedback:
             threshold -= 0.01
         elif source_count == 0:
             threshold += 0.01
-        candidate["confidence_threshold"] = round(threshold, 6)
+        candidate["confidence_threshold"] = round(max(0.50, min(0.90, threshold)), 6)
         candidate["source_reliability"] = reliability
         history = list(candidate.get("observation_history", []))
         history.append(str(observation.get("observation_hash", "")))

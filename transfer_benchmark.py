@@ -14,11 +14,13 @@ from typing import Any
 
 from feedback_learning import AdaptiveFeedback
 from learning_engine import LearningEngine
+from provider_diagnostics import classify_provider_status
 
 
 CASES = (
     "quality_discrimination",
     "feedback_deduplication",
+    "provider_failure_diagnosis",
 )
 
 
@@ -52,10 +54,16 @@ def run_transfer_benchmark(output_path: str | Path = "transfer_benchmark_report.
                 {"source": "benchmark", "decision": "NO_CHANGE_NEEDED", "confidence": 0},
             )
             dedup_passed = first["decision"] == "PROMOTED" and second["decision"] == "NO_CHANGE_NEEDED"
+            provider_diagnostic_passed = (
+                classify_provider_status("EMPTY_CLOUDFLARE_RESPONSE") == "cooldown_empty_provider_and_fallback"
+                and classify_provider_status("PROVIDER_ERROR:HTTP_429") == "respect_cooldown_and_fallback"
+                and classify_provider_status("INVALID_MODEL_JSON") == "repair_once_then_cooldown"
+            )
 
     cases = {
         "quality_discrimination": {"passed": quality_passed},
         "feedback_deduplication": {"passed": dedup_passed},
+        "provider_failure_diagnosis": {"passed": provider_diagnostic_passed},
     }
     passed = sum(1 for item in cases.values() if item["passed"])
     report: dict[str, Any] = {
@@ -75,5 +83,4 @@ if __name__ == "__main__":
 
 
 __all__ = ["run_transfer_benchmark"]
-
 

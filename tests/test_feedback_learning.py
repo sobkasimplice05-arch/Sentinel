@@ -61,7 +61,7 @@ def test_memory_is_reused_for_a_new_observation(tmp_path):
     assert second["policy_after"]["source_reliability"]["github"] > first["policy_after"]["source_reliability"]["github"]
 
 
-def test_policy_validation_rejects_unsafe_threshold(tmp_path):
+def test_policy_update_clamps_unsafe_threshold_before_learning(tmp_path):
     engine = AdaptiveFeedback(
         db_filename=tmp_path / "memory.db",
         state_filename=tmp_path / "state.json",
@@ -70,6 +70,6 @@ def test_policy_validation_rejects_unsafe_threshold(tmp_path):
     engine.state["policy"]["confidence_threshold"] = 0.99
     result = engine.run_cycle(*inputs("new observation"))
 
-    assert result["decision"] == "REJECTED"
-    assert result["changed"] is False
-    assert result["reason"] == "confidence_threshold hors limites [0.50, 0.90]"
+    assert result["decision"] == "PROMOTED"
+    assert result["changed"] is True
+    assert result["policy_after"]["confidence_threshold"] == 0.9
