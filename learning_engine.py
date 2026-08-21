@@ -1,4 +1,5 @@
 import json
+import hashlib
 from datetime import datetime
 from typing import Any, Mapping
 
@@ -18,7 +19,13 @@ class LearningEngine:
         collected_data: Mapping[str, Any],
         policy: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Produit un rapport déterministe et réutilise la politique apprise."""
+        """Produit un rapport déterministe et réutilise la politique apprise.
+
+        L'évaluation calcule plusieurs métriques de qualité, de diversité et de
+        couverture, puis génère un score d'intelligence. La sauvegarde de la
+        mémoire n'est effectuée que lorsqu'il y a des données à analyser afin
+        d'éviter des opérations d'I/O inutiles.
+        """
         policy = policy or {}
         reliability = dict(policy.get("source_reliability", {}))
         minimum_sources = int(policy.get("minimum_sources", 1))
@@ -48,7 +55,7 @@ class LearningEngine:
             non_empty = bool(text.strip())
             length_quality = min(1.0, content_length / 1000.0)
             content_quality = round((0.45 if non_empty else 0.0) + (0.55 * length_quality), 6)
-            content_hash = __import__("hashlib").sha256(text.encode("utf-8")).hexdigest()
+            content_hash = hashlib.sha256(text.encode("utf-8")).hexdigest()
             content_hashes.add(content_hash)
             quality_values.append(content_quality)
             analysis_result["source_metrics"][source] = {
@@ -85,11 +92,12 @@ class LearningEngine:
                 ),
                 2,
             )
+            # Sauvegarde automatique avant toute décision adaptative.
+            self.memory.backup_memory()
         else:
             logger.warning("📝 Aucune nouvelle donnée à analyser. Repos du noyau.")
+            logger.debug("Sauvegarde mémoire sautée car aucune donnée n'a été fournie.")
 
-        # Sauvegarde automatique avant toute décision adaptative.
-        self.memory.backup_memory()
         return analysis_result
 
 
