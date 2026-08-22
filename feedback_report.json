@@ -1,12 +1,13 @@
 {
-  "cycle_id": "cycle-20260822T080030-897324bb56a8",
-  "created_at": "2026-08-22T08:00:30.526681+00:00",
-  "decision": "NO_CHANGE_NEEDED",
-  "changed": false,
-  "observation_hash": "897324bb56a80b34ee9363f2f6b4a935c732b007e693f561875ae62613dff030",
+  "cycle_id": "cycle-20260822T083249-1277c86d3e84",
+  "created_at": "2026-08-22T08:32:49.974226+00:00",
+  "decision": "PROMOTED",
+  "changed": true,
+  "observation_hash": "1277c86d3e84499c515266e7e49efa9e8546eaa813cc8bec9c02615b3cc11134",
   "baseline_score": 0.789519,
   "candidate_score": 0.789519,
-  "reason": "observation déjà traitée; aucune nouvelle preuve",
+  "hypothesis": "Ajuster la fiabilité des sources selon la fraîcheur observée et adapter le seuil selon la couverture des sources.",
+  "reason": "adaptation validée par la baseline",
   "policy_before": {
     "version": 67,
     "confidence_threshold": 0.5,
@@ -84,7 +85,7 @@
     ]
   },
   "policy_after": {
-    "version": 67,
+    "version": 68,
     "confidence_threshold": 0.5,
     "minimum_sources": 1,
     "source_reliability": {
@@ -156,7 +157,8 @@
       "1277c86d3e84499c515266e7e49efa9e8546eaa813cc8bec9c02615b3cc11134",
       "897324bb56a80b34ee9363f2f6b4a935c732b007e693f561875ae62613dff030",
       "1277c86d3e84499c515266e7e49efa9e8546eaa813cc8bec9c02615b3cc11134",
-      "897324bb56a80b34ee9363f2f6b4a935c732b007e693f561875ae62613dff030"
+      "897324bb56a80b34ee9363f2f6b4a935c732b007e693f561875ae62613dff030",
+      "1277c86d3e84499c515266e7e49efa9e8546eaa813cc8bec9c02615b3cc11134"
     ]
   }
 }
