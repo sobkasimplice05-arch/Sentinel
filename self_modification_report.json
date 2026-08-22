@@ -1,9 +1,9 @@
 {
-  "cycle_id": "self-mod-20260822T120011",
+  "cycle_id": "self-mod-20260822T133331",
   "decision": "PROMOTED",
-  "provider": "GOOGLE",
-  "hypothesis": "Ajuster dynamiquement la fiabilité de chaque source en combinant sa fiabilité historique (85%) avec la qualité de son contenu actuel (15%) afin de pénaliser les sources temporairement vides ou pauvres et valoriser les contributions riches.",
-  "expected_gain": "Amélioration de la précision du score d'intelligence et de la réactivité du moteur d'apprentissage avec un gain attendu de +0.01 sur le score d'évaluation.",
+  "provider": "GROQ",
+  "hypothesis": "Utiliser un horodatage UTC normalisé et hacher le texte épuré améliore la cohérence temporelle et la détection de contenus dupliqués, ce qui devrait réduire la variance des timestamps entre exécutions et augmenter la précision du métrique source_diversity, entraînant une hausse stable du intelligence_score.",
+  "expected_gain": "Réduction de l'écart-type des timestamps <0.01 s sur 100 exécutions et augmentation moyenne du intelligence_score d'au moins 0.5 points sur le jeu de validation interne.",
   "baseline_score": 0.75,
   "candidate_score": 0.85,
   "changed_files": [
@@ -15,9 +15,18 @@
       "target_file": "learning_engine.py",
       "attempt": 1,
       "compact": false,
-      "prompt_chars": 11008,
+      "prompt_chars": 11131,
       "output_tokens": 4096,
-      "provider": "GOOGLE"
+      "provider": "GOOGLE",
+      "parse_error": "réponse sans objet JSON"
+    },
+    {
+      "target_file": "learning_engine.py",
+      "attempt": 2,
+      "compact": true,
+      "prompt_chars": 9431,
+      "output_tokens": 2048,
+      "provider": "GROQ"
     }
   ],
   "tests": {
@@ -26,5 +35,5 @@
     "test_returncode": 0,
     "test_output": "\n======================================================================\n🔧 PYTEST CONFIGURATION\n======================================================================\n📋 Mode: TEST (Réponses mock activées)\n======================================================================\n\n.........                                                                [100%]\n"
   },
-  "created_at": "2026-08-22T12:00:24.290510+00:00"
+  "created_at": "2026-08-22T13:34:27.471567+00:00"
 }

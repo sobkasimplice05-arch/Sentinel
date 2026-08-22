@@ -1,6 +1,6 @@
 import json
 import hashlib
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Mapping
 
 from loguru import logger
@@ -33,7 +33,7 @@ class LearningEngine:
         logger.info("🧠 Moteur d'apprentissage activé. Analyse des données en cours...")
 
         analysis_result: dict[str, Any] = {
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": datetime.utcnow().replace(tzinfo=timezone.utc).isoformat(),
             "status": "analyzed" if len(collected_data) >= minimum_sources else "insufficient_sources",
             "intelligence_score": 0.0,
             "mutations_suggested": [],
@@ -46,7 +46,11 @@ class LearningEngine:
 
         # Early exit if not enough sources – avoids unnecessary work and memory backup
         if len(collected_data) < minimum_sources:
-            logger.warning("📝 Nombre de sources insuffisant (%d < %d). Analyse interrompue.", len(collected_data), minimum_sources)
+            logger.warning(
+                "📝 Nombre de sources insuffisant (%d < %d). Analyse interrompue.",
+                len(collected_data),
+                minimum_sources,
+            )
             return analysis_result
 
         weighted_scores: list[float] = []
@@ -55,23 +59,24 @@ class LearningEngine:
         for source, content in collected_data.items():
             text = str(content or "")
             stripped_text = text.strip()
-            
+
             # Robust float conversion for reliability
             try:
                 raw_reliability = float(reliability.get(source, 0.5))
             except (ValueError, TypeError):
                 raw_reliability = 0.5
-                
+
             content_length = len(stripped_text)
             non_empty = content_length > 0
             length_quality = min(1.0, content_length / 1000.0)
             content_quality = round((0.45 if non_empty else 0.0) + (0.55 * length_quality), 6)
-            
+
             # Dynamically adjust reliability based on content quality
             adjusted_reliability = max(0.0, min(1.0, raw_reliability * 0.85 + content_quality * 0.15))
             weighted_scores.append(adjusted_reliability)
-            
-            content_hash = hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+            # Use stripped text for hashing to ignore leading/trailing whitespace differences
+            content_hash = hashlib.sha256(stripped_text.encode("utf-8")).hexdigest()
             content_hashes.add(content_hash)
             quality_values.append(content_quality)
             analysis_result["source_metrics"][source] = {
@@ -101,7 +106,8 @@ class LearningEngine:
                 "coverage": round(coverage, 6),
             }
             analysis_result["intelligence_score"] = round(
-                100 * (
+                100
+                * (
                     reliability_score * 0.40
                     + content_quality * 0.25
                     + source_diversity * 0.15
