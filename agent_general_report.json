@@ -1,6 +1,6 @@
 {
   "mode": "EXPERIMENTAL_GENERAL_AGENT",
-  "cycle_number": 185,
+  "cycle_number": 186,
   "objective": {
     "id": 1,
     "title": "improve_observation_and_transfer",
@@ -41,9 +41,9 @@
     }
   ],
   "episode": {
-    "created_at": "2026-08-22T13:34:27.476400+00:00",
+    "created_at": "2026-08-22T13:38:17.339187+00:00",
     "objective_id": 1,
-    "observation_hash": "97b4072e68fd7b50353a08172d1e2bed15d619f90bb87d51a62b49816ad1651a",
+    "observation_hash": "897324bb56a80b34ee9363f2f6b4a935c732b007e693f561875ae62613dff030",
     "plan": [
       {
         "step": 1,
@@ -76,7 +76,7 @@
         "status": "READY"
       }
     ],
-    "action": "PROMOTED",
+    "action": "PROVIDER_ERROR",
     "outcome": "PROMOTED",
     "score": 0.789519,
     "transfer_status": "VERIFIED"
@@ -93,17 +93,19 @@
       "transfer_score": 1.0
     },
     "diagnostic": {
-      "attempt_count": 2,
+      "attempt_count": 3,
       "provider_sequence": [
-        "GOOGLE",
-        "GROQ"
+        "PROVIDER_ERROR:HTTP_400",
+        "PROVIDER_ERROR:HTTP_429",
+        "PROVIDER_ERROR:ConnectionError"
       ],
       "recommended_actions": [
-        "response_received_validate_structure",
-        "response_received_validate_structure"
+        "inspect_request_contract_before_retry",
+        "respect_cooldown_and_fallback",
+        "retry_next_provider_with_bounded_attempts"
       ],
-      "fallback_observed": false,
-      "diagnostic_score": 0.8
+      "fallback_observed": true,
+      "diagnostic_score": 1.0
     }
   },
   "capability_profile": {
