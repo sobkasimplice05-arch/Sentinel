@@ -1,31 +1,19 @@
 {
-  "cycle_id": "self-mod-20260822T133331",
-  "decision": "PROMOTED",
+  "cycle_id": "self-mod-20260822T222428",
+  "decision": "REJECTED",
   "provider": "GROQ",
-  "hypothesis": "Utiliser un horodatage UTC normalisé et hacher le texte épuré améliore la cohérence temporelle et la détection de contenus dupliqués, ce qui devrait réduire la variance des timestamps entre exécutions et augmenter la précision du métrique source_diversity, entraînant une hausse stable du intelligence_score.",
-  "expected_gain": "Réduction de l'écart-type des timestamps <0.01 s sur 100 exécutions et augmentation moyenne du intelligence_score d'au moins 0.5 points sur le jeu de validation interne.",
-  "baseline_score": 0.75,
-  "candidate_score": 0.85,
-  "changed_files": [
-    "learning_engine.py"
-  ],
+  "hypothesis": "Réduire la longueur du texte utilisé pour le hachage (troncature à 200 caractères) et diminuer le niveau de journalisation des messages par source (passage de info/success à debug) accélérera l'évaluation des menaces sans altérer significativement le score d'intelligence.",
+  "expected_gain": "Temps de traitement réduit d'au moins 15 % sur des entrées où chaque source dépasse 10 KB, et réduction de l'empreinte de journalisation de 30 % en moyenne.",
+  "baseline_score": 0.0,
+  "candidate_score": 0.0,
   "target_file": "learning_engine.py",
   "attempts": [
     {
       "target_file": "learning_engine.py",
       "attempt": 1,
       "compact": false,
-      "prompt_chars": 11131,
+      "prompt_chars": 11284,
       "output_tokens": 4096,
-      "provider": "GOOGLE",
-      "parse_error": "réponse sans objet JSON"
-    },
-    {
-      "target_file": "learning_engine.py",
-      "attempt": 2,
-      "compact": true,
-      "prompt_chars": 9431,
-      "output_tokens": 2048,
       "provider": "GROQ"
     }
   ],
@@ -35,5 +23,5 @@
     "test_returncode": 0,
     "test_output": "\n======================================================================\n🔧 PYTEST CONFIGURATION\n======================================================================\n📋 Mode: TEST (Réponses mock activées)\n======================================================================\n\n.........                                                                [100%]\n"
   },
-  "created_at": "2026-08-22T13:34:27.471567+00:00"
+  "created_at": "2026-08-22T22:24:34.011093+00:00"
 }
