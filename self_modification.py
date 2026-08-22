@@ -430,13 +430,22 @@ Réponse invalide à réparer :
     def _validate_structure(self, proposal: PatchProposal) -> tuple[bool, str]:
         if not proposal.files:
             return False, "NO_CHANGE_PROPOSED"
+        forbidden_process_markers = (
+            "subprocess",
+            "os.system(",
+            "os.popen(",
+            "eval(",
+            "exec(",
+            "git push --force",
+            "SELF_MODIFICATION_MODEL_URL",
+        )
         for path, content in proposal.files.items():
-            if "subprocess" in content and path == "learning_engine.py":
+            if any(marker in content for marker in forbidden_process_markers):
+                if "SELF_MODIFICATION_MODEL_URL" in content:
+                    return False, "self_provider_mutation_forbidden"
+                if "git push --force" in content or "os.system(" in content or "os.popen(" in content:
+                    return False, "forbidden_unbounded_side_effect"
                 return False, "forbidden_process_control"
-            if "os.system(" in content or "git push --force" in content:
-                return False, "forbidden_unbounded_side_effect"
-            if "SELF_MODIFICATION_MODEL_URL" in content:
-                return False, "self_provider_mutation_forbidden"
         return True, "structure_valid"
 
     def _run_candidate_tests(self, candidate_root: Path, files: Mapping[str, str]) -> tuple[bool, dict[str, Any]]:

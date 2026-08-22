@@ -476,3 +476,15 @@ def test_passing_candidate_without_measured_gain_is_not_promoted(tmp_path):
     )
 
     assert score == 0.0
+
+
+def test_structure_rejects_dynamic_code_execution(tmp_path):
+    engine = SelfModificationEngine(root=tmp_path)
+    proposal = engine._parse_proposal(
+        '{"hypothesis":"bad","expected_gain":"none","files":[{"path":"learning_engine.py","content":"exec(\\\"print(1)\\\")"}]}'
+    )
+
+    valid, reason = engine._validate_structure(proposal)
+
+    assert valid is False
+    assert reason == "forbidden_process_control"
