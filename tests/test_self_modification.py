@@ -462,3 +462,17 @@ def test_auto_provider_falls_back_after_empty_cloudflare_response(tmp_path, monk
     assert engine._provider_on_cooldown("cloudflare") is True
     assert any("api.cloudflare.com" in url for url in calls)
     assert any("generativelanguage.googleapis.com" in url for url in calls)
+
+
+def test_passing_candidate_without_measured_gain_is_not_promoted(tmp_path):
+    engine = SelfModificationEngine(root=tmp_path)
+    proposal = engine._parse_proposal(
+        '{"hypothesis":"cleanup","expected_gain":"none","files":[{"path":"learning_engine.py","content":"print(1)"}]}'
+    )
+
+    score = engine._score(
+        {"compile_returncode": 0, "test_returncode": 0},
+        proposal,
+    )
+
+    assert score == 0.0

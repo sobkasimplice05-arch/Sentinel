@@ -33,7 +33,7 @@ class LearningEngine:
         logger.info("🧠 Moteur d'apprentissage activé. Analyse des données en cours...")
 
         analysis_result: dict[str, Any] = {
-            "timestamp": datetime.utcnow().replace(tzinfo=timezone.utc).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "status": "analyzed" if len(collected_data) >= minimum_sources else "insufficient_sources",
             "intelligence_score": 0.0,
             "mutations_suggested": [],
@@ -87,10 +87,10 @@ class LearningEngine:
             }
             if non_empty and adjusted_reliability >= 0.45:
                 analysis_result["mutations_suggested"].append(f"optimize_defense_{source}")
-                logger.success("🎯 Pattern d'intelligence détecté pour la source : %s", source)
+                logger.success("🎯 Pattern d'intelligence détecté pour la source : {}", source)
             elif source:
                 analysis_result["mutations_suggested"].append(f"monitor_source_{source}")
-                logger.warning("📝 Source à surveiller selon la mémoire : %s", source)
+                logger.warning("📝 Source à surveiller selon la mémoire : {}", source)
 
         if weighted_scores:
             reliability_score = sum(weighted_scores) / len(weighted_scores)

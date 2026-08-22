@@ -464,10 +464,18 @@ Réponse invalide à réparer :
         return compile_result.returncode == 0 and test_result.returncode == 0, details
 
     def _score(self, details: Mapping[str, Any], proposal: PatchProposal) -> float:
+        """Retourne un score nul sans preuve de gain mesurable.
+
+        La compilation et les tests établissent l'absence de régression, mais ne
+        prouvent pas une amélioration. Un score de validation ne doit donc pas
+        être augmenté artificiellement par le simple nombre de fichiers changés.
+        """
         if details.get("compile_returncode") != 0 or details.get("test_returncode") != 0:
             return 0.0
-        meaningful_change = sum(1 for path, content in proposal.files.items() if content != (self.root / path).read_text(encoding="utf-8"))
-        return round(min(1.0, 0.75 + meaningful_change * 0.10), 6)
+        explicit_gain = details.get("measured_gain")
+        if isinstance(explicit_gain, (int, float)) and 0.0 < float(explicit_gain) <= 1.0:
+            return round(float(explicit_gain), 6)
+        return 0.0
 
     def _write_report(self, report: Mapping[str, Any]) -> None:
         self.report_filename.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -629,7 +637,7 @@ Réponse invalide à réparer :
                 passed, test_details = self._run_candidate_tests(candidate_root, proposal.files)
                 score = self._score(test_details, proposal)
 
-            baseline_score = 0.75
+            baseline_score = 0.0
             if not passed or score <= baseline_score:
                 report = {
                     "cycle_id": cycle_id,
