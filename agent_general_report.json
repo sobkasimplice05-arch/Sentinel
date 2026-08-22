@@ -1,6 +1,6 @@
 {
   "mode": "EXPERIMENTAL_GENERAL_AGENT",
-  "cycle_number": 182,
+  "cycle_number": 183,
   "objective": {
     "id": 1,
     "title": "improve_observation_and_transfer",
@@ -41,7 +41,7 @@
     }
   ],
   "episode": {
-    "created_at": "2026-08-22T12:00:24.295338+00:00",
+    "created_at": "2026-08-22T12:42:40.077106+00:00",
     "objective_id": 1,
     "observation_hash": "97b4072e68fd7b50353a08172d1e2bed15d619f90bb87d51a62b49816ad1651a",
     "plan": [
@@ -76,8 +76,8 @@
         "status": "READY"
       }
     ],
-    "action": "PROMOTED",
-    "outcome": "PROMOTED",
+    "action": "PROVIDER_ERROR",
+    "outcome": "NO_CHANGE_NEEDED",
     "score": 0.789519,
     "transfer_status": "VERIFIED"
   },
@@ -93,14 +93,18 @@
       "transfer_score": 1.0
     },
     "diagnostic": {
-      "attempt_count": 1,
+      "attempt_count": 3,
       "provider_sequence": [
-        "GOOGLE"
+        "GOOGLE",
+        "PROVIDER_ERROR:HTTP_400",
+        "PROVIDER_ERROR:HTTP_400"
       ],
       "recommended_actions": [
-        "response_received_validate_structure"
+        "response_received_validate_structure",
+        "inspect_request_contract_before_retry",
+        "inspect_request_contract_before_retry"
       ],
-      "fallback_observed": false,
+      "fallback_observed": true,
       "diagnostic_score": 1.0
     }
   },
