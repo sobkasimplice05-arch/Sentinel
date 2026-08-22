@@ -62,23 +62,25 @@ class LearningEngine:
             except (ValueError, TypeError):
                 raw_reliability = 0.5
                 
-            source_reliability = max(0.0, min(1.0, raw_reliability))
-            weighted_scores.append(source_reliability)
-            
             content_length = len(stripped_text)
             non_empty = content_length > 0
             length_quality = min(1.0, content_length / 1000.0)
             content_quality = round((0.45 if non_empty else 0.0) + (0.55 * length_quality), 6)
+            
+            # Dynamically adjust reliability based on content quality
+            adjusted_reliability = max(0.0, min(1.0, raw_reliability * 0.85 + content_quality * 0.15))
+            weighted_scores.append(adjusted_reliability)
+            
             content_hash = hashlib.sha256(text.encode("utf-8")).hexdigest()
             content_hashes.add(content_hash)
             quality_values.append(content_quality)
             analysis_result["source_metrics"][source] = {
                 "content_length": content_length,
                 "content_quality": content_quality,
-                "reliability": round(source_reliability, 6),
+                "reliability": round(adjusted_reliability, 6),
                 "content_hash": content_hash,
             }
-            if non_empty and source_reliability >= 0.45:
+            if non_empty and adjusted_reliability >= 0.45:
                 analysis_result["mutations_suggested"].append(f"optimize_defense_{source}")
                 logger.success("🎯 Pattern d'intelligence détecté pour la source : %s", source)
             elif source:
@@ -98,7 +100,7 @@ class LearningEngine:
                 "freshness": round(freshness, 6),
                 "coverage": round(coverage, 6),
             }
-            analysis_result["intelligence_score" ] = round(
+            analysis_result["intelligence_score"] = round(
                 100 * (
                     reliability_score * 0.40
                     + content_quality * 0.25
