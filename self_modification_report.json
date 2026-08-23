@@ -1,9 +1,9 @@
 {
-  "cycle_id": "self-mod-20260823T145947",
+  "cycle_id": "self-mod-20260823T152507",
   "decision": "REJECTED",
   "provider": "GROQ",
-  "hypothesis": "Adding policy‑driven metric weights and caching previously seen content hashes will make the scoring more adaptable to policy changes and reduce redundant processing, leading to higher alignment with desired outcomes and faster evaluation times.",
-  "expected_gain": "candidate_score increase ≥0.01 on next cycle and evaluation time reduction ≥10% (e.g., from 0.06s to ≤0.054s).",
+  "hypothesis": "En limitant les sauvegardes mémoire aux évaluations dont le score d'intelligence dépasse le seuil de confiance, on réduit les I/O inutiles tout en conservant la persistance des décisions significatives. De plus, en filtrant les sources non‑string, on évite des erreurs de type et améliore la robustesse du moteur.",
+  "expected_gain": "Temps d'exécution moyen réduit d'au moins 20 % sur les cycles où les données sont insuffisantes ou de faible qualité, et taux d'exception < 0,1 % sur 10 000 évaluations",
   "baseline_score": 0.0,
   "candidate_score": 0.0,
   "target_file": "learning_engine.py",
@@ -14,6 +14,15 @@
       "compact": false,
       "prompt_chars": 11284,
       "output_tokens": 4096,
+      "provider": "GOOGLE",
+      "parse_error": "Unterminated string starting at: line 7 column 18 (char 490)"
+    },
+    {
+      "target_file": "learning_engine.py",
+      "attempt": 2,
+      "compact": true,
+      "prompt_chars": 9584,
+      "output_tokens": 2048,
       "provider": "GROQ"
     }
   ],
@@ -23,5 +32,5 @@
     "test_returncode": 0,
     "test_output": "\n======================================================================\n🔧 PYTEST CONFIGURATION\n======================================================================\n📋 Mode: TEST (Réponses mock activées)\n======================================================================\n\n.........                                                                [100%]\n"
   },
-  "created_at": "2026-08-23T14:59:53.995183+00:00"
+  "created_at": "2026-08-23T15:25:26.177901+00:00"
 }
