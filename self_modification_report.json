@@ -1,9 +1,9 @@
 {
-  "cycle_id": "self-mod-20260823T152507",
+  "cycle_id": "self-mod-20260823T171724",
   "decision": "REJECTED",
-  "provider": "GROQ",
-  "hypothesis": "En limitant les sauvegardes mémoire aux évaluations dont le score d'intelligence dépasse le seuil de confiance, on réduit les I/O inutiles tout en conservant la persistance des décisions significatives. De plus, en filtrant les sources non‑string, on évite des erreurs de type et améliore la robustesse du moteur.",
-  "expected_gain": "Temps d'exécution moyen réduit d'au moins 20 % sur les cycles où les données sont insuffisantes ou de faible qualité, et taux d'exception < 0,1 % sur 10 000 évaluations",
+  "provider": "GOOGLE",
+  "hypothesis": "Lier dynamiquement le seuil de suggestion des mutations au seuil de confiance de la politique et adapter la pondération de la fiabilité selon que la source est connue ou non permet d'améliorer la pertinence des décisions d'adaptation.",
+  "expected_gain": "Amélioration de la précision de l'évaluation et augmentation du score d'intelligence global d'au moins 0.5%.",
   "baseline_score": 0.0,
   "candidate_score": 0.0,
   "target_file": "learning_engine.py",
@@ -14,16 +14,7 @@
       "compact": false,
       "prompt_chars": 11284,
       "output_tokens": 4096,
-      "provider": "GOOGLE",
-      "parse_error": "Unterminated string starting at: line 7 column 18 (char 490)"
-    },
-    {
-      "target_file": "learning_engine.py",
-      "attempt": 2,
-      "compact": true,
-      "prompt_chars": 9584,
-      "output_tokens": 2048,
-      "provider": "GROQ"
+      "provider": "GOOGLE"
     }
   ],
   "tests": {
@@ -32,5 +23,5 @@
     "test_returncode": 0,
     "test_output": "\n======================================================================\n🔧 PYTEST CONFIGURATION\n======================================================================\n📋 Mode: TEST (Réponses mock activées)\n======================================================================\n\n.........                                                                [100%]\n"
   },
-  "created_at": "2026-08-23T15:25:26.177901+00:00"
+  "created_at": "2026-08-23T17:17:35.875129+00:00"
 }
