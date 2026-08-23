@@ -1,9 +1,9 @@
 {
-  "cycle_id": "self-mod-20260822T222428",
+  "cycle_id": "self-mod-20260823T142536",
   "decision": "REJECTED",
-  "provider": "GROQ",
-  "hypothesis": "Réduire la longueur du texte utilisé pour le hachage (troncature à 200 caractères) et diminuer le niveau de journalisation des messages par source (passage de info/success à debug) accélérera l'évaluation des menaces sans altérer significativement le score d'intelligence.",
-  "expected_gain": "Temps de traitement réduit d'au moins 15 % sur des entrées où chaque source dépasse 10 KB, et réduction de l'empreinte de journalisation de 30 % en moyenne.",
+  "provider": "GOOGLE",
+  "hypothesis": "Moduler le poids de la qualité du contenu dans la fiabilité ajustée selon le seuil de confiance et optimiser le calcul de couverture pour valoriser l'atteinte du nombre minimal de sources.",
+  "expected_gain": "Amélioration de la précision du score d'intelligence et augmentation potentielle du score global de 0.5% à 1.5%.",
   "baseline_score": 0.0,
   "candidate_score": 0.0,
   "target_file": "learning_engine.py",
@@ -14,7 +14,7 @@
       "compact": false,
       "prompt_chars": 11284,
       "output_tokens": 4096,
-      "provider": "GROQ"
+      "provider": "GOOGLE"
     }
   ],
   "tests": {
@@ -23,5 +23,5 @@
     "test_returncode": 0,
     "test_output": "\n======================================================================\n🔧 PYTEST CONFIGURATION\n======================================================================\n📋 Mode: TEST (Réponses mock activées)\n======================================================================\n\n.........                                                                [100%]\n"
   },
-  "created_at": "2026-08-22T22:24:34.011093+00:00"
+  "created_at": "2026-08-23T14:25:48.728792+00:00"
 }
