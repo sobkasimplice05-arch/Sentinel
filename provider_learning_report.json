@@ -3,14 +3,14 @@
   "observed_diagnostic": {
     "attempt_count": 3,
     "provider_sequence": [
-      "GOOGLE",
-      "PROVIDER_ERROR:HTTP_400",
-      "PROVIDER_ERROR:HTTP_400"
+      "PROVIDER_ERROR:HTTP_429",
+      "PROVIDER_ERROR:ConnectionError",
+      "PROVIDER_ERROR:ConnectionError"
     ],
     "recommended_actions": [
-      "response_received_validate_structure",
-      "inspect_request_contract_before_retry",
-      "inspect_request_contract_before_retry"
+      "respect_cooldown_and_fallback",
+      "retry_next_provider_with_bounded_attempts",
+      "retry_next_provider_with_bounded_attempts"
     ],
     "fallback_observed": true,
     "diagnostic_score": 1.0
