@@ -1,14 +1,18 @@
 {
   "skill_name": "provider_failure_diagnosis",
   "observed_diagnostic": {
-    "attempt_count": 1,
+    "attempt_count": 3,
     "provider_sequence": [
-      "GOOGLE"
+      "GOOGLE",
+      "PROVIDER_ERROR:HTTP_400",
+      "PROVIDER_ERROR:HTTP_429"
     ],
     "recommended_actions": [
-      "response_received_validate_structure"
+      "response_received_validate_structure",
+      "inspect_request_contract_before_retry",
+      "respect_cooldown_and_fallback"
     ],
-    "fallback_observed": false,
+    "fallback_observed": true,
     "diagnostic_score": 1.0
   },
   "transfer_variants": [
