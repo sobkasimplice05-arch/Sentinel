@@ -13,9 +13,9 @@
     "evaluate_feedback",
     "self_diagnose_failures"
   ],
-  "cycle_number": 254,
+  "cycle_number": 255,
   "known_failures": [],
-  "last_observation_hash": "897324bb56a80b34ee9363f2f6b4a935c732b007e693f561875ae62613dff030",
+  "last_observation_hash": "7bb2067a40e08a6c95ed8e66f2d29aeee53c1741deaa9ddc2228dd8b37bbe3b6",
   "next_actions": [
     "reuse_promoted_policy_next_cycle",
     "measure_source_reliability_again",
@@ -24,11 +24,11 @@
   "rejected_experiments": 30,
   "strategy": {
     "confidence": 0.95,
-    "last_decision_at": "2026-08-23T20:19:11.123329+00:00",
+    "last_decision_at": "2026-08-23T20:25:28.115458+00:00",
     "last_outcome": "PROMOTED",
     "name": "evidence_driven_adaptation"
   },
-  "successful_experiments": 155,
-  "total_plans": 254,
+  "successful_experiments": 156,
+  "total_plans": 255,
   "version": 1
 }

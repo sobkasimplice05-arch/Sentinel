@@ -1,6 +1,6 @@
 {
   "mode": "EXPERIMENTAL_GENERAL_AGENT",
-  "cycle_number": 271,
+  "cycle_number": 272,
   "objective": {
     "id": 1,
     "title": "improve_observation_and_transfer",
@@ -41,9 +41,9 @@
     }
   ],
   "episode": {
-    "created_at": "2026-08-23T20:19:11.396782+00:00",
+    "created_at": "2026-08-23T20:25:28.211695+00:00",
     "objective_id": 1,
-    "observation_hash": "897324bb56a80b34ee9363f2f6b4a935c732b007e693f561875ae62613dff030",
+    "observation_hash": "7bb2067a40e08a6c95ed8e66f2d29aeee53c1741deaa9ddc2228dd8b37bbe3b6",
     "plan": [
       {
         "step": 1,
@@ -95,17 +95,17 @@
     "diagnostic": {
       "attempt_count": 3,
       "provider_sequence": [
-        "PROVIDER_ERROR:HTTP_429",
+        "PROVIDER_ERROR:ConnectionError",
         "PROVIDER_ERROR:ConnectionError",
         "PROVIDER_ERROR:ConnectionError"
       ],
       "recommended_actions": [
-        "respect_cooldown_and_fallback",
+        "retry_next_provider_with_bounded_attempts",
         "retry_next_provider_with_bounded_attempts",
         "retry_next_provider_with_bounded_attempts"
       ],
-      "fallback_observed": true,
-      "diagnostic_score": 1.0
+      "fallback_observed": false,
+      "diagnostic_score": 0.8
     }
   },
   "capability_profile": {
