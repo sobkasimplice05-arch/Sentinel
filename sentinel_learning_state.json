@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "last_observation_hash": "fd410d30b10a07eff60a50cdd045de8d342302615b5e0b08a8deef40a71ff02c",
-  "last_cycle_id": "cycle-20260823T092949-fd410d30b10a",
-  "total_cycles": 156,
-  "successful_adaptations": 126,
+  "last_observation_hash": "5ef364647f19464aa222af3b99c176e23d6e07288acddeab18b9a21c72301d36",
+  "last_cycle_id": "cycle-20260823T095328-5ef364647f19",
+  "total_cycles": 157,
+  "successful_adaptations": 127,
   "rejected_adaptations": 30,
   "policy": {
-    "version": 127,
+    "version": 128,
     "confidence_threshold": 0.5,
     "minimum_sources": 1,
     "source_reliability": {
@@ -138,7 +138,8 @@
       "1277c86d3e84499c515266e7e49efa9e8546eaa813cc8bec9c02615b3cc11134",
       "5ef364647f19464aa222af3b99c176e23d6e07288acddeab18b9a21c72301d36",
       "1277c86d3e84499c515266e7e49efa9e8546eaa813cc8bec9c02615b3cc11134",
-      "fd410d30b10a07eff60a50cdd045de8d342302615b5e0b08a8deef40a71ff02c"
+      "fd410d30b10a07eff60a50cdd045de8d342302615b5e0b08a8deef40a71ff02c",
+      "5ef364647f19464aa222af3b99c176e23d6e07288acddeab18b9a21c72301d36"
     ]
   }
 }
