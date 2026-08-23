@@ -3,17 +3,17 @@
   "observed_diagnostic": {
     "attempt_count": 3,
     "provider_sequence": [
-      "PROVIDER_ERROR:ConnectionError",
-      "PROVIDER_ERROR:ConnectionError",
-      "PROVIDER_ERROR:ConnectionError"
+      "GOOGLE",
+      "PROVIDER_ERROR:HTTP_400",
+      "PROVIDER_ERROR:HTTP_400"
     ],
     "recommended_actions": [
-      "retry_next_provider_with_bounded_attempts",
-      "retry_next_provider_with_bounded_attempts",
-      "retry_next_provider_with_bounded_attempts"
+      "response_received_validate_structure",
+      "inspect_request_contract_before_retry",
+      "inspect_request_contract_before_retry"
     ],
-    "fallback_observed": false,
-    "diagnostic_score": 0.8
+    "fallback_observed": true,
+    "diagnostic_score": 1.0
   },
   "transfer_variants": [
     {
