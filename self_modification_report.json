@@ -1,9 +1,9 @@
 {
-  "cycle_id": "self-mod-20260824T015014",
+  "cycle_id": "self-mod-20260824T205847",
   "decision": "REJECTED",
-  "provider": "GROQ",
-  "hypothesis": "Introducing configurable weighting for reliability/content quality and score components allows tuning to improve alignment with downstream decision accuracy.",
-  "expected_gain": ">=5% increase in correlation between intelligence_score and successful adaptation decisions on validation observations.",
+  "provider": "GOOGLE",
+  "hypothesis": "Optimiser l'ajustement de la fiabilité des sources avec une pénalité de longueur progressive et rééquilibrer les poids du score d'intelligence pour valoriser la fiabilité globale.",
+  "expected_gain": "Amélioration de la précision du score d'intelligence et augmentation du score de la baseline d'au moins 0.01.",
   "baseline_score": 0.0,
   "candidate_score": 0.0,
   "target_file": "learning_engine.py",
@@ -12,9 +12,9 @@
       "target_file": "learning_engine.py",
       "attempt": 1,
       "compact": false,
-      "prompt_chars": 11256,
+      "prompt_chars": 11284,
       "output_tokens": 4096,
-      "provider": "GROQ"
+      "provider": "GOOGLE"
     }
   ],
   "tests": {
@@ -23,5 +23,5 @@
     "test_returncode": 0,
     "test_output": "\n======================================================================\n🔧 PYTEST CONFIGURATION\n======================================================================\n📋 Mode: TEST (Réponses mock activées)\n======================================================================\n\n.........                                                                [100%]\n"
   },
-  "created_at": "2026-08-24T01:50:20.953429+00:00"
+  "created_at": "2026-08-24T20:58:59.560938+00:00"
 }
