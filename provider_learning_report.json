@@ -3,7 +3,7 @@
   "observed_diagnostic": {
     "attempt_count": 1,
     "provider_sequence": [
-      "GOOGLE"
+      "GROQ"
     ],
     "recommended_actions": [
       "response_received_validate_structure"
