@@ -1,9 +1,9 @@
 {
-  "cycle_id": "self-mod-20260823T171724",
+  "cycle_id": "self-mod-20260824T012447",
   "decision": "REJECTED",
   "provider": "GOOGLE",
-  "hypothesis": "Lier dynamiquement le seuil de suggestion des mutations au seuil de confiance de la politique et adapter la pondération de la fiabilité selon que la source est connue ou non permet d'améliorer la pertinence des décisions d'adaptation.",
-  "expected_gain": "Amélioration de la précision de l'évaluation et augmentation du score d'intelligence global d'au moins 0.5%.",
+  "hypothesis": "Utiliser le seuil de confiance dynamique de la politique (confidence_threshold) au lieu d'un seuil statique de 0.45 pour filtrer les suggestions de mutations de défense, améliorant ainsi la précision des décisions d'adaptation.",
+  "expected_gain": "Alignement optimal avec la politique active et maintien d'un score de baseline stable ou supérieur à 0.789519.",
   "baseline_score": 0.0,
   "candidate_score": 0.0,
   "target_file": "learning_engine.py",
@@ -23,5 +23,5 @@
     "test_returncode": 0,
     "test_output": "\n======================================================================\n🔧 PYTEST CONFIGURATION\n======================================================================\n📋 Mode: TEST (Réponses mock activées)\n======================================================================\n\n.........                                                                [100%]\n"
   },
-  "created_at": "2026-08-23T17:17:35.875129+00:00"
+  "created_at": "2026-08-24T01:24:59.044404+00:00"
 }
