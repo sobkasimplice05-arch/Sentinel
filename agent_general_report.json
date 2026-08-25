@@ -1,6 +1,6 @@
 {
   "mode": "EXPERIMENTAL_GENERAL_AGENT",
-  "cycle_number": 361,
+  "cycle_number": 362,
   "objective": {
     "id": 1,
     "title": "improve_observation_and_transfer",
@@ -41,9 +41,9 @@
     }
   ],
   "episode": {
-    "created_at": "2026-08-25T12:51:27.271542+00:00",
+    "created_at": "2026-08-25T13:36:02.845656+00:00",
     "objective_id": 1,
-    "observation_hash": "5ef364647f19464aa222af3b99c176e23d6e07288acddeab18b9a21c72301d36",
+    "observation_hash": "1277c86d3e84499c515266e7e49efa9e8546eaa813cc8bec9c02615b3cc11134",
     "plan": [
       {
         "step": 1,
@@ -95,14 +95,14 @@
     "diagnostic": {
       "attempt_count": 3,
       "provider_sequence": [
-        "PROVIDER_ERROR:HTTP_429",
-        "PROVIDER_ERROR:ConnectionError",
-        "PROVIDER_ERROR:ConnectionError"
+        "EMPTY_CLOUDFLARE_RESPONSE",
+        "GOOGLE",
+        "PROVIDER_ERROR:HTTP_400"
       ],
       "recommended_actions": [
-        "respect_cooldown_and_fallback",
-        "retry_next_provider_with_bounded_attempts",
-        "retry_next_provider_with_bounded_attempts"
+        "cooldown_empty_provider_and_fallback",
+        "response_received_validate_structure",
+        "inspect_request_contract_before_retry"
       ],
       "fallback_observed": true,
       "diagnostic_score": 1.0
