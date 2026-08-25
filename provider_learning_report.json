@@ -3,17 +3,17 @@
   "observed_diagnostic": {
     "attempt_count": 3,
     "provider_sequence": [
-      "PROVIDER_ERROR:HTTP_429",
-      "PROVIDER_ERROR:ConnectionError",
-      "PROVIDER_ERROR:ConnectionError"
+      "PROVIDER_ERROR:HTTP_503",
+      "PROVIDER_ERROR:HTTP_503",
+      "PROVIDER_ERROR:HTTP_503"
     ],
     "recommended_actions": [
-      "respect_cooldown_and_fallback",
-      "retry_next_provider_with_bounded_attempts",
-      "retry_next_provider_with_bounded_attempts"
+      "record_unknown_provider_state",
+      "record_unknown_provider_state",
+      "record_unknown_provider_state"
     ],
-    "fallback_observed": true,
-    "diagnostic_score": 1.0
+    "fallback_observed": false,
+    "diagnostic_score": 0.8
   },
   "transfer_variants": [
     {
