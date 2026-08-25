@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "last_observation_hash": "97b4072e68fd7b50353a08172d1e2bed15d619f90bb87d51a62b49816ad1651a",
-  "last_cycle_id": "cycle-20260825T065228-97b4072e68fd",
-  "total_cycles": 256,
-  "successful_adaptations": 226,
+  "last_observation_hash": "1277c86d3e84499c515266e7e49efa9e8546eaa813cc8bec9c02615b3cc11134",
+  "last_cycle_id": "cycle-20260825T073013-1277c86d3e84",
+  "total_cycles": 257,
+  "successful_adaptations": 227,
   "rejected_adaptations": 30,
   "policy": {
-    "version": 227,
+    "version": 228,
     "confidence_threshold": 0.5,
     "minimum_sources": 1,
     "source_reliability": {
@@ -14,7 +14,6 @@
       "github": 0.899998
     },
     "observation_history": [
-      "b707dd5490889f30925568ba31fdd0f60e7106a8e0ac5660b56081818572fac8",
       "1201a2d88910147457f2798ea62a5d3c09f0c668d7a024384ce684fde3aa0341",
       "b707dd5490889f30925568ba31fdd0f60e7106a8e0ac5660b56081818572fac8",
       "897324bb56a80b34ee9363f2f6b4a935c732b007e693f561875ae62613dff030",
@@ -213,7 +212,8 @@
       "97b4072e68fd7b50353a08172d1e2bed15d619f90bb87d51a62b49816ad1651a",
       "fd410d30b10a07eff60a50cdd045de8d342302615b5e0b08a8deef40a71ff02c",
       "1277c86d3e84499c515266e7e49efa9e8546eaa813cc8bec9c02615b3cc11134",
-      "97b4072e68fd7b50353a08172d1e2bed15d619f90bb87d51a62b49816ad1651a"
+      "97b4072e68fd7b50353a08172d1e2bed15d619f90bb87d51a62b49816ad1651a",
+      "1277c86d3e84499c515266e7e49efa9e8546eaa813cc8bec9c02615b3cc11134"
     ]
   }
 }
