@@ -4,13 +4,13 @@
     "attempt_count": 3,
     "provider_sequence": [
       "EMPTY_CLOUDFLARE_RESPONSE",
-      "PROVIDER_ERROR:HTTP_400",
-      "PROVIDER_ERROR:HTTP_400"
+      "PROVIDER_ERROR:HTTP_503",
+      "PROVIDER_ERROR:HTTP_503"
     ],
     "recommended_actions": [
       "cooldown_empty_provider_and_fallback",
-      "inspect_request_contract_before_retry",
-      "inspect_request_contract_before_retry"
+      "record_unknown_provider_state",
+      "record_unknown_provider_state"
     ],
     "fallback_observed": true,
     "diagnostic_score": 1.0
