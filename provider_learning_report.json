@@ -4,12 +4,12 @@
     "attempt_count": 3,
     "provider_sequence": [
       "PROVIDER_ERROR:HTTP_429",
-      "PROVIDER_ERROR:HTTP_429",
+      "PROVIDER_ERROR:ConnectionError",
       "PROVIDER_ERROR:ConnectionError"
     ],
     "recommended_actions": [
       "respect_cooldown_and_fallback",
-      "respect_cooldown_and_fallback",
+      "retry_next_provider_with_bounded_attempts",
       "retry_next_provider_with_bounded_attempts"
     ],
     "fallback_observed": true,
