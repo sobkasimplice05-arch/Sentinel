@@ -1,6 +1,6 @@
 {
   "mode": "EXPERIMENTAL_GENERAL_AGENT",
-  "cycle_number": 378,
+  "cycle_number": 379,
   "objective": {
     "id": 1,
     "title": "improve_observation_and_transfer",
@@ -41,9 +41,9 @@
     }
   ],
   "episode": {
-    "created_at": "2026-08-25T20:24:21.688497+00:00",
+    "created_at": "2026-08-25T20:32:15.626616+00:00",
     "objective_id": 1,
-    "observation_hash": "65833bb52a3938f3964b9a513993f5bf134ec28e24796ce51963c9cf3223f610",
+    "observation_hash": "1277c86d3e84499c515266e7e49efa9e8546eaa813cc8bec9c02615b3cc11134",
     "plan": [
       {
         "step": 1,
@@ -95,14 +95,14 @@
     "diagnostic": {
       "attempt_count": 3,
       "provider_sequence": [
-        "PROVIDER_ERROR:HTTP_429",
-        "PROVIDER_ERROR:ConnectionError",
-        "PROVIDER_ERROR:ConnectionError"
+        "EMPTY_CLOUDFLARE_RESPONSE",
+        "PROVIDER_ERROR:HTTP_503",
+        "PROVIDER_ERROR:HTTP_503"
       ],
       "recommended_actions": [
-        "respect_cooldown_and_fallback",
-        "retry_next_provider_with_bounded_attempts",
-        "retry_next_provider_with_bounded_attempts"
+        "cooldown_empty_provider_and_fallback",
+        "record_unknown_provider_state",
+        "record_unknown_provider_state"
       ],
       "fallback_observed": true,
       "diagnostic_score": 1.0
