@@ -11,8 +11,8 @@ jobs:
   test-suite:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      actions: write
+      contents: read
+      actions: read
 
     steps:
       - name: 📥 Restauration du Noyau
