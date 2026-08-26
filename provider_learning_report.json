@@ -1,18 +1,14 @@
 {
   "skill_name": "provider_failure_diagnosis",
   "observed_diagnostic": {
-    "attempt_count": 3,
+    "attempt_count": 1,
     "provider_sequence": [
-      "EMPTY_CLOUDFLARE_RESPONSE",
-      "PROVIDER_ERROR:HTTP_429",
-      "PROVIDER_ERROR:HTTP_400"
+      "GROQ"
     ],
     "recommended_actions": [
-      "cooldown_empty_provider_and_fallback",
-      "respect_cooldown_and_fallback",
-      "inspect_request_contract_before_retry"
+      "response_received_validate_structure"
     ],
-    "fallback_observed": true,
+    "fallback_observed": false,
     "diagnostic_score": 1.0
   },
   "transfer_variants": [
