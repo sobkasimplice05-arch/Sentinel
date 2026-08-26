@@ -3,13 +3,13 @@
   "observed_diagnostic": {
     "attempt_count": 3,
     "provider_sequence": [
-      "EMPTY_CLOUDFLARE_RESPONSE",
       "PROVIDER_ERROR:HTTP_429",
+      "PROVIDER_ERROR:HTTP_400",
       "PROVIDER_ERROR:HTTP_400"
     ],
     "recommended_actions": [
-      "cooldown_empty_provider_and_fallback",
       "respect_cooldown_and_fallback",
+      "inspect_request_contract_before_retry",
       "inspect_request_contract_before_retry"
     ],
     "fallback_observed": true,
