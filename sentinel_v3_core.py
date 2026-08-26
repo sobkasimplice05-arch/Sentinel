@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import subprocess
 from datetime import datetime, timezone
 from typing import Any
@@ -10,6 +11,7 @@ from ai_matrix import AIMatrix
 from autonomy_kernel import AutonomyKernel
 from data_collector import DataCollector
 from evolution_guard import EvolutionGuard
+from evolution_lab import EvolutionLab
 from feedback_learning import AdaptiveFeedback
 from learning_engine import LearningEngine
 from memory_manager import SentinelMemory
@@ -36,6 +38,7 @@ class SentinelV3Core:
         self.notifier = SentinelNotifier()
         self.ai = AIMatrix()
         self.guard = EvolutionGuard()
+        self.evolution_lab = EvolutionLab()
         self.janitor = SentinelJanitor()
 
     def commit_memory(
@@ -58,6 +61,7 @@ class SentinelV3Core:
                 "agent_general_state.json",
                 "agent_general_report.json",
                 "transfer_benchmark_report.json",
+                "evolution_lab_report.json",
                 "provider_learning_report.json",
                 *tracked_files,
             ]
@@ -91,8 +95,18 @@ class SentinelV3Core:
                 ["git", "commit", "-m", f"🧬 FEEDBACK: cycle adaptatif vérifié {timestamp}"],
                 check=True,
             )
-            subprocess.run(["git", "push", "origin", "main"], check=True)
-            logger.info("✅ Preuves du cycle poussées sur main sans écrasement d'historique.")
+            code_candidate = include_self_modification_report or include_source_evolution_report
+            allow_direct_main = os.getenv("SENTINEL_ALLOW_DIRECT_MAIN_PUSH", "false").lower() == "true"
+            if code_candidate and not allow_direct_main:
+                branch_name = "evolution-lab/" + timestamp.replace(":", "").replace("-", "")
+                subprocess.run(["git", "push", "origin", f"HEAD:refs/heads/{branch_name}"], check=True)
+                logger.info(
+                    "✅ Preuves de code poussées vers %s; aucune auto-promotion directe sur main.",
+                    branch_name,
+                )
+            else:
+                subprocess.run(["git", "push", "origin", "main"], check=True)
+                logger.info("✅ Preuves du cycle poussées sur main sans écrasement d'historique.")
             return True
         except subprocess.CalledProcessError as exc:
             logger.error(f"❌ Persistance Git échouée: {exc}")
@@ -153,6 +167,15 @@ class SentinelV3Core:
             source_evolution_decision = source_evolution_report["decision"]
             preliminary_report["source_evolution"] = source_evolution_report
 
+            evolution_lab_report = self.evolution_lab.record_cycle(
+                cycle_id=feedback_report["cycle_id"],
+                observation_hash=feedback_report["observation_hash"],
+                feedback_report=feedback_report,
+                self_modification_report=self_modification_report,
+                source_evolution_report=source_evolution_report,
+            )
+            preliminary_report["evolution_lab"] = evolution_lab_report
+
             provider_learning = run_provider_diagnostic(self_modification_report)
             existing_skill = self.agent_general.get_skill(provider_learning["skill_name"])
             provider_learning_new = False
@@ -194,16 +217,20 @@ class SentinelV3Core:
             )
             preliminary_report["agent_general"] = agent_general_report
 
+            verified_code_promotion = any(
+                item.get("code_promotion_verified")
+                for item in evolution_lab_report.get("experiments", [])
+            )
             meaningful_learning = (
                 feedback_decision == "PROMOTED"
                 or provider_learning_new
-                or source_evolution_decision == "PROMOTED"
+                or verified_code_promotion
             )
             if meaningful_learning:
                 self.memory.save_learning(
                     mutation_id=(
                         "SOURCE_EVOLUTION_PROMOTED"
-                        if source_evolution_decision == "PROMOTED"
+                        if verified_code_promotion
                         else "PROVIDER_DIAGNOSTIC_PROMOTED" if provider_learning_new else feedback_decision
                     ),
                     success=True,
@@ -211,7 +238,7 @@ class SentinelV3Core:
                 )
                 persisted = self.commit_memory(
                     include_self_modification_report=self_modification_decision in {"PROMOTED", "REJECTED"},
-                    include_source_evolution_report=source_evolution_decision == "PROMOTED",
+                    include_source_evolution_report=verified_code_promotion,
                 )
                 if not persisted:
                     return False
