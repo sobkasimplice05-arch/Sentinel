@@ -212,7 +212,7 @@ def test_http_429_sets_provider_cooldown(tmp_path, monkeypatch):
 
     class Response:
         status_code = 429
-        headers = {"retry-after": "120"}
+        headers = {"retry-after": "120"}  # noqa: RUF012
 
     error = requests.HTTPError("rate limited")
     error.response = Response()
@@ -336,7 +336,7 @@ def test_auto_provider_falls_back_after_http_429(tmp_path, monkeypatch):
 
     class RateLimitResponse:
         status_code = 429
-        headers = {"retry-after": "120"}
+        headers = {"retry-after": "120"}  # noqa: RUF012
 
     rate_limit_error = requests.HTTPError("rate limited")
     rate_limit_error.response = RateLimitResponse()
@@ -488,3 +488,30 @@ def test_structure_rejects_dynamic_code_execution(tmp_path):
 
     assert valid is False
     assert reason == "forbidden_process_control"
+
+
+
+def test_score_uses_independent_benchmark_score(tmp_path):
+    engine = SelfModificationEngine(root=tmp_path)
+    proposal = engine._parse_proposal(
+        '{"hypothesis":"measure","expected_gain":"higher transfer score","files":[{"path":"learning_engine.py","content":"print(1)"}]}'
+    )
+
+    assert engine._score(
+        {
+            "compile_returncode": 0,
+            "test_returncode": 0,
+            "benchmark_returncode": 0,
+            "benchmark_score": 0.75,
+        },
+        proposal,
+    ) == 0.75
+    assert engine._score(
+        {
+            "compile_returncode": 0,
+            "test_returncode": 0,
+            "benchmark_returncode": 1,
+            "benchmark_score": 1.0,
+        },
+        proposal,
+    ) == 0.0

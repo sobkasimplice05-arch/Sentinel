@@ -1,9 +1,10 @@
-import sqlite3
-import os
 import json
-import logging
-from datetime import datetime
+import os
+import sqlite3
+from datetime import datetime, timezone
+
 from loguru import logger
+
 
 class SentinelMemory:
     def __init__(self, db_filename="sentinel_memory.db"):
@@ -30,8 +31,8 @@ class SentinelMemory:
             conn.commit()
             conn.close()
             logger.success(f"🧬 Base de données v3.0 SQLite initialisée ({self.db_filename}).")
-        except Exception as e:
-            logger.error(f"❌ Impossible d'initialiser la base de données : {str(e)}")
+        except (OSError, sqlite3.Error, TypeError, ValueError) as e:
+            logger.error(f"❌ Impossible d'initialiser la base de données : {e!s}")
 
     def save_learning(self, mutation_id, success, learnings_dict):
         """Enregistre un apprentissage de manière atomique (protection anti-corruption)"""
@@ -43,7 +44,7 @@ class SentinelMemory:
                 INSERT INTO learning_history (timestamp, mutation_id, success, learnings, version)
                 VALUES (?, ?, ?, ?, ?)
             ''', (
-                datetime.now().isoformat(),
+                datetime.now(timezone.utc).isoformat(),
                 mutation_id,
                 1 if success else 0,
                 json.dumps(learnings_dict),
@@ -52,8 +53,8 @@ class SentinelMemory:
             conn.commit()
             conn.close()
             logger.success("🛡️ Mutation et apprentissage sauvegardés de façon ACID en BDD.")
-        except Exception as e:
-            logger.error(f"❌ Erreur d'écriture BDD : {str(e)}")
+        except (OSError, sqlite3.Error, TypeError, ValueError) as e:
+            logger.error(f"❌ Erreur d'écriture BDD : {e!s}")
 
     def backup_memory(self):
         """Crée une copie physique de sauvegarde de la base de données"""

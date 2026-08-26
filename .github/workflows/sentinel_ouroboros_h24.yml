@@ -56,7 +56,7 @@ jobs:
         run: pip install requests loguru pytest -q
 
       - name: 🧪 Validation des moteurs autonomie, agent général et feedback
-        run: python -m py_compile agent_general_kernel.py ai_matrix.py autonomy_kernel.py evolution_lab.py feedback_learning.py learning_engine.py provider_diagnostics.py self_modification.py source_evolution_curriculum.py sentinel_v3_core.py transfer_benchmark.py tests/test_agent_general_kernel.py tests/test_ai_matrix.py tests/test_autonomy_kernel.py tests/test_evolution_lab.py tests/test_feedback_learning.py tests/test_provider_diagnostics.py tests/test_self_modification.py tests/test_source_evolution_curriculum.py tests/test_transfer_benchmark.py
+        run: python -m py_compile agent_general_kernel.py ai_matrix.py autonomy_kernel.py evolution_lab.py feedback_learning.py learning_engine.py memory_manager.py daily_metrics_report.py provider_diagnostics.py self_modification.py source_evolution_curriculum.py sentinel_v3_core.py transfer_benchmark.py tests/test_agent_general_kernel.py tests/test_ai_matrix.py tests/test_autonomy_kernel.py tests/test_daily_metrics_report.py tests/test_evolution_lab.py tests/test_feedback_learning.py tests/test_provider_diagnostics.py tests/test_self_modification.py tests/test_source_evolution_curriculum.py tests/test_transfer_benchmark.py
 
       - name: 🧪 Suite complète de non-régression
         run: python -m pytest -q

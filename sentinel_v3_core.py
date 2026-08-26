@@ -38,14 +38,17 @@ class SentinelV3Core:
         self.notifier = SentinelNotifier()
         self.ai = AIMatrix()
         self.guard = EvolutionGuard()
-        self.evolution_lab = EvolutionLab()
+        self.evolution_lab = EvolutionLab(repo_dir=".")
         self.janitor = SentinelJanitor()
 
     def commit_memory(
         self,
         include_self_modification_report: bool = False,
         include_source_evolution_report: bool = False,
+        include_self_modification_code: bool = False,
+        include_source_evolution_code: bool = False,
         include_runtime_state: bool = True,
+        evolution_candidate_branch: str = "",
     ) -> bool:
         """Persiste les preuves et les patches approuvés; aucun force-push."""
         tracked_files = ["self_modification_provider_cooldown.json"]
@@ -66,16 +69,19 @@ class SentinelV3Core:
                 *tracked_files,
             ]
         if include_self_modification_report:
+            tracked_files.append("self_modification_report.json")
+        if include_self_modification_code:
             tracked_files.extend(
                 [
-                    "self_modification_report.json",
                     "learning_engine.py",
                     "feedback_learning.py",
                     "autonomy_kernel.py",
                 ]
             )
         if include_source_evolution_report:
-            tracked_files.extend(["source_evolution_report.json", "provider_diagnostics.py"])
+            tracked_files.append("source_evolution_report.json")
+        if include_source_evolution_code:
+            tracked_files.append("provider_diagnostics.py")
         try:
             subprocess.run(
                 ["git", "config", "user.email", "sentinel-v3@evolution.ai"],
@@ -95,11 +101,45 @@ class SentinelV3Core:
                 ["git", "commit", "-m", f"🧬 FEEDBACK: cycle adaptatif vérifié {timestamp}"],
                 check=True,
             )
-            code_candidate = include_self_modification_report or include_source_evolution_report
+            code_candidate = include_self_modification_code or include_source_evolution_code
             allow_direct_main = os.getenv("SENTINEL_ALLOW_DIRECT_MAIN_PUSH", "false").lower() == "true"
             if code_candidate and not allow_direct_main:
-                branch_name = "evolution-lab/" + timestamp.replace(":", "").replace("-", "")
+                branch_name = evolution_candidate_branch or ("evolution-lab/" + timestamp.replace(":", "").replace("-", ""))
                 subprocess.run(["git", "push", "origin", f"HEAD:refs/heads/{branch_name}"], check=True)
+                pending = getattr(self, "_pending_evolution_cycle", {})
+                if pending and pending.get("cycle_id"):
+                    candidate_commit = subprocess.run(
+                        ["git", "rev-parse", "HEAD"], capture_output=True, text=True, check=True
+                    ).stdout.strip()
+                    self.evolution_lab.mark_commit(
+                        cycle_id=str(pending["cycle_id"]),
+                        candidate_commit=candidate_commit,
+                        candidate_branch=branch_name,
+                        evidence={
+                            "verified_code_promotion": True,
+                            "restart_required": True,
+                            "candidate_commit": candidate_commit,
+                        },
+                    )
+                    self.evolution_lab.record_checkpoint(
+                        cycle_id=str(pending["cycle_id"]),
+                        kind="candidate_commit",
+                        status="awaiting_review",
+                        objective=str(pending.get("objective") or ""),
+                        commit_sha=candidate_commit,
+                        branch=branch_name,
+                        baseline_score=pending.get("baseline_score"),
+                        candidate_score=pending.get("candidate_score"),
+                        measurable_gain=True,
+                        evidence={"restart_required": True, "candidate_branch": branch_name},
+                    )
+                    subprocess.run(["git", "add", "sentinel_memory.db"], check=True)
+                    if subprocess.run(["git", "diff", "--cached", "--quiet"], check=False).returncode != 0:
+                        subprocess.run(
+                            ["git", "commit", "-m", f"🧬 EVOLUTION LAB: receipt for {pending['cycle_id']}"],
+                            check=True,
+                        )
+                        subprocess.run(["git", "push", "origin", f"HEAD:refs/heads/{branch_name}"], check=True)
                 logger.info(
                     "✅ Preuves de code poussées vers %s; aucune auto-promotion directe sur main.",
                     branch_name,
@@ -115,6 +155,14 @@ class SentinelV3Core:
     def run_cycle(self) -> bool:
         logger.info("⚡ Début du cycle d'apprentissage et de feedback...")
         try:
+            reconciliation = self.evolution_lab.reconcile_pending()
+            if reconciliation.get("absorbed") or reconciliation.get("pending"):
+                logger.info(
+                    "🧬 Réconciliation Evolution Lab: absorbées=%s, en_attente=%s, branche=%s",
+                    reconciliation.get("absorbed", 0),
+                    reconciliation.get("pending", 0),
+                    reconciliation.get("observed_branch", ""),
+                )
             self.janitor.purge_old_backups()
             raw_data = self.collector.fetch_all()
             active_sources = ", ".join(raw_data.keys()) if raw_data else "Aucune"
@@ -150,8 +198,17 @@ class SentinelV3Core:
             preliminary_report["autonomy_cycle_number"] = autonomy_report["cycle_number"]
             preliminary_report["next_actions"] = autonomy_report["next_actions"]
             preliminary_report["strategy"] = autonomy_report["strategy"]
+            autonomy_report["recurring_error_patterns"] = self.evolution_lab.pattern_digest(limit=8)
+            preliminary_report["recurring_error_patterns"] = autonomy_report["recurring_error_patterns"]
 
             objective = self.agent_general.select_objective(raw_data.keys())
+            evolution_transaction = self.evolution_lab.start_transaction(
+                cycle_id=feedback_report["cycle_id"],
+                objective=str(objective.get("title", "autonomous self-improvement")),
+                observation_hash=feedback_report["observation_hash"],
+                candidate_branch="",
+            )
+            preliminary_report["evolution_transaction"] = evolution_transaction
             capabilities = list(self.autonomy.state.get("capabilities", []))
             capabilities.append("source_modification")
             agent_plan = self.agent_general.build_plan(objective, capabilities)
@@ -176,6 +233,21 @@ class SentinelV3Core:
             )
             preliminary_report["evolution_lab"] = evolution_lab_report
 
+            experiment_by_kind = {
+                item.get("kind"): item
+                for item in evolution_lab_report.get("experiments", [])
+                if isinstance(item, dict)
+            }
+            verified_self_modification = bool(
+                (experiment_by_kind.get("self_modification") or {}).get("code_promotion_verified")
+            )
+            verified_source_evolution = bool(
+                (experiment_by_kind.get("source_evolution") or {}).get("code_promotion_verified")
+            )
+            preliminary_report["evolution_lab_verification"] = {
+                "self_modification": verified_self_modification,
+                "source_evolution": verified_source_evolution,
+            }
             provider_learning = run_provider_diagnostic(self_modification_report)
             existing_skill = self.agent_general.get_skill(provider_learning["skill_name"])
             provider_learning_new = False
@@ -221,11 +293,53 @@ class SentinelV3Core:
                 item.get("code_promotion_verified")
                 for item in evolution_lab_report.get("experiments", [])
             )
+            verified_experiment = next(
+                (item for item in evolution_lab_report.get("experiments", [])
+                 if isinstance(item, dict) and item.get("code_promotion_verified")),
+                {},
+            )
+            self._pending_evolution_cycle = {
+                "cycle_id": feedback_report["cycle_id"],
+                "objective": str(objective.get("title", "")),
+                "baseline_score": verified_experiment.get("baseline_score"),
+                "candidate_score": verified_experiment.get("candidate_score"),
+            } if verified_code_promotion else {}
             meaningful_learning = (
                 feedback_decision == "PROMOTED"
                 or provider_learning_new
                 or verified_code_promotion
             )
+            if not verified_code_promotion:
+                terminal_status = (
+                    "blocked"
+                    if self_modification_decision in {"MODEL_UNAVAILABLE", "PROVIDER_ERROR", "PROVIDER_COOLDOWN:all"}
+                    else "no_op"
+                )
+                self.evolution_lab.finish_transaction(
+                    cycle_id=feedback_report["cycle_id"],
+                    status=terminal_status,
+                    outcome="no_code_absorbed",
+                    evidence={
+                        "policy_decision": feedback_decision,
+                        "self_modification_decision": self_modification_decision,
+                        "source_evolution_decision": source_evolution_decision,
+                    },
+                )
+                self.evolution_lab.record_checkpoint(
+                    cycle_id=feedback_report["cycle_id"],
+                    kind="cycle_outcome",
+                    status="no_code_absorbed",
+                    objective=str(objective.get("title", "")),
+                    baseline_score=feedback_report.get("baseline_score"),
+                    candidate_score=feedback_report.get("candidate_score"),
+                    measurable_gain=False,
+                    evidence={
+                        "verified_code_promotion": False,
+                        "policy_decision": feedback_decision,
+                        "self_modification_decision": self_modification_decision,
+                        "source_evolution_decision": source_evolution_decision,
+                    },
+                )
             if meaningful_learning:
                 self.memory.save_learning(
                     mutation_id=(
@@ -238,7 +352,9 @@ class SentinelV3Core:
                 )
                 persisted = self.commit_memory(
                     include_self_modification_report=self_modification_decision in {"PROMOTED", "REJECTED"},
-                    include_source_evolution_report=verified_code_promotion,
+                    include_source_evolution_report=True,
+                    include_self_modification_code=verified_self_modification,
+                    include_source_evolution_code=verified_source_evolution,
                 )
                 if not persisted:
                     return False
@@ -246,12 +362,20 @@ class SentinelV3Core:
                 # Heartbeat stratégique périodique : la mémoire longue durée
                 # est conservée sans fabriquer un faux succès de mutation.
                 persisted = self.commit_memory(
-                    include_self_modification_report=self_modification_decision in {"PROMOTED", "REJECTED"}
+                    include_self_modification_report=self_modification_decision in {"PROMOTED", "REJECTED"},
+                    include_source_evolution_report=True,
+                    include_self_modification_code=verified_self_modification,
+                    include_source_evolution_code=verified_source_evolution,
                 )
                 if not persisted:
                     return False
             elif self_modification_decision in {"PROMOTED", "REJECTED"}:
-                persisted = self.commit_memory(include_self_modification_report=True)
+                persisted = self.commit_memory(
+                    include_self_modification_report=True,
+                    include_self_modification_code=verified_self_modification,
+                    include_source_evolution_report=True,
+                    include_source_evolution_code=verified_source_evolution,
+                )
                 if not persisted:
                     return False
             elif self_modification_decision == "PROVIDER_ERROR":
@@ -275,7 +399,7 @@ class SentinelV3Core:
                 f"objectif={objective['title']}"
             )
             return True
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 - le cycle doit toujours retourner un échec contrôlé
             logger.exception(f"❌ CYCLE FAILED: {exc}")
             return False
 
