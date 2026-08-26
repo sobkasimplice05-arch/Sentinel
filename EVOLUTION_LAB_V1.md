@@ -28,3 +28,17 @@ Les workflows, secrets, permissions, protections Git et mécanismes de rollback 
 ## Promotion Git sécurisée
 
 Lorsqu’un cycle contient une expérience de code ou une évolution source, la persistance pousse par défaut le commit vers une branche `evolution-lab/<timestamp>` au lieu de pousser directement sur `main`. L’intégration dans `main` doit passer par une revue et une validation séparées. Le comportement historique de push direct ne peut être réactivé qu’avec la variable explicite `SENTINEL_ALLOW_DIRECT_MAIN_PUSH=true`, qui doit rester désactivée dans les workflows normaux.
+
+## Evolution Lab v1.1 — mémoire cumulative et absorption
+
+Evolution Lab conserve désormais trois registres supplémentaires dans `sentinel_memory.db` : `evolution_transactions`, `evolution_checkpoints` et `evolution_patterns`.
+
+Une transaction est créée au début de chaque cycle avec l’objectif, son empreinte, l’observation, le commit de base et la branche de base. Un candidat de code publié est marqué `awaiting_review`; il ne devient jamais absorbé dans le même cycle. Lorsqu’un futur cycle observe le commit candidat dans le `HEAD` courant, `git merge-base --is-ancestor` vérifie sa présence et la transaction devient `absorbed`. Une fusion sur `main` est donc nécessaire avant de considérer une modification comme effectivement active.
+
+Les checkpoints sont append-only et conservent les états `candidate_commit`, `awaiting_review`, `restart_reconcile` et `no_code_absorbed`. Chaque expérience porte aussi un manifeste de couverture des fichiers candidats : taille, SHA-256 et fichiers manquants. Une couverture incomplète est signalée et ne doit pas être présentée comme une revue complète.
+
+Les rejets de promotion alimentent `evolution_patterns` par empreinte stable. Les occurrences récurrentes augmentent `count` et actualisent `last_seen` sans supprimer l’historique. Le digest de ces classes est réinjecté dans les cycles suivants comme contexte de recherche, jamais comme ordre de modification.
+
+Le benchmark de transfert indépendant est exécuté dans la baseline et dans la copie candidate du moteur de self-modification. Une promotion exige compilation, tests ciblés, benchmark lisible et `candidate_score > baseline_score`. Une absence de benchmark ou un score non mesurable entraîne un rejet honnête.
+
+Les statuts ont une signification stricte : une adaptation de politique peut être persistée sans constituer une autoévolution de code ; un commit candidat peut être valide sans être encore absorbé ; un échec ou un no-op devient une donnée de recherche plutôt qu’un succès artificiel.

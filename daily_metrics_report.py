@@ -12,6 +12,7 @@ from typing import Any
 
 import requests
 
+from evolution_lab import EvolutionLab
 
 ROOT = Path(__file__).resolve().parent
 REPORT_JSON = ROOT / "daily_metrics_report.json"
@@ -103,6 +104,13 @@ def sqlite_metrics() -> dict[str, Any]:
     return metrics
 
 
+def evolution_metrics() -> dict[str, Any]:
+    try:
+        return EvolutionLab().summary()
+    except (OSError, sqlite3.Error, TypeError, ValueError):
+        return {"available": False}
+
+
 def collect_metrics() -> dict[str, Any]:
     feedback = load_json("feedback_report.json")
     autonomy = load_json("sentinel_autonomy_state.json")
@@ -151,6 +159,7 @@ def collect_metrics() -> dict[str, Any]:
             "candidate_score": self_mod.get("candidate_score"),
             "attempt_count": len(self_mod.get("attempts", [])),
         },
+        "evolution_lab": evolution_metrics(),
         "sqlite": sqlite_metrics(),
     }
 
@@ -161,6 +170,7 @@ def render_discord(metrics: dict[str, Any]) -> str:
     autonomy = metrics["autonomy"]
     agent = metrics["agent_general"]
     mutation = metrics["self_modification"]
+    evolution = metrics.get("evolution_lab", {})
     changed = ", ".join(mutation["changed_files"]) or "aucun"
     next_actions = ", ".join(autonomy["next_actions"][:2]) or "aucune"
     text = (
@@ -172,6 +182,7 @@ def render_discord(metrics: dict[str, Any]) -> str:
         f"Feedback : **{feedback['decision']}** | baseline → candidat : `{feedback['baseline_score']} → {feedback['candidate_score']}`\n"
         f"Objectif agent général : `{agent['objective']}` | transfert vérifié : **{agent['transfer_verified']}**\n"
         f"Commits sur 24 h : **{git.get('commit_count', 0)}** | mémoire seule : **{git.get('memory_only_commit_count', 0)}** | code promu : **{git.get('source_promotion_count', 0)}**\n"
+        f"Evolution Lab : absorbées **{evolution.get('absorbed_after_restart', 0)}** | revue **{evolution.get('awaiting_review', 0)}** | classes d’erreurs **{evolution.get('open_error_patterns', 0)}**\n"
         f"Prochaines actions : `{next_actions}`"
     )
     return text[:1950]
@@ -204,7 +215,7 @@ def main() -> int:
         try:
             send_discord(discord_text)
             print("Discord report sent")
-        except Exception as exc:
+        except (OSError, RuntimeError, TypeError, ValueError, requests.RequestException) as exc:
             print(f"Discord report failed: {type(exc).__name__}")
             if args.require_discord:
                 return 1

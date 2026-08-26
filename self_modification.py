@@ -12,11 +12,13 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 import tempfile
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any
 
 import requests
 
@@ -400,7 +402,7 @@ Réponse invalide à réparer :
             except json.JSONDecodeError:
                 raise first_error
         if not isinstance(payload, dict):
-            raise ValueError("réponse JSON invalide")
+            raise TypeError("réponse JSON invalide")
         return payload
 
     def _parse_proposal(self, raw: str | None) -> PatchProposal:
@@ -413,11 +415,11 @@ Réponse invalide à réparer :
         files: dict[str, str] = {}
         for entry in entries:
             if not isinstance(entry, dict):
-                raise ValueError("entrée de fichier invalide")
+                raise TypeError("entrée de fichier invalide")
             path = entry.get("path")
             content = entry.get("content")
             if not isinstance(path, str) or not isinstance(content, str):
-                raise ValueError("path/content invalides")
+                raise TypeError("path/content invalides")
             if path not in self.allowed_files or Path(path).is_absolute() or ".." in Path(path).parts:
                 raise ValueError(f"fichier non autorisé: {path}")
             if len(content.encode("utf-8")) > self.max_file_bytes:
@@ -439,7 +441,7 @@ Réponse invalide à réparer :
             "git push --force",
             "SELF_MODIFICATION_MODEL_URL",
         )
-        for path, content in proposal.files.items():
+        for content in proposal.files.values():
             if any(marker in content for marker in forbidden_process_markers):
                 if "SELF_MODIFICATION_MODEL_URL" in content:
                     return False, "self_provider_mutation_forbidden"
@@ -448,43 +450,78 @@ Réponse invalide à réparer :
                 return False, "forbidden_process_control"
         return True, "structure_valid"
 
+    def _run_independent_benchmark(self, root: Path) -> dict[str, Any]:
+        """Exécute le benchmark de transfert dans le dépôt indiqué.
+
+        Le benchmark est lancé dans un sous-processus et son rapport est lu comme
+        une preuve externe au générateur. Une erreur ou une sortie invalide ne
+        peut jamais devenir un score implicite favorable.
+        """
+        try:
+            result = subprocess.run(
+                [sys.executable, "-m", "transfer_benchmark"],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                timeout=180,
+                check=False,
+            )
+            raw = result.stdout.strip()
+            payload = json.loads(raw) if raw else {}
+            score = payload.get("score") if isinstance(payload, dict) else None
+            return {
+                "ok": result.returncode == 0 and isinstance(payload, dict) and isinstance(score, (int, float)),
+                "returncode": result.returncode,
+                "score": float(score) if isinstance(score, (int, float)) else None,
+                "transfer_verified": bool(payload.get("transfer_verified")) if isinstance(payload, dict) else False,
+                "report": payload if isinstance(payload, dict) else {},
+                "output": (result.stdout + result.stderr)[-5000:],
+            }
+        except (OSError, subprocess.SubprocessError, ValueError, TypeError) as exc:
+            return {"ok": False, "returncode": None, "score": None, "transfer_verified": False, "report": {}, "output": str(exc)}
+
     def _run_candidate_tests(self, candidate_root: Path, files: Mapping[str, str]) -> tuple[bool, dict[str, Any]]:
         compile_targets = [str(candidate_root / path) for path in files if path.endswith(".py")]
         compile_result = subprocess.run(
-            ["python", "-m", "py_compile", *compile_targets],
+            [sys.executable, "-m", "py_compile", *compile_targets],
             cwd=candidate_root,
             capture_output=True,
             text=True,
             timeout=60,
+            check=False,
         )
         test_result = subprocess.run(
-            ["python", "-m", "pytest", "-q", "tests/test_feedback_learning.py", "tests/test_autonomy_kernel.py"],
+            [sys.executable, "-m", "pytest", "-q", "tests/test_feedback_learning.py", "tests/test_autonomy_kernel.py"],
             cwd=candidate_root,
             capture_output=True,
             text=True,
             timeout=120,
+            check=False,
         )
+        benchmark = self._run_independent_benchmark(candidate_root)
         details = {
             "compile_returncode": compile_result.returncode,
             "compile_output": (compile_result.stdout + compile_result.stderr)[-4000:],
             "test_returncode": test_result.returncode,
             "test_output": (test_result.stdout + test_result.stderr)[-6000:],
+            "benchmark_returncode": benchmark.get("returncode"),
+            "benchmark_score": benchmark.get("score"),
+            "benchmark_transfer_verified": benchmark.get("transfer_verified", False),
+            "benchmark_report": benchmark.get("report", {}),
+            "benchmark_output": benchmark.get("output", ""),
         }
-        return compile_result.returncode == 0 and test_result.returncode == 0, details
+        return compile_result.returncode == 0 and test_result.returncode == 0 and bool(benchmark.get("ok")), details
 
     def _score(self, details: Mapping[str, Any], proposal: PatchProposal) -> float:
-        """Retourne un score nul sans preuve de gain mesurable.
-
-        La compilation et les tests établissent l'absence de régression, mais ne
-        prouvent pas une amélioration. Un score de validation ne doit donc pas
-        être augmenté artificiellement par le simple nombre de fichiers changés.
-        """
-        if details.get("compile_returncode") != 0 or details.get("test_returncode") != 0:
+        """Retourne le score du benchmark indépendant, jamais un proxy d’activité."""
+        if (
+            details.get("compile_returncode") != 0
+            or details.get("test_returncode") != 0
+            or details.get("benchmark_returncode") != 0
+        ):
             return 0.0
-        explicit_gain = details.get("measured_gain")
-        if isinstance(explicit_gain, (int, float)) and 0.0 < float(explicit_gain) <= 1.0:
-            return round(float(explicit_gain), 6)
-        return 0.0
+        score = details.get("benchmark_score")
+        return round(float(score), 6) if isinstance(score, (int, float)) else 0.0
 
     def _write_report(self, report: Mapping[str, Any]) -> None:
         self.report_filename.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -536,9 +573,7 @@ Réponse invalide à réparer :
                     if (
                         (os.getenv("SELF_MODIFICATION_PROVIDER") or "auto").lower() == "auto"
                         and (
-                            provider.startswith("PROVIDER_ERROR:")
-                            or provider.startswith("PROVIDER_COOLDOWN:")
-                            or provider.startswith("EMPTY_")
+                            provider.startswith(("PROVIDER_ERROR:", "PROVIDER_COOLDOWN:", "EMPTY_"))
                         )
                         and attempt_index < len(self.retry_output_tokens) - 1
                     ):
@@ -636,6 +671,20 @@ Réponse invalide à réparer :
             return report
 
         try:
+            baseline_benchmark = self._run_independent_benchmark(self.root)
+            if not baseline_benchmark.get("ok"):
+                report = {
+                    "cycle_id": cycle_id,
+                    "decision": "REJECTED",
+                    "provider": provider,
+                    "reason": "BASELINE_BENCHMARK_UNAVAILABLE",
+                    "baseline_benchmark": baseline_benchmark,
+                    "attempts": attempts,
+                    "created_at": self._now(),
+                }
+                self._write_report(report)
+                return report
+            baseline_score = float(baseline_benchmark["score"])
             with tempfile.TemporaryDirectory(prefix="sentinel-candidate-") as directory:
                 candidate_root = Path(directory)
                 shutil.copytree(self.root, candidate_root, dirs_exist_ok=True, ignore=shutil.ignore_patterns(".git", "__pycache__", ".pytest_cache"))
@@ -645,8 +694,9 @@ Réponse invalide à réparer :
                     destination.write_text(content, encoding="utf-8")
                 passed, test_details = self._run_candidate_tests(candidate_root, proposal.files)
                 score = self._score(test_details, proposal)
+                test_details["baseline_benchmark_score"] = baseline_score
+                test_details["measured_gain"] = round(score - baseline_score, 6)
 
-            baseline_score = 0.0
             if not passed or score <= baseline_score:
                 report = {
                     "cycle_id": cycle_id,
