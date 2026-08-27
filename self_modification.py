@@ -58,6 +58,7 @@ class SelfModificationEngine:
         self.max_targets_per_cycle = max(1, int(os.getenv("SELF_MODIFICATION_MAX_TARGETS_PER_CYCLE", "1")))
         self.cooldown_filename = self.root / "self_modification_provider_cooldown.json"
         self.cooldown_seconds = max(60, int(os.getenv("SELF_MODIFICATION_COOLDOWN_SECONDS", "1800")))
+        self._last_provider_diagnostic: dict[str, Any] = {}
 
     @staticmethod
     def _now() -> str:
@@ -158,8 +159,55 @@ Réponse invalide à réparer :
         cooldowns[provider.lower()] = datetime.now(timezone.utc).timestamp() + seconds
         self._save_cooldowns(cooldowns)
 
+    def _post_with_contract_fallback(
+        self,
+        url: str,
+        headers: Mapping[str, str],
+        payload: Mapping[str, Any],
+        *,
+        timeout: int,
+        provider: str,
+    ) -> requests.Response:
+        """Retry HTTP 400 once without provider-specific structured-output controls.
+
+        JSON remains enforced by the prompt and by ``_parse_proposal``. The retry
+        is limited to a contract mismatch and never retries arbitrary failures.
+        """
+        self._last_provider_diagnostic = {
+            "provider": provider.upper(),
+            "endpoint_host": url.split("/", 3)[2] if "://" in url else "configured",
+            "contract_retry": False,
+        }
+        response = requests.post(url, headers=dict(headers), json=dict(payload), timeout=timeout)
+        try:
+            response.raise_for_status()
+            return response
+        except requests.HTTPError as exc:
+            status = exc.response.status_code if exc.response is not None else None
+            if status != 400:
+                raise
+            fallback_payload = json.loads(json.dumps(payload))
+            changed = False
+            if "response_format" in fallback_payload:
+                fallback_payload.pop("response_format", None)
+                changed = True
+            generation_config = fallback_payload.get("generationConfig")
+            if isinstance(generation_config, dict) and "responseMimeType" in generation_config:
+                generation_config.pop("responseMimeType", None)
+                changed = True
+            if "nvext" in fallback_payload:
+                fallback_payload.pop("nvext", None)
+                changed = True
+            if not changed:
+                raise
+            self._last_provider_diagnostic["contract_retry"] = True
+            response = requests.post(url, headers=dict(headers), json=fallback_payload, timeout=timeout)
+            response.raise_for_status()
+            return response
+
     def _call_provider(self, prompt: str, *, output_tokens: int | None = None) -> tuple[str | None, str]:
         output_tokens = output_tokens or self.default_output_tokens
+        self._last_provider_diagnostic = {}
         requested_provider = (os.getenv("SELF_MODIFICATION_PROVIDER") or "auto").lower()
         configured_url = os.getenv("SELF_MODIFICATION_MODEL_URL") or os.getenv("MODEL_API_URL") or os.getenv("OLLAMA_BASE_URL")
         google_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_GEMINI_API_KEY")
@@ -204,7 +252,7 @@ Réponse invalide à réparer :
             model = os.getenv("GOOGLE_MODEL") or os.getenv("GEMINI_MODEL") or os.getenv("SELF_MODIFICATION_MODEL") or "gemini-3.5-flash"
             url = os.getenv("GOOGLE_API_URL") or f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
         elif provider in {"cloudflare", "workers_ai"}:
-            model = os.getenv("CLOUDFLARE_MODEL") or "@cf/qwen/qwen2.5-coder-32b-instruct"
+            model = os.getenv("CLOUDFLARE_MODEL") or "@hf/thebloke/deepseek-coder-6.7b-instruct-awq"
             url = os.getenv("CLOUDFLARE_API_URL") or (
                 f"https://api.cloudflare.com/client/v4/accounts/{cloudflare_account}/ai/run/{model}"
                 if cloudflare_account else ""
@@ -241,8 +289,9 @@ Réponse invalide à réparer :
                 }
                 if os.getenv("SELF_MODIFICATION_JSON_MODE", "true").lower() == "true":
                     request_payload["response_format"] = {"type": "json_object"}
-                response = requests.post(url, headers=headers, json=request_payload, timeout=120)
-                response.raise_for_status()
+                response = self._post_with_contract_fallback(
+                    url, headers, request_payload, timeout=120, provider="cloudflare"
+                )
                 payload = response.json()
                 result = payload.get("result", payload) if isinstance(payload, dict) else {}
                 if isinstance(result, dict):
@@ -258,21 +307,18 @@ Réponse invalide à réparer :
 
             if provider in {"google", "gemini"} or "generativelanguage.googleapis.com" in url:
                 headers["x-goog-api-key"] = token or ""
-                response = requests.post(
-                    url,
-                    headers=headers,
-                    json={
-                        "system_instruction": {"parts": [{"text": "Return only one valid JSON object. Never use Markdown fences."}]},
-                        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
-                        "generationConfig": {
-                            "temperature": 0.1,
-                            "maxOutputTokens": output_tokens,
-                            "responseMimeType": "application/json" if os.getenv("SELF_MODIFICATION_JSON_MODE", "true").lower() == "true" else "text/plain",
-                        },
+                google_payload = {
+                    "system_instruction": {"parts": [{"text": "Return only one valid JSON object. Never use Markdown fences."}]},
+                    "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+                    "generationConfig": {
+                        "temperature": 0.1,
+                        "maxOutputTokens": output_tokens,
+                        "responseMimeType": "application/json" if os.getenv("SELF_MODIFICATION_JSON_MODE", "true").lower() == "true" else "text/plain",
                     },
-                    timeout=120,
+                }
+                response = self._post_with_contract_fallback(
+                    url, headers, google_payload, timeout=120, provider="google"
                 )
-                response.raise_for_status()
                 payload = response.json()
                 candidates = payload.get("candidates", []) if isinstance(payload, dict) else []
                 parts = candidates[0].get("content", {}).get("parts", []) if candidates else []
@@ -316,9 +362,33 @@ Réponse invalide à réparer :
                     "max_tokens": output_tokens,
                 }
                 if os.getenv("SELF_MODIFICATION_JSON_MODE", "true").lower() == "true":
-                    request_payload["response_format"] = {"type": "json_object"}
-                response = requests.post(url, headers=headers, json=request_payload, timeout=120)
-                response.raise_for_status()
+                    if provider in {"nvidia", "nim"}:
+                        request_payload["nvext"] = {
+                            "guided_json": {
+                                "type": "object",
+                                "properties": {
+                                    "hypothesis": {"type": "string"},
+                                    "expected_gain": {"type": "string"},
+                                    "files": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "path": {"type": "string"},
+                                                "content": {"type": "string"},
+                                            },
+                                            "required": ["path", "content"],
+                                        },
+                                    },
+                                },
+                                "required": ["hypothesis", "expected_gain", "files"],
+                            }
+                        }
+                    else:
+                        request_payload["response_format"] = {"type": "json_object"}
+                response = self._post_with_contract_fallback(
+                    url, headers, request_payload, timeout=120, provider=provider
+                )
                 payload = response.json()
                 choices = payload.get("choices", []) if isinstance(payload, dict) else []
                 if choices and isinstance(choices[0], dict):
@@ -565,11 +635,19 @@ Réponse invalide à réparer :
                     "output_tokens": output_tokens,
                     "provider": provider,
                 }
+                if self._last_provider_diagnostic:
+                    attempt["provider_diagnostic"] = dict(self._last_provider_diagnostic)
                 attempts.append(attempt)
                 if raw is None:
                     last_error = provider
                     if "HTTP_413" in provider:
                         continue
+                    if "HTTP_400" in provider and (os.getenv("SELF_MODIFICATION_PROVIDER") or "auto").lower() == "auto":
+                        diagnostic_provider = attempt.get("provider_diagnostic", {}).get("provider")
+                        if isinstance(diagnostic_provider, str) and diagnostic_provider:
+                            self._set_provider_cooldown(diagnostic_provider)
+                        if attempt_index < len(self.retry_output_tokens) - 1:
+                            continue
                     if (
                         (os.getenv("SELF_MODIFICATION_PROVIDER") or "auto").lower() == "auto"
                         and (
