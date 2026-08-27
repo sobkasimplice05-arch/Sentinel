@@ -1,21 +1,17 @@
 {
   "skill_name": "provider_failure_diagnosis",
   "observed_diagnostic": {
-    "attempt_count": 3,
+    "attempt_count": 1,
     "provider_sequence": [
-      "PROVIDER_ERROR:HTTP_410",
-      "PROVIDER_ERROR:HTTP_410",
-      "PROVIDER_ERROR:HTTP_410"
+      "CLOUDFLARE"
     ],
     "recommended_actions": [
-      "record_unknown_provider_state",
-      "record_unknown_provider_state",
-      "record_unknown_provider_state"
+      "response_received_validate_structure"
     ],
     "fallback_observed": false,
     "contract_retry_count": 0,
     "http_400_observed": false,
-    "diagnostic_score": 0.8
+    "diagnostic_score": 1.0
   },
   "transfer_variants": [
     {

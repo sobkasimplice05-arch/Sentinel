@@ -1,10 +1,10 @@
 {
-  "cycle_id": "self-mod-20260826T044146",
+  "cycle_id": "self-mod-20260827T135838",
   "decision": "REJECTED",
-  "provider": "GROQ",
-  "hypothesis": "En introduisant des poids métriques configurables via la politique, le moteur pourra ajuster l'importance relative de chaque critère (fiabilité, qualité du contenu, diversité, fraîcheur, couverture). Cela devrait améliorer la pertinence du score d'intelligence et augmenter le candidate_score d'au moins 0.01 par rapport à la baseline.",
-  "expected_gain": "candidate_score >= baseline_score + 0.01",
-  "baseline_score": 0.0,
+  "provider": "CLOUDFLARE",
+  "hypothesis": "Améliorer la fiabilité des sources en ajustant la dynamique de confiance en fonction de la qualité des contenus.",
+  "expected_gain": "Augmentation de la précision de l'intelligence artificielle de 5% en moyenne, avec un seuil de 3% de gain minimum.",
+  "baseline_score": 1.0,
   "candidate_score": 0.0,
   "target_file": "learning_engine.py",
   "attempts": [
@@ -12,16 +12,28 @@
       "target_file": "learning_engine.py",
       "attempt": 1,
       "compact": false,
-      "prompt_chars": 11284,
+      "prompt_chars": 11404,
       "output_tokens": 4096,
-      "provider": "GROQ"
+      "provider": "CLOUDFLARE",
+      "provider_diagnostic": {
+        "provider": "CLOUDFLARE",
+        "endpoint_host": "api.cloudflare.com",
+        "contract_retry": false
+      }
     }
   ],
   "tests": {
-    "compile_returncode": 0,
-    "compile_output": "",
+    "compile_returncode": 1,
+    "compile_output": "  File \"/tmp/sentinel-candidate-kq8qjoac/learning_engine.py\", line 23\n    L'évaluation calcule plusieurs métriques de qualité, de diversité et de\n     ^\nSyntaxError: unterminated string literal (detected at line 23)\n",
     "test_returncode": 0,
-    "test_output": "\n======================================================================\n🔧 PYTEST CONFIGURATION\n======================================================================\n📋 Mode: TEST (Réponses mock activées)\n======================================================================\n\n.........                                                                [100%]\n"
+    "test_output": "\n======================================================================\n🔧 PYTEST CONFIGURATION\n======================================================================\n📋 Mode: TEST (Réponses mock activées)\n======================================================================\n\n.........                                                                [100%]\n",
+    "benchmark_returncode": 1,
+    "benchmark_score": null,
+    "benchmark_transfer_verified": false,
+    "benchmark_report": {},
+    "benchmark_output": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/tmp/sentinel-candidate-kq8qjoac/transfer_benchmark.py\", line 16, in <module>\n    from learning_engine import LearningEngine\n  File \"/tmp/sentinel-candidate-kq8qjoac/learning_engine.py\", line 23\n    L'évaluation calcule plusieurs métriques de qualité, de diversité et de\n     ^\nSyntaxError: unterminated string literal (detected at line 23)\n",
+    "baseline_benchmark_score": 1.0,
+    "measured_gain": -1.0
   },
-  "created_at": "2026-08-26T04:41:52.102913+00:00"
+  "created_at": "2026-08-27T13:58:49.936637+00:00"
 }

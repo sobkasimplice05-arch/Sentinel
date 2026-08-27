@@ -1,6 +1,6 @@
 {
   "mode": "EXPERIMENTAL_GENERAL_AGENT",
-  "cycle_number": 423,
+  "cycle_number": 424,
   "objective": {
     "id": 1,
     "title": "improve_observation_and_transfer",
@@ -41,9 +41,9 @@
     }
   ],
   "episode": {
-    "created_at": "2026-08-27T13:51:03.883211+00:00",
+    "created_at": "2026-08-27T13:58:49.943923+00:00",
     "objective_id": 1,
-    "observation_hash": "a4ec50dbc5381225c78b7a77863e2e7fe4f702a9a9a99963cbd04eb1bdfa4e39",
+    "observation_hash": "83b92f633be8bcc456cd50454acb4dc94a81c9b6aa1dcb3fe4537309b0f1d56c",
     "plan": [
       {
         "step": 1,
@@ -76,7 +76,7 @@
         "status": "READY"
       }
     ],
-    "action": "PROVIDER_ERROR",
+    "action": "REJECTED",
     "outcome": "PROMOTED",
     "score": 0.889519,
     "transfer_status": "VERIFIED"
@@ -96,21 +96,17 @@
       "updated_at": "2026-08-27T13:09:11.534688+00:00"
     },
     "diagnostic": {
-      "attempt_count": 3,
+      "attempt_count": 1,
       "provider_sequence": [
-        "PROVIDER_ERROR:HTTP_410",
-        "PROVIDER_ERROR:HTTP_410",
-        "PROVIDER_ERROR:HTTP_410"
+        "CLOUDFLARE"
       ],
       "recommended_actions": [
-        "record_unknown_provider_state",
-        "record_unknown_provider_state",
-        "record_unknown_provider_state"
+        "response_received_validate_structure"
       ],
       "fallback_observed": false,
       "contract_retry_count": 0,
       "http_400_observed": false,
-      "diagnostic_score": 0.8
+      "diagnostic_score": 1.0
     }
   },
   "capability_profile": {
