@@ -17,30 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
-      HF_API_KEY: ${{ secrets.HF_API_KEY }}
       SELF_MODIFICATION_ENABLED: "true"
       SELF_MODIFICATION_JSON_MODE: "true"
       SELF_MODIFICATION_MAX_TARGETS_PER_CYCLE: "1"
       SELF_MODIFICATION_PROVIDER: ${{ vars.SELF_MODIFICATION_PROVIDER || 'auto' }}
-      SELF_MODIFICATION_MODEL_URL: ${{ secrets.SELF_MODIFICATION_MODEL_URL }}
-      SELF_MODIFICATION_MODEL: ${{ vars.SELF_MODIFICATION_MODEL }}
-      MODEL_API_URL: ${{ secrets.MODEL_API_URL }}
-      MODEL_API_KEY: ${{ secrets.MODEL_API_KEY }}
-      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-      NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      CLOUDFLARE_MODEL: ${{ vars.CLOUDFLARE_MODEL || '@cf/qwen/qwen2.5-coder-32b-instruct' }}
-      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      REPLICATE_API_TOKEN: ${{ secrets.REPLICATE_API_TOKEN }}
-      REPLICATE_API_KEY: ${{ secrets.REPLICATE_API_KEY }}
-      GOOGLE_MODEL: ${{ vars.GOOGLE_MODEL || 'gemini-3.5-flash' }}
-      GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
-      REPLICATE_MODEL: ${{ vars.REPLICATE_MODEL }}
-      REPLICATE_MODEL_VERSION: ${{ secrets.REPLICATE_MODEL_VERSION }}
-      OLLAMA_BASE_URL: ${{ secrets.OLLAMA_BASE_URL }}
-      OLLAMA_MODEL: ${{ vars.OLLAMA_MODEL || 'qwen2.5-coder:7b' }}
     steps:
       - name: 📥 Restauration du Noyau
         uses: actions/checkout@v4
@@ -62,6 +42,27 @@ jobs:
         run: python -m pytest -q
 
       - name: 🚀 Exécution du cycle d'apprentissage vérifiable
+        env:
+          HF_API_KEY: ${{ secrets.HF_API_KEY }}
+          SELF_MODIFICATION_MODEL_URL: ${{ secrets.SELF_MODIFICATION_MODEL_URL }}
+          SELF_MODIFICATION_MODEL: ${{ vars.SELF_MODIFICATION_MODEL }}
+          MODEL_API_URL: ${{ secrets.MODEL_API_URL }}
+          MODEL_API_KEY: ${{ secrets.MODEL_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_MODEL: ${{ vars.CLOUDFLARE_MODEL || '@cf/qwen/qwen2.5-coder-32b-instruct' }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          REPLICATE_API_TOKEN: ${{ secrets.REPLICATE_API_TOKEN }}
+          REPLICATE_API_KEY: ${{ secrets.REPLICATE_API_KEY }}
+          GOOGLE_MODEL: ${{ vars.GOOGLE_MODEL || 'gemini-3.5-flash' }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          REPLICATE_MODEL: ${{ vars.REPLICATE_MODEL }}
+          REPLICATE_MODEL_VERSION: ${{ secrets.REPLICATE_MODEL_VERSION }}
+          OLLAMA_BASE_URL: ${{ secrets.OLLAMA_BASE_URL }}
+          OLLAMA_MODEL: ${{ vars.OLLAMA_MODEL || 'qwen2.5-coder:7b' }}
         run: python sentinel_v3_core.py
 
       - name: 📊 Publication des preuves du cycle
