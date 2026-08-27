@@ -1,24 +1,24 @@
 {
   "version": 2,
-  "cycle_id": "cycle-20260827T130750-1277c86d3e84",
-  "created_at": "2026-08-27T13:09:11.530530+00:00",
+  "cycle_id": "cycle-20260827T135103-a4ec50dbc538",
+  "created_at": "2026-08-27T13:51:03.881643+00:00",
   "experiments": [
     {
-      "cycle_id": "cycle-20260827T130750-1277c86d3e84",
+      "cycle_id": "cycle-20260827T135103-a4ec50dbc538",
       "kind": "policy",
-      "decision": "NO_CHANGE_NEEDED",
-      "original_decision": "NO_CHANGE_NEEDED",
+      "decision": "PROMOTED",
+      "original_decision": "PROMOTED",
       "code_promotion_verified": false,
       "changed_files": [],
       "tests_passed": false,
-      "baseline_score": 0.789519,
-      "candidate_score": 0.789519,
+      "baseline_score": 0.889519,
+      "candidate_score": 0.889519,
       "measurable_gain": false,
-      "rejection_reason": "observation déjà traitée; aucune nouvelle preuve",
+      "rejection_reason": "adaptation validée par la baseline",
       "coverage_complete": true
     },
     {
-      "cycle_id": "cycle-20260827T130750-1277c86d3e84",
+      "cycle_id": "cycle-20260827T135103-a4ec50dbc538",
       "kind": "self_modification",
       "decision": "PROVIDER_ERROR",
       "original_decision": "PROVIDER_ERROR",
@@ -28,11 +28,11 @@
       "baseline_score": null,
       "candidate_score": null,
       "measurable_gain": false,
-      "rejection_reason": "PROVIDER_ERROR:HTTP_400",
+      "rejection_reason": "PROVIDER_ERROR:HTTP_410",
       "coverage_complete": true
     },
     {
-      "cycle_id": "cycle-20260827T130750-1277c86d3e84",
+      "cycle_id": "cycle-20260827T135103-a4ec50dbc538",
       "kind": "source_evolution",
       "decision": "ALREADY_LEARNED",
       "original_decision": "ALREADY_LEARNED",
@@ -46,18 +46,18 @@
       "coverage_complete": true
     }
   ],
-  "pattern_digest": "- [18abf97a3443f111] count=1 category=self_modification_promotion: PROVIDER_ERROR:HTTP_400",
+  "pattern_digest": "- [233671278c50059b] count=1 category=self_modification_promotion: PROVIDER_ERROR:HTTP_410\n- [18abf97a3443f111] count=1 category=self_modification_promotion: PROVIDER_ERROR:HTTP_400",
   "summary": {
-    "total_experiments": 3,
+    "total_experiments": 6,
     "verified_code_promotions": 0,
     "rejected_no_measurement": 0,
     "absorbed_after_restart": 0,
     "pending_restart_verification": 0,
     "awaiting_review": 0,
-    "open_error_patterns": 1,
+    "open_error_patterns": 2,
     "latest": {
-      "cycle_id": "cycle-20260827T130750-1277c86d3e84",
-      "created_at": "2026-08-27T13:09:11.529652+00:00",
+      "cycle_id": "cycle-20260827T135103-a4ec50dbc538",
+      "created_at": "2026-08-27T13:51:03.880819+00:00",
       "decision": "ALREADY_LEARNED"
     }
   },

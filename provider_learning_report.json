@@ -3,17 +3,19 @@
   "observed_diagnostic": {
     "attempt_count": 3,
     "provider_sequence": [
-      "EMPTY_CLOUDFLARE_RESPONSE",
-      "GOOGLE",
-      "PROVIDER_ERROR:HTTP_400"
+      "PROVIDER_ERROR:HTTP_410",
+      "PROVIDER_ERROR:HTTP_410",
+      "PROVIDER_ERROR:HTTP_410"
     ],
     "recommended_actions": [
-      "cooldown_empty_provider_and_fallback",
-      "response_received_validate_structure",
-      "inspect_request_contract_before_retry"
+      "record_unknown_provider_state",
+      "record_unknown_provider_state",
+      "record_unknown_provider_state"
     ],
-    "fallback_observed": true,
-    "diagnostic_score": 1.0
+    "fallback_observed": false,
+    "contract_retry_count": 0,
+    "http_400_observed": false,
+    "diagnostic_score": 0.8
   },
   "transfer_variants": [
     {
@@ -27,37 +29,29 @@
     {
       "name": "invalid_json_variant",
       "score": 1.0
+    },
+    {
+      "name": "http_400_contract_variant",
+      "score": 1.0
     }
   ],
   "transfer_score": 1.0,
   "transfer_verified": true,
   "procedure": "Classifier les erreurs fournisseur, appliquer une action bornée et poursuivre uniquement avec un fallback disponible.",
   "transfer": {
+    "decision": "ALREADY_PROMOTED",
     "skill": {
       "name": "provider_failure_diagnosis",
       "version": 1,
-      "status": "PROMOTED",
       "competence_score": 1.0,
-      "transfer_score": 1.0
+      "transfer_score": 1.0,
+      "successes": 1,
+      "failures": 0,
+      "status": "PROMOTED",
+      "updated_at": "2026-08-27T13:09:11.534688+00:00"
     },
-    "variants": [
-      {
-        "name": "empty_response_variant",
-        "score": 1.0
-      },
-      {
-        "name": "rate_limit_variant",
-        "score": 1.0
-      },
-      {
-        "name": "invalid_json_variant",
-        "score": 1.0
-      }
-    ],
-    "baseline": 0.65,
-    "transfer_score": 1.0,
-    "decision": "PROMOTED"
+    "transfer_score": 1.0
   },
-  "new_learning": true,
-  "status": "PROMOTED"
+  "new_learning": false,
+  "status": "ALREADY_PROMOTED"
 }

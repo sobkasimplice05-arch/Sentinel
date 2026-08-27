@@ -1,6 +1,6 @@
 {
   "mode": "EXPERIMENTAL_GENERAL_AGENT",
-  "cycle_number": 422,
+  "cycle_number": 423,
   "objective": {
     "id": 1,
     "title": "improve_observation_and_transfer",
@@ -41,9 +41,9 @@
     }
   ],
   "episode": {
-    "created_at": "2026-08-27T13:09:11.537688+00:00",
+    "created_at": "2026-08-27T13:51:03.883211+00:00",
     "objective_id": 1,
-    "observation_hash": "1277c86d3e84499c515266e7e49efa9e8546eaa813cc8bec9c02615b3cc11134",
+    "observation_hash": "a4ec50dbc5381225c78b7a77863e2e7fe4f702a9a9a99963cbd04eb1bdfa4e39",
     "plan": [
       {
         "step": 1,
@@ -77,35 +77,40 @@
       }
     ],
     "action": "PROVIDER_ERROR",
-    "outcome": "NO_CHANGE_NEEDED",
-    "score": 0.789519,
+    "outcome": "PROMOTED",
+    "score": 0.889519,
     "transfer_status": "VERIFIED"
   },
   "skill_learning": {
-    "status": "PROMOTED",
+    "status": "ALREADY_PROMOTED",
     "transfer_status": "VERIFIED",
     "note": "Compétence de diagnostic fournisseur promue après trois variantes déterministes distinctes.",
     "skill": {
       "name": "provider_failure_diagnosis",
       "version": 1,
-      "status": "PROMOTED",
       "competence_score": 1.0,
-      "transfer_score": 1.0
+      "transfer_score": 1.0,
+      "successes": 1,
+      "failures": 0,
+      "status": "PROMOTED",
+      "updated_at": "2026-08-27T13:09:11.534688+00:00"
     },
     "diagnostic": {
       "attempt_count": 3,
       "provider_sequence": [
-        "EMPTY_CLOUDFLARE_RESPONSE",
-        "GOOGLE",
-        "PROVIDER_ERROR:HTTP_400"
+        "PROVIDER_ERROR:HTTP_410",
+        "PROVIDER_ERROR:HTTP_410",
+        "PROVIDER_ERROR:HTTP_410"
       ],
       "recommended_actions": [
-        "cooldown_empty_provider_and_fallback",
-        "response_received_validate_structure",
-        "inspect_request_contract_before_retry"
+        "record_unknown_provider_state",
+        "record_unknown_provider_state",
+        "record_unknown_provider_state"
       ],
-      "fallback_observed": true,
-      "diagnostic_score": 1.0
+      "fallback_observed": false,
+      "contract_retry_count": 0,
+      "http_400_observed": false,
+      "diagnostic_score": 0.8
     }
   },
   "capability_profile": {
