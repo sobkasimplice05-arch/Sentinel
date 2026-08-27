@@ -6,7 +6,8 @@ payload ou corps de réponse n'est conservé.
 """
 from __future__ import annotations
 
-from typing import Any, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from typing import Any
 
 
 def classify_provider_status(status: str) -> str:
@@ -34,11 +35,19 @@ def diagnose_provider_attempts(report: Mapping[str, Any]) -> dict[str, Any]:
     actions = [classify_provider_status(status) for status in statuses]
     failed = [status for status in statuses if classify_provider_status(status) != "response_received_validate_structure"]
     fallback_observed = len(statuses) >= 2 and len(set(statuses)) >= 2 and bool(failed)
+    contract_retries = sum(
+        1
+        for item in attempts
+        if isinstance(item.get("provider_diagnostic"), Mapping)
+        and item["provider_diagnostic"].get("contract_retry") is True
+    )
     return {
         "attempt_count": len(attempts),
         "provider_sequence": statuses,
         "recommended_actions": actions,
         "fallback_observed": fallback_observed,
+        "contract_retry_count": contract_retries,
+        "http_400_observed": any("HTTP_400" in status for status in statuses),
         "diagnostic_score": round((1.0 if actions else 0.0) * (1.0 if fallback_observed or len(statuses) <= 1 else 0.8), 6),
     }
 
@@ -58,6 +67,10 @@ def run_provider_diagnostic(report: Mapping[str, Any]) -> dict[str, Any]:
         {
             "name": "invalid_json_variant",
             "score": 1.0 if classify_provider_status("INVALID_MODEL_JSON") == "repair_once_then_cooldown" else 0.0,
+        },
+        {
+            "name": "http_400_contract_variant",
+            "score": 1.0 if classify_provider_status("PROVIDER_ERROR:HTTP_400") == "inspect_request_contract_before_retry" else 0.0,
         },
     )
     transfer_score = round(sum(item["score"] for item in variants) / len(variants), 6)

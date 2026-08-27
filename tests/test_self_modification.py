@@ -515,3 +515,133 @@ def test_score_uses_independent_benchmark_score(tmp_path):
         },
         proposal,
     ) == 0.0
+
+
+
+def test_nvidia_uses_guided_json_and_retries_without_constraint_on_http_400(tmp_path, monkeypatch):
+    import requests
+
+    monkeypatch.setenv("SELF_MODIFICATION_PROVIDER", "nvidia")
+    monkeypatch.setenv("NVIDIA_API_KEY", "nvidia-test-key")
+    calls = []
+
+    class Response:
+        def __init__(self, status_code, payload):
+            self.status_code = status_code
+            self._payload = payload
+            self.headers = {}
+
+        def raise_for_status(self):
+            if self.status_code >= 400:
+                error = requests.HTTPError(f"HTTP {self.status_code}")
+                error.response = self
+                raise error
+
+        def json(self):
+            return self._payload
+
+    def fake_post(url, **kwargs):
+        calls.append(kwargs["json"])
+        if len(calls) == 1:
+            return Response(400, {"error": "unsupported response format"})
+        return Response(200, {"choices": [{"message": {"content": '{"files":[]}'}}]})
+
+    monkeypatch.setattr("self_modification.requests.post", fake_post)
+    engine = SelfModificationEngine(root=tmp_path)
+
+    raw, provider = engine._call_provider("return json")
+
+    assert raw == '{"files":[]}'
+    assert provider == "NVIDIA"
+    assert "nvext" in calls[0]
+    assert "response_format" not in calls[0]
+    assert "nvext" not in calls[1]
+    assert engine._last_provider_diagnostic["contract_retry"] is True
+
+
+def test_google_retries_without_response_mime_on_http_400(tmp_path, monkeypatch):
+    import requests
+
+    monkeypatch.setenv("SELF_MODIFICATION_PROVIDER", "google")
+    monkeypatch.setenv("GOOGLE_API_KEY", "google-test-key")
+    calls = []
+
+    class Response:
+        def __init__(self, status_code, payload):
+            self.status_code = status_code
+            self._payload = payload
+            self.headers = {}
+
+        def raise_for_status(self):
+            if self.status_code >= 400:
+                error = requests.HTTPError(f"HTTP {self.status_code}")
+                error.response = self
+                raise error
+
+        def json(self):
+            return self._payload
+
+    def fake_post(url, **kwargs):
+        calls.append(kwargs["json"])
+        if len(calls) == 1:
+            return Response(400, {"error": "unsupported response mime"})
+        return Response(200, {"candidates": [{"content": {"parts": [{"text": '{"files":[]}'}]}}]})
+
+    monkeypatch.setattr("self_modification.requests.post", fake_post)
+    engine = SelfModificationEngine(root=tmp_path)
+
+    raw, provider = engine._call_provider("return json")
+
+    assert raw == '{"files":[]}'
+    assert provider == "GOOGLE"
+    assert "responseMimeType" in calls[0]["generationConfig"]
+    assert "responseMimeType" not in calls[1]["generationConfig"]
+    assert engine._last_provider_diagnostic["contract_retry"] is True
+
+
+
+def test_auto_provider_falls_back_after_http_400(tmp_path, monkeypatch):
+    import requests
+
+    monkeypatch.setenv("SELF_MODIFICATION_PROVIDER", "auto")
+    monkeypatch.setenv("NVIDIA_API_KEY", "nvidia-test-key")
+    monkeypatch.setenv("HF_API_KEY", "hf-test-key")
+    for name in ("GOOGLE_API_KEY", "GEMINI_API_KEY", "GOOGLE_GEMINI_API_KEY", "GROQ_API_KEY", "MODEL_API_KEY", "MODEL_API_URL", "SELF_MODIFICATION_MODEL_URL", "OLLAMA_BASE_URL", "CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID"):
+        monkeypatch.delenv(name, raising=False)
+    (tmp_path / "learning_engine.py").write_text("def evaluate_threats(data, policy=None):\n    return {}\n")
+
+    class ErrorResponse:
+        status_code = 400
+        headers = {}  # noqa: RUF012
+
+        def raise_for_status(self):
+            error = requests.HTTPError("bad request")
+            error.response = self
+            raise error
+
+    class SuccessResponse:
+        status_code = 200
+
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return [{"generated_text": '{"files":[]}'}]
+
+    calls = []
+
+    def fake_post(url, **kwargs):
+        calls.append((url, kwargs["json"]))
+        if "integrate.api.nvidia.com" in url:
+            return ErrorResponse()
+        return SuccessResponse()
+
+    monkeypatch.setattr("self_modification.requests.post", fake_post)
+    engine = SelfModificationEngine(root=tmp_path, allowed_files={"learning_engine.py"})
+
+    result = engine.run_cycle(feedback={}, autonomy={})
+
+    assert result["decision"] == "NO_CHANGE_PROPOSED"
+    assert any("integrate.api.nvidia.com" in url for url, _ in calls)
+    assert any("api-inference.huggingface.co" in url for url, _ in calls)
+    assert any(attempt.get("provider_diagnostic", {}).get("contract_retry") for attempt in result["attempts"])

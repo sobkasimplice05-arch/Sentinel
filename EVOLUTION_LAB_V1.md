@@ -42,3 +42,13 @@ Les rejets de promotion alimentent `evolution_patterns` par empreinte stable. Le
 Le benchmark de transfert indépendant est exécuté dans la baseline et dans la copie candidate du moteur de self-modification. Une promotion exige compilation, tests ciblés, benchmark lisible et `candidate_score > baseline_score`. Une absence de benchmark ou un score non mesurable entraîne un rejet honnête.
 
 Les statuts ont une signification stricte : une adaptation de politique peut être persistée sans constituer une autoévolution de code ; un commit candidat peut être valide sans être encore absorbé ; un échec ou un no-op devient une donnée de recherche plutôt qu’un succès artificiel.
+
+## Contrat fournisseurs et HTTP 400
+
+Le client de self-modification utilise désormais un contrat structuré adapté au fournisseur. NVIDIA reçoit `nvext.guided_json`, conformément à sa documentation de génération structurée, tandis que les endpoints OpenAI-compatibles conservent `response_format` lorsque cette option est supportée. Google reçoit `responseMimeType` en premier essai.
+
+Lorsqu’un fournisseur renvoie HTTP 400, Sentinel effectue au maximum un retry contractuel en retirant uniquement les contrôles structurés incompatibles (`response_format`, `responseMimeType` ou `nvext`). Le JSON reste imposé par le prompt et validé localement par le parseur de proposition ; une réponse non conforme n’est jamais exécutée. En mode `auto`, le fournisseur qui échoue est ensuite placé en cooldown et le prochain fournisseur disponible est essayé.
+
+Chaque tentative conserve uniquement un diagnostic borné : fournisseur, hôte de l’endpoint et indication d’un retry contractuel. Aucun secret ni corps de réponse n’est enregistré. Le diagnostic d’apprentissage contient désormais une variante HTTP 400 afin que la gestion des erreurs de contrat soit mesurée comme une compétence transférable.
+
+Les modèles par défaut Cloudflare ont été alignés sur un modèle listé comme compatible avec JSON Mode dans la documentation officielle : [Cloudflare Workers AI JSON Mode](https://developers.cloudflare.com/workers-ai/features/json-mode/). Pour NVIDIA, la contrainte recommandée est décrite dans [NVIDIA NIM Structured Generation](https://docs.nvidia.com/nim/large-language-models/1.8.0/structured-generation.html).
