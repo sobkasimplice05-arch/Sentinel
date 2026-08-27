@@ -13,22 +13,21 @@
     "evaluate_feedback",
     "self_diagnose_failures"
   ],
-  "cycle_number": 395,
+  "cycle_number": 396,
   "known_failures": [],
   "last_observation_hash": "1277c86d3e84499c515266e7e49efa9e8546eaa813cc8bec9c02615b3cc11134",
   "next_actions": [
-    "reuse_promoted_policy_next_cycle",
-    "measure_source_reliability_again",
-    "search_for_new_observations"
+    "wait_for_novel_observation",
+    "maintain_current_policy"
   ],
   "rejected_experiments": 30,
   "strategy": {
     "confidence": 0.95,
-    "last_decision_at": "2026-08-26T16:51:56.462910+00:00",
-    "last_outcome": "PROMOTED",
+    "last_decision_at": "2026-08-27T13:07:50.453896+00:00",
+    "last_outcome": "NO_CHANGE_NEEDED",
     "name": "evidence_driven_adaptation"
   },
   "successful_experiments": 296,
-  "total_plans": 395,
+  "total_plans": 396,
   "version": 1
 }
