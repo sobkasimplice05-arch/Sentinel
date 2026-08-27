@@ -252,7 +252,7 @@ Réponse invalide à réparer :
             model = os.getenv("GOOGLE_MODEL") or os.getenv("GEMINI_MODEL") or os.getenv("SELF_MODIFICATION_MODEL") or "gemini-3.5-flash"
             url = os.getenv("GOOGLE_API_URL") or f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
         elif provider in {"cloudflare", "workers_ai"}:
-            model = os.getenv("CLOUDFLARE_MODEL") or "@hf/thebloke/deepseek-coder-6.7b-instruct-awq"
+            model = os.getenv("CLOUDFLARE_MODEL") or "@cf/meta/llama-3.1-8b-instruct-fast"
             url = os.getenv("CLOUDFLARE_API_URL") or (
                 f"https://api.cloudflare.com/client/v4/accounts/{cloudflare_account}/ai/run/{model}"
                 if cloudflare_account else ""
@@ -643,6 +643,17 @@ Réponse invalide à réparer :
                     if "HTTP_413" in provider:
                         continue
                     if "HTTP_400" in provider and (os.getenv("SELF_MODIFICATION_PROVIDER") or "auto").lower() == "auto":
+                        diagnostic_provider = attempt.get("provider_diagnostic", {}).get("provider")
+                        if isinstance(diagnostic_provider, str) and diagnostic_provider:
+                            self._set_provider_cooldown(diagnostic_provider)
+                        if attempt_index < len(self.retry_output_tokens) - 1:
+                            continue
+                    auto_fallback_statuses = ("HTTP_401", "HTTP_403", "HTTP_404", "HTTP_410", "HTTP_422")
+                    if (
+                        (os.getenv("SELF_MODIFICATION_PROVIDER") or "auto").lower() == "auto"
+                        and provider.startswith("PROVIDER_ERROR:")
+                        and any(status in provider for status in auto_fallback_statuses)
+                    ):
                         diagnostic_provider = attempt.get("provider_diagnostic", {}).get("provider")
                         if isinstance(diagnostic_provider, str) and diagnostic_provider:
                             self._set_provider_cooldown(diagnostic_provider)

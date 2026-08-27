@@ -367,6 +367,47 @@ def test_auto_provider_falls_back_after_http_429(tmp_path, monkeypatch):
     assert [attempt["provider"] for attempt in result["attempts"]] == ["PROVIDER_ERROR:HTTP_429", "HUGGINGFACE_INFERENCE"]
 
 
+def test_auto_provider_falls_back_after_http_410(tmp_path, monkeypatch):
+    import requests
+
+    monkeypatch.setenv("SELF_MODIFICATION_PROVIDER", "auto")
+    monkeypatch.setenv("CLOUDFLARE_API_TOKEN", "cf-test-token")
+    monkeypatch.setenv("CLOUDFLARE_ACCOUNT_ID", "account-test")
+    monkeypatch.setenv("GOOGLE_API_KEY", "google-test-key")
+    for name in ("NVIDIA_API_KEY", "GROQ_API_KEY", "HF_API_KEY", "MODEL_API_KEY", "MODEL_API_URL", "SELF_MODIFICATION_MODEL_URL", "OLLAMA_BASE_URL"):
+        monkeypatch.delenv(name, raising=False)
+    (tmp_path / "learning_engine.py").write_text("def evaluate_threats(data, policy=None):\n    return {}\n")
+
+    gone_error = requests.HTTPError("model retired")
+    gone_error.response = type("GoneResponse", (), {"status_code": 410, "headers": {}})()
+
+    class SuccessResponse:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"candidates": [{"content": {"parts": [{"text": '{\"files\":[]}'}]}}]}
+
+    calls = []
+
+    def fake_post(url, **kwargs):
+        calls.append(url)
+        if "api.cloudflare.com" in url:
+            raise gone_error
+        return SuccessResponse()
+
+    monkeypatch.setattr("self_modification.requests.post", fake_post)
+    engine = SelfModificationEngine(root=tmp_path, allowed_files={"learning_engine.py"})
+
+    result = engine.run_cycle(feedback={}, autonomy={})
+
+    assert result["decision"] == "NO_CHANGE_PROPOSED"
+    assert any("api.cloudflare.com" in url for url in calls)
+    assert any("generativelanguage.googleapis.com" in url for url in calls)
+    assert [attempt["provider"] for attempt in result["attempts"]] == ["PROVIDER_ERROR:HTTP_410", "GOOGLE"]
+    assert engine._provider_on_cooldown("cloudflare") is True
+
+
 def test_cloudflare_workers_ai_provider_extracts_response(tmp_path, monkeypatch):
     monkeypatch.setenv("SELF_MODIFICATION_PROVIDER", "cloudflare")
     monkeypatch.setenv("CLOUDFLARE_API_TOKEN", "cf-test-token")
