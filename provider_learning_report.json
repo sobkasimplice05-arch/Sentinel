@@ -1,13 +1,17 @@
 {
   "skill_name": "provider_failure_diagnosis",
   "observed_diagnostic": {
-    "attempt_count": 0,
-    "provider_sequence": [],
-    "recommended_actions": [],
+    "attempt_count": 1,
+    "provider_sequence": [
+      "CLOUDFLARE"
+    ],
+    "recommended_actions": [
+      "response_received_validate_structure"
+    ],
     "fallback_observed": false,
     "contract_retry_count": 0,
     "http_400_observed": false,
-    "diagnostic_score": 0.0
+    "diagnostic_score": 1.0
   },
   "transfer_variants": [
     {

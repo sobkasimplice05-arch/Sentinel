@@ -1,7 +1,7 @@
 {
   "version": 1,
   "mode": "EXPERIMENTAL_GENERAL_AGENT",
-  "cycle_number": 508,
+  "cycle_number": 509,
   "current_objective_id": 1,
   "current_objective": {
     "id": 1,
@@ -26,7 +26,7 @@
     {
       "step": 3,
       "name": "act_and_experiment",
-      "action": "execute_observation_and_safe_candidate_experiment",
+      "action": "execute_tools_or_candidate_patch_in_isolation",
       "status": "READY"
     },
     {
@@ -51,5 +51,5 @@
     "transfer": 1.0
   },
   "transfer_verified": true,
-  "last_outcome": "REJECTED"
+  "last_outcome": "PROMOTED"
 }
