@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "cycle_id": "cycle-20260904T131521-60caa005c4fb",
-  "created_at": "2026-09-04T13:15:32.557625+00:00",
+  "cycle_id": "cycle-20260904T134026-83b92f633be8",
+  "created_at": "2026-09-04T13:40:38.343645+00:00",
   "experiments": [
     {
-      "cycle_id": "cycle-20260904T131521-60caa005c4fb",
+      "cycle_id": "cycle-20260904T134026-83b92f633be8",
       "kind": "policy",
       "decision": "PROMOTED",
       "original_decision": "PROMOTED",
@@ -18,7 +18,7 @@
       "coverage_complete": true
     },
     {
-      "cycle_id": "cycle-20260904T131521-60caa005c4fb",
+      "cycle_id": "cycle-20260904T134026-83b92f633be8",
       "kind": "self_modification",
       "decision": "REJECTED",
       "original_decision": "REJECTED",
@@ -32,7 +32,7 @@
       "coverage_complete": true
     },
     {
-      "cycle_id": "cycle-20260904T131521-60caa005c4fb",
+      "cycle_id": "cycle-20260904T134026-83b92f633be8",
       "kind": "source_evolution",
       "decision": "ALREADY_LEARNED",
       "original_decision": "ALREADY_LEARNED",
@@ -56,8 +56,8 @@
     "awaiting_review": 0,
     "open_error_patterns": 2,
     "latest": {
-      "cycle_id": "cycle-20260904T131521-60caa005c4fb",
-      "created_at": "2026-09-04T13:15:32.556706+00:00",
+      "cycle_id": "cycle-20260904T134026-83b92f633be8",
+      "created_at": "2026-09-04T13:40:38.342994+00:00",
       "decision": "ALREADY_LEARNED"
     }
   },
