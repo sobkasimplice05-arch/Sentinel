@@ -1,52 +1,52 @@
 {
   "version": 2,
-  "cycle_id": "cycle-20260904T134026-83b92f633be8",
-  "created_at": "2026-09-04T13:40:38.343645+00:00",
+  "cycle_id": "cycle-20260904T170303-fde5db3674fc",
+  "created_at": "2026-09-04T17:03:03.588782+00:00",
   "experiments": [
     {
-      "cycle_id": "cycle-20260904T134026-83b92f633be8",
+      "cycle_id": "cycle-20260904T170303-fde5db3674fc",
       "kind": "policy",
-      "decision": "PROMOTED",
-      "original_decision": "PROMOTED",
-      "code_promotion_verified": false,
-      "changed_files": [],
-      "tests_passed": false,
-      "baseline_score": 0.789519,
-      "candidate_score": 0.789519,
-      "measurable_gain": false,
-      "rejection_reason": "adaptation validée par la baseline",
-      "coverage_complete": true
-    },
-    {
-      "cycle_id": "cycle-20260904T134026-83b92f633be8",
-      "kind": "self_modification",
       "decision": "REJECTED",
       "original_decision": "REJECTED",
       "code_promotion_verified": false,
       "changed_files": [],
       "tests_passed": false,
-      "baseline_score": 1.0,
-      "candidate_score": 0.0,
+      "baseline_score": 0.543333,
+      "candidate_score": 0.510333,
       "measurable_gain": false,
-      "rejection_reason": "candidat non promu",
+      "rejection_reason": "score candidat inférieur à la baseline ou aucun changement",
       "coverage_complete": true
     },
     {
-      "cycle_id": "cycle-20260904T134026-83b92f633be8",
-      "kind": "source_evolution",
-      "decision": "ALREADY_LEARNED",
-      "original_decision": "ALREADY_LEARNED",
+      "cycle_id": "cycle-20260904T170303-fde5db3674fc",
+      "kind": "self_modification",
+      "decision": "DISABLED_FOR_COMPLIANCE",
+      "original_decision": "DISABLED_FOR_COMPLIANCE",
       "code_promotion_verified": false,
       "changed_files": [],
       "tests_passed": false,
       "baseline_score": null,
       "candidate_score": null,
       "measurable_gain": false,
-      "rejection_reason": "compétence déjà présente",
+      "rejection_reason": "La modification automatique des scripts Python est interdite.",
+      "coverage_complete": true
+    },
+    {
+      "cycle_id": "cycle-20260904T170303-fde5db3674fc",
+      "kind": "source_evolution",
+      "decision": "DISABLED_FOR_COMPLIANCE",
+      "original_decision": "DISABLED_FOR_COMPLIANCE",
+      "code_promotion_verified": false,
+      "changed_files": [],
+      "tests_passed": false,
+      "baseline_score": null,
+      "candidate_score": null,
+      "measurable_gain": false,
+      "rejection_reason": "L'évolution automatique des sources est interdite.",
       "coverage_complete": true
     }
   ],
-  "pattern_digest": "- [44bdeb2ef925734b] count=22 category=self_modification_promotion: candidat non promu\n- [18abf97a3443f111] count=1 category=self_modification_promotion: PROVIDER_ERROR:HTTP_400",
+  "pattern_digest": "- [44bdeb2ef925734b] count=21 category=self_modification_promotion: candidat non promu\n- [837f06ab9510f3c7] count=1 category=source_evolution_promotion: L'évolution automatique des sources est interdite.\n- [31a6f22922f5659c] count=1 category=self_modification_promotion: La modification automatique des scripts Python est interdite.\n- [18abf97a3443f111] count=1 category=self_modification_promotion: PROVIDER_ERROR:HTTP_400",
   "summary": {
     "total_experiments": 68,
     "verified_code_promotions": 0,
@@ -54,11 +54,11 @@
     "absorbed_after_restart": 0,
     "pending_restart_verification": 0,
     "awaiting_review": 0,
-    "open_error_patterns": 2,
+    "open_error_patterns": 4,
     "latest": {
-      "cycle_id": "cycle-20260904T134026-83b92f633be8",
-      "created_at": "2026-09-04T13:40:38.342994+00:00",
-      "decision": "ALREADY_LEARNED"
+      "cycle_id": "cycle-20260904T170303-fde5db3674fc",
+      "created_at": "2026-09-04T17:03:03.587199+00:00",
+      "decision": "DISABLED_FOR_COMPLIANCE"
     }
   },
   "invariants": [
