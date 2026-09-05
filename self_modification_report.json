@@ -1,9 +1,9 @@
 {
-  "cycle_id": "self-mod-20260905T103401",
+  "cycle_id": "self-mod-20260905T133235",
   "decision": "REJECTED",
   "provider": "CLOUDFLARE",
   "hypothesis": "Améliorer la fiabilité des sources en ajustant la dynamique de confiance en fonction de la qualité des contenus.",
-  "expected_gain": "Augmentation de la précision de l'intelligence artificielle de 5% en moyenne, avec un seuil de 0.8 pour la confiance.",
+  "expected_gain": "Augmentation de la qualité des contenus de 15% et de la confiance dans les sources de 10%.",
   "baseline_score": 1.0,
   "candidate_score": 0.0,
   "target_file": "learning_engine.py",
@@ -12,7 +12,7 @@
       "target_file": "learning_engine.py",
       "attempt": 1,
       "compact": false,
-      "prompt_chars": 11455,
+      "prompt_chars": 11492,
       "output_tokens": 4096,
       "provider": "CLOUDFLARE",
       "provider_diagnostic": {
@@ -24,16 +24,16 @@
   ],
   "tests": {
     "compile_returncode": 1,
-    "compile_output": "  File \"/tmp/sentinel-candidate-8o5ggg57/learning_engine.py\", line 1\n    import json\\nimport hashlib\\nfrom datetime import datetime, timezone\\nfrom typing import Any, Mapping\\n\\nfrom loguru import logger\\n\\nfrom memory_manager import SentinelMemory\\n\\n\\nclass LearningEngine:\\n    \"\"\"Analyse les observations en tenant compte de la politique persistante.\"\"\"\\n\\n    def __init__(self):\\n        self.memory = SentinelMemory()\\n\\n    def evaluate_threats(\\n        self,\\n        collected_data: Mapping[str, Any],\\n        policy: Mapping[str, Any] | None = None,\\n    ) -> dict[str, Any]:\\n        \"\"\"Produit un rapport déterministe et réutilise la politique apprise.\\n\\n        L'évaluation calcule plusieurs métriques de qualité, de diversité et de\\n        couverture, puis génère un score d'intelligence. La sauvegarde de la\\n        mémoire n'est effectuée que lorsqu'il y a des données à analyser afin\\n        d'éviter des opérations d'I/O inutiles.\\n        \"\"\"\\n\\n        policy = policy or {}\\n        reliability = dict(policy.get(\"source_reliabil\n                ^\nSyntaxError: unexpected character after line continuation character\n",
+    "compile_output": "  File \"/tmp/sentinel-candidate-1x42gqjb/learning_engine.py\", line 1\n    import json\\nimport hashlib\\nfrom datetime import datetime, timezone\\nfrom typing import Any, Mapping\\n\\nfrom loguru import logger\\n\\nfrom memory_manager import SentinelMemory\\n\\n\\nclass LearningEngine:\\n    \\\"\"\"Analyse les observations en tenant compte de la politique persistante.\\\"\"\"\\n\\n    def __init__(self):\\n        self.memory = SentinelMemory()\\n\\n    def evaluate_threats(\\n        self,\\n        collected_data: Mapping[str, Any],\\n        policy: Mapping[str, Any] | None = None,\\n    ) -> dict[str, Any]:\\n        \\\"\"\"Produit un rapport déterministe et réutilise la politique apprise.\\\"\"\"\\n\\n        policy = policy or {}\\n        reliability = dict(policy.get(\"source_reliability\", {}))\\n        minimum_sources = int(policy.get(\"minimum_sources\", 1))\\n        confidence_threshold = float(policy.get(\"confidence_threshold\", 0.65))\\n        logger.info(\"\\u270B Moteur d'apprentissage activé. Analyse des données en cours...\")\\n\\n        analysis_result: dict[str, Any] = {\\n       \n                ^\nSyntaxError: unexpected character after line continuation character\n",
     "test_returncode": 0,
     "test_output": "\n======================================================================\n🔧 PYTEST CONFIGURATION\n======================================================================\n📋 Mode: TEST (Réponses mock activées)\n======================================================================\n\n.........                                                                [100%]\n",
     "benchmark_returncode": 1,
     "benchmark_score": null,
     "benchmark_transfer_verified": false,
     "benchmark_report": {},
-    "benchmark_output": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/tmp/sentinel-candidate-8o5ggg57/transfer_benchmark.py\", line 16, in <module>\n    from learning_engine import LearningEngine\n  File \"/tmp/sentinel-candidate-8o5ggg57/learning_engine.py\", line 1\n    import json\\nimport hashlib\\nfrom datetime import datetime, timezone\\nfrom typing import Any, Mapping\\n\\nfrom loguru import logger\\n\\nfrom memory_manager import SentinelMemory\\n\\n\\nclass LearningEngine:\\n    \"\"\"Analyse les observations en tenant compte de la politique persistante.\"\"\"\\n\\n    def __init__(self):\\n        self.memory = SentinelMemory()\\n\\n    def evaluate_threats(\\n        self,\\n        collected_data: Mapping[str, Any],\\n        policy: Mapping[str, Any] | None = None,\\n    ) -> dict[str, Any]:\\n        \"\"\"Produit un rapport déterministe et réutilise la politique apprise.\\n\\n        L'évaluation calcule plusieurs métriques de qualité, de diversité et de\\n        couverture, puis génère un score d'intelligence. La sauvegarde de la\\n        mémoire n'est effectuée que lorsqu'il y a des données à analyser afin\\n        d'éviter des opérations d'I/O inutiles.\\n        \"\"\"\\n\\n        policy = policy or {}\\n        reliability = dict(policy.get(\"source_reliabil\n                ^\nSyntaxError: unexpected character after line continuation character\n",
+    "benchmark_output": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/tmp/sentinel-candidate-1x42gqjb/transfer_benchmark.py\", line 16, in <module>\n    from learning_engine import LearningEngine\n  File \"/tmp/sentinel-candidate-1x42gqjb/learning_engine.py\", line 1\n    import json\\nimport hashlib\\nfrom datetime import datetime, timezone\\nfrom typing import Any, Mapping\\n\\nfrom loguru import logger\\n\\nfrom memory_manager import SentinelMemory\\n\\n\\nclass LearningEngine:\\n    \\\"\"\"Analyse les observations en tenant compte de la politique persistante.\\\"\"\"\\n\\n    def __init__(self):\\n        self.memory = SentinelMemory()\\n\\n    def evaluate_threats(\\n        self,\\n        collected_data: Mapping[str, Any],\\n        policy: Mapping[str, Any] | None = None,\\n    ) -> dict[str, Any]:\\n        \\\"\"\"Produit un rapport déterministe et réutilise la politique apprise.\\\"\"\"\\n\\n        policy = policy or {}\\n        reliability = dict(policy.get(\"source_reliability\", {}))\\n        minimum_sources = int(policy.get(\"minimum_sources\", 1))\\n        confidence_threshold = float(policy.get(\"confidence_threshold\", 0.65))\\n        logger.info(\"\\u270B Moteur d'apprentissage activé. Analyse des données en cours...\")\\n\\n        analysis_result: dict[str, Any] = {\\n       \n                ^\nSyntaxError: unexpected character after line continuation character\n",
     "baseline_benchmark_score": 1.0,
     "measured_gain": -1.0
   },
-  "created_at": "2026-09-05T10:34:10.314776+00:00"
+  "created_at": "2026-09-05T13:32:42.943462+00:00"
 }
