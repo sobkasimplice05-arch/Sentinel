@@ -1,7 +1,7 @@
 {
   "task": "compact_http_413_recovery",
   "target_file": "provider_diagnostics.py",
-  "created_at": "2026-09-18T21:28:54.639049+00:00",
+  "created_at": "2026-09-18T22:14:52.218482+00:00",
   "transfer_variants": [
     "PROVIDER_ERROR:HTTP_413",
     "HTTP_413:oversized_prompt"
