@@ -1,38 +1,38 @@
 {
   "version": 2,
-  "cycle_id": "cycle-20260930T225048-83b92f633be8",
-  "created_at": "2026-09-30T22:50:59.891620+00:00",
+  "cycle_id": "cycle-20261001T000208-60caa005c4fb",
+  "created_at": "2026-10-01T00:02:19.492894+00:00",
   "experiments": [
     {
-      "cycle_id": "cycle-20260930T225048-83b92f633be8",
+      "cycle_id": "cycle-20261001T000208-60caa005c4fb",
       "kind": "policy",
-      "decision": "NO_CHANGE_NEEDED",
-      "original_decision": "NO_CHANGE_NEEDED",
+      "decision": "PROMOTED",
+      "original_decision": "PROMOTED",
       "code_promotion_verified": false,
       "changed_files": [],
       "tests_passed": false,
       "baseline_score": 0.789519,
       "candidate_score": 0.789519,
       "measurable_gain": false,
-      "rejection_reason": "observation déjà traitée; aucune nouvelle preuve",
+      "rejection_reason": "adaptation validée par la baseline",
       "coverage_complete": true
     },
     {
-      "cycle_id": "cycle-20260930T225048-83b92f633be8",
+      "cycle_id": "cycle-20261001T000208-60caa005c4fb",
       "kind": "self_modification",
       "decision": "REJECTED",
       "original_decision": "REJECTED",
       "code_promotion_verified": false,
       "changed_files": [],
-      "tests_passed": false,
+      "tests_passed": true,
       "baseline_score": 1.0,
-      "candidate_score": 0.0,
+      "candidate_score": 1.0,
       "measurable_gain": false,
       "rejection_reason": "candidat non promu",
       "coverage_complete": true
     },
     {
-      "cycle_id": "cycle-20260930T225048-83b92f633be8",
+      "cycle_id": "cycle-20261001T000208-60caa005c4fb",
       "kind": "source_evolution",
       "decision": "ALREADY_LEARNED",
       "original_decision": "ALREADY_LEARNED",
@@ -56,8 +56,8 @@
     "awaiting_review": 0,
     "open_error_patterns": 2,
     "latest": {
-      "cycle_id": "cycle-20260930T225048-83b92f633be8",
-      "created_at": "2026-09-30T22:50:59.890935+00:00",
+      "cycle_id": "cycle-20261001T000208-60caa005c4fb",
+      "created_at": "2026-10-01T00:02:19.492306+00:00",
       "decision": "ALREADY_LEARNED"
     }
   },
