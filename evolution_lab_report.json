@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "cycle_id": "cycle-20261001T000208-60caa005c4fb",
-  "created_at": "2026-10-01T00:02:19.492894+00:00",
+  "cycle_id": "cycle-20261001T015122-83b92f633be8",
+  "created_at": "2026-10-01T01:51:30.210894+00:00",
   "experiments": [
     {
-      "cycle_id": "cycle-20261001T000208-60caa005c4fb",
+      "cycle_id": "cycle-20261001T015122-83b92f633be8",
       "kind": "policy",
       "decision": "PROMOTED",
       "original_decision": "PROMOTED",
@@ -18,21 +18,21 @@
       "coverage_complete": true
     },
     {
-      "cycle_id": "cycle-20261001T000208-60caa005c4fb",
+      "cycle_id": "cycle-20261001T015122-83b92f633be8",
       "kind": "self_modification",
       "decision": "REJECTED",
       "original_decision": "REJECTED",
       "code_promotion_verified": false,
       "changed_files": [],
-      "tests_passed": true,
+      "tests_passed": false,
       "baseline_score": 1.0,
-      "candidate_score": 1.0,
+      "candidate_score": 0.0,
       "measurable_gain": false,
       "rejection_reason": "candidat non promu",
       "coverage_complete": true
     },
     {
-      "cycle_id": "cycle-20261001T000208-60caa005c4fb",
+      "cycle_id": "cycle-20261001T015122-83b92f633be8",
       "kind": "source_evolution",
       "decision": "ALREADY_LEARNED",
       "original_decision": "ALREADY_LEARNED",
@@ -56,8 +56,8 @@
     "awaiting_review": 0,
     "open_error_patterns": 2,
     "latest": {
-      "cycle_id": "cycle-20261001T000208-60caa005c4fb",
-      "created_at": "2026-10-01T00:02:19.492306+00:00",
+      "cycle_id": "cycle-20261001T015122-83b92f633be8",
+      "created_at": "2026-10-01T01:51:30.210197+00:00",
       "decision": "ALREADY_LEARNED"
     }
   },

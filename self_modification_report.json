@@ -1,18 +1,18 @@
 {
-  "cycle_id": "self-mod-20261001T000208",
+  "cycle_id": "self-mod-20261001T015122",
   "decision": "REJECTED",
   "provider": "CLOUDFLARE",
-  "hypothesis": "Améliorer la fiabilité des sources en ajustant la dynamique de confiance en fonction de la qualité des contenus et adapter le seuil de confiance en fonction de la diversité des sources.",
-  "expected_gain": "Augmentation de la fiabilité des sources de 10% et augmentation de la diversité des sources de 15%.",
+  "hypothesis": "Améliorer la fiabilité des sources en ajustant la dynamique de confiance en fonction de la qualité des contenus.",
+  "expected_gain": "Augmentation de la précision de l'intelligence artificielle de 5% en moyenne, avec un seuil de 3% pour les sources les moins fiables.",
   "baseline_score": 1.0,
-  "candidate_score": 1.0,
+  "candidate_score": 0.0,
   "target_file": "learning_engine.py",
   "attempts": [
     {
       "target_file": "learning_engine.py",
       "attempt": 1,
       "compact": false,
-      "prompt_chars": 11455,
+      "prompt_chars": 11492,
       "output_tokens": 4096,
       "provider": "CLOUDFLARE",
       "provider_diagnostic": {
@@ -23,34 +23,17 @@
     }
   ],
   "tests": {
-    "compile_returncode": 0,
-    "compile_output": "",
+    "compile_returncode": 1,
+    "compile_output": "  File \"/tmp/sentinel-candidate-k4kh7_fr/learning_engine.py\", line 24\n    L'évaluation calcule plusieurs métriques de qualité, de diversité et de\n     ^\nSyntaxError: unterminated string literal (detected at line 24)\n",
     "test_returncode": 0,
     "test_output": "\n======================================================================\n🔧 PYTEST CONFIGURATION\n======================================================================\n📋 Mode: TEST (Réponses mock activées)\n======================================================================\n\n.........                                                                [100%]\n",
-    "benchmark_returncode": 0,
-    "benchmark_score": 1.0,
-    "benchmark_transfer_verified": true,
-    "benchmark_report": {
-      "benchmark": "sentinel-transfer-v1",
-      "cases": {
-        "quality_discrimination": {
-          "passed": true
-        },
-        "feedback_deduplication": {
-          "passed": true
-        },
-        "provider_failure_diagnosis": {
-          "passed": true
-        }
-      },
-      "passed": 3,
-      "total": 3,
-      "score": 1.0,
-      "transfer_verified": true
-    },
-    "benchmark_output": "{\n  \"benchmark\": \"sentinel-transfer-v1\",\n  \"cases\": {\n    \"quality_discrimination\": {\n      \"passed\": true\n    },\n    \"feedback_deduplication\": {\n      \"passed\": true\n    },\n    \"provider_failure_diagnosis\": {\n      \"passed\": true\n    }\n  },\n  \"passed\": 3,\n  \"total\": 3,\n  \"score\": 1.0,\n  \"transfer_verified\": true\n}\n\u001b[32m2026-10-01 00:02:19.467\u001b[0m | \u001b[32m\u001b[1mSUCCESS \u001b[0m | \u001b[36mmemory_manager\u001b[0m:\u001b[36minit_database\u001b[0m:\u001b[36m33\u001b[0m - \u001b[32m\u001b[1m🧬 Base de données v3.0 SQLite initialisée (sentinel_memory.db).\u001b[0m\n\u001b[32m2026-10-01 00:02:19.467\u001b[0m | \u001b[1mINFO    \u001b[0m | \u001b[36mlearning_engine\u001b[0m:\u001b[36mevaluate_threats\u001b[0m:\u001b[36m32\u001b[0m - \u001b[1m❓ Moteur d'apprentissage activé. Analyse des données en cours...\u001b[0m\n\u001b[32m2026-10-01 00:02:19.467\u001b[0m | \u001b[32m\u001b[1mSUCCESS \u001b[0m | \u001b[36mlearning_engine\u001b[0m:\u001b[36mevaluate_threats\u001b[0m:\u001b[36m89\u001b[0m - \u001b[32m\u001b[1m✅ Pattern d'intelligence détecté pour la source : \u001b[0m\n\u001b[32m2026-10-01 00:02:19.468\u001b[0m | \u001b[1mINFO    \u001b[0m | \u001b[36mmemory_manager\u001b[0m:\u001b[36mbackup_memory\u001b[0m:\u001b[36m64\u001b[0m - \u001b[1m💾 Backup physique de la base de données créé (.db.bak).\u001b[0m\n\u001b[32m2026-10-01 00:02:19.468\u001b[0m | \u001b[1mINFO    \u001b[0m | \u001b[36mlearning_engine\u001b[0m:\u001b[36mevaluate_threats\u001b[0m:\u001b[36m32\u001b[0m - \u001b[1m❓ Moteur d'apprentissage activé. Analyse des données en cours...\u001b[0m\n\u001b[32m2026-10-01 00:02:19.468\u001b[0m | \u001b[32m\u001b[1mSUCCESS \u001b[0m | \u001b[36mlearning_engine\u001b[0m:\u001b[36mevaluate_threats\u001b[0m:\u001b[36m89\u001b[0m - \u001b[32m\u001b[1m✅ Pattern d'intelligence détecté pour la source : \u001b[0m\n\u001b[32m2026-10-01 00:02:19.468\u001b[0m | \u001b[32m\u001b[1mSUCCESS \u001b[0m | \u001b[36mlearning_engine\u001b[0m:\u001b[36mevaluate_threats\u001b[0m:\u001b[36m89\u001b[0m - \u001b[32m\u001b[1m✅ Pattern d'intelligence détecté pour la source : \u001b[0m\n\u001b[32m2026-10-01 00:02:19.468\u001b[0m | \u001b[1mINFO    \u001b[0m | \u001b[36mmemory_manager\u001b[0m:\u001b[36mbackup_memory\u001b[0m:\u001b[36m64\u001b[0m - \u001b[1m💾 Backup physique de la base de données créé (.db.bak).\u001b[0m\n",
+    "benchmark_returncode": 1,
+    "benchmark_score": null,
+    "benchmark_transfer_verified": false,
+    "benchmark_report": {},
+    "benchmark_output": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/tmp/sentinel-candidate-k4kh7_fr/transfer_benchmark.py\", line 16, in <module>\n    from learning_engine import LearningEngine\n  File \"/tmp/sentinel-candidate-k4kh7_fr/learning_engine.py\", line 24\n    L'évaluation calcule plusieurs métriques de qualité, de diversité et de\n     ^\nSyntaxError: unterminated string literal (detected at line 24)\n",
     "baseline_benchmark_score": 1.0,
-    "measured_gain": 0.0
+    "measured_gain": -1.0
   },
-  "created_at": "2026-10-01T00:02:19.487541+00:00"
+  "created_at": "2026-10-01T01:51:30.205980+00:00"
 }
