@@ -1,15 +1,15 @@
 {
   "baseline_score": 0.789519,
   "candidate_score": 0.789519,
-  "created_at": "2026-10-02T08:05:51.949697+00:00",
-  "cycle_id": "cycle-20261002T080551-83b92f633be8",
+  "created_at": "2026-10-02T14:44:32.729370+00:00",
+  "cycle_id": "cycle-20261002T144432-83b92f633be8",
   "decision": "NO_CHANGE_NEEDED",
   "feedback": {
     "baseline_score": 0.789519,
     "candidate_score": 0.789519,
     "changed": false,
-    "created_at": "2026-10-02T08:05:51.948909+00:00",
-    "cycle_id": "cycle-20261002T080551-83b92f633be8",
+    "created_at": "2026-10-02T14:44:32.728903+00:00",
+    "cycle_id": "cycle-20261002T144432-83b92f633be8",
     "decision": "NO_CHANGE_NEEDED",
     "observation_hash": "83b92f633be8bcc456cd50454acb4dc94a81c9b6aa1dcb3fe4537309b0f1d56c",
     "policy": {
@@ -654,7 +654,7 @@
   "observation_hash": "83b92f633be8bcc456cd50454acb4dc94a81c9b6aa1dcb3fe4537309b0f1d56c",
   "strategy": {
     "confidence": 0.95,
-    "last_decision_at": "2026-10-02T08:05:51.949686+00:00",
+    "last_decision_at": "2026-10-02T14:44:32.729363+00:00",
     "last_outcome": "NO_CHANGE_NEEDED",
     "name": "evidence_driven_adaptation"
   }
