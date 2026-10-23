@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "cycle_id": "cycle-20261023T131112-8c28dc379b78",
-  "created_at": "2026-10-23T13:11:23.673510+00:00",
+  "cycle_id": "cycle-20261023T172711-8c28dc379b78",
+  "created_at": "2026-10-23T17:27:19.961743+00:00",
   "experiments": [
     {
-      "cycle_id": "cycle-20261023T131112-8c28dc379b78",
+      "cycle_id": "cycle-20261023T172711-8c28dc379b78",
       "kind": "policy",
       "decision": "NO_CHANGE_NEEDED",
       "original_decision": "NO_CHANGE_NEEDED",
@@ -18,7 +18,7 @@
       "coverage_complete": true
     },
     {
-      "cycle_id": "cycle-20261023T131112-8c28dc379b78",
+      "cycle_id": "cycle-20261023T172711-8c28dc379b78",
       "kind": "self_modification",
       "decision": "REJECTED",
       "original_decision": "REJECTED",
@@ -32,7 +32,7 @@
       "coverage_complete": true
     },
     {
-      "cycle_id": "cycle-20261023T131112-8c28dc379b78",
+      "cycle_id": "cycle-20261023T172711-8c28dc379b78",
       "kind": "source_evolution",
       "decision": "ALREADY_LEARNED",
       "original_decision": "ALREADY_LEARNED",
@@ -46,9 +46,9 @@
       "coverage_complete": true
     }
   ],
-  "pattern_digest": "- [44bdeb2ef925734b] count=23 category=self_modification_promotion: candidat non promu\n- [18abf97a3443f111] count=1 category=self_modification_promotion: PROVIDER_ERROR:HTTP_400",
+  "pattern_digest": "- [44bdeb2ef925734b] count=24 category=self_modification_promotion: candidat non promu\n- [18abf97a3443f111] count=1 category=self_modification_promotion: PROVIDER_ERROR:HTTP_400",
   "summary": {
-    "total_experiments": 71,
+    "total_experiments": 74,
     "verified_code_promotions": 0,
     "rejected_no_measurement": 0,
     "absorbed_after_restart": 0,
@@ -56,8 +56,8 @@
     "awaiting_review": 0,
     "open_error_patterns": 2,
     "latest": {
-      "cycle_id": "cycle-20261023T131112-8c28dc379b78",
-      "created_at": "2026-10-23T13:11:23.672616+00:00",
+      "cycle_id": "cycle-20261023T172711-8c28dc379b78",
+      "created_at": "2026-10-23T17:27:19.960893+00:00",
       "decision": "ALREADY_LEARNED"
     }
   },
