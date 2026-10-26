@@ -1,22 +1,22 @@
 {
-  "baseline_score": 0.789592,
-  "candidate_score": 0.789592,
-  "created_at": "2026-10-26T13:50:35.962573+00:00",
-  "cycle_id": "cycle-20261026T135035-b836f9a9834c",
-  "decision": "NO_CHANGE_NEEDED",
+  "baseline_score": 0.889592,
+  "candidate_score": 0.889592,
+  "created_at": "2026-10-26T19:42:55.410032+00:00",
+  "cycle_id": "cycle-20261026T194255-4df6ccbb2dfc",
+  "decision": "PROMOTED",
   "feedback": {
-    "baseline_score": 0.789592,
-    "candidate_score": 0.789592,
-    "changed": false,
-    "created_at": "2026-10-26T13:50:35.962044+00:00",
-    "cycle_id": "cycle-20261026T135035-b836f9a9834c",
-    "decision": "NO_CHANGE_NEEDED",
-    "observation_hash": "b836f9a9834c4b3ff5cf0f4d623f82a7b411fee42dbcf6667d413cb7093483d9",
+    "baseline_score": 0.889592,
+    "candidate_score": 0.889592,
+    "changed": true,
+    "created_at": "2026-10-26T19:42:55.409596+00:00",
+    "cycle_id": "cycle-20261026T194255-4df6ccbb2dfc",
+    "decision": "PROMOTED",
+    "hypothesis": "Ajuster la fiabilité des sources selon la fraîcheur observée et adapter le seuil selon la couverture des sources.",
+    "observation_hash": "4df6ccbb2dfc747ec586e3d832d179085362176cbc205cfd8f81670609f95d13",
     "policy": {
       "confidence_threshold": 0.5,
       "minimum_sources": 1,
       "observation_history": [
-        "5ef364647f19464aa222af3b99c176e23d6e07288acddeab18b9a21c72301d36",
         "1277c86d3e84499c515266e7e49efa9e8546eaa813cc8bec9c02615b3cc11134",
         "97b4072e68fd7b50353a08172d1e2bed15d619f90bb87d51a62b49816ad1651a",
         "5ef364647f19464aa222af3b99c176e23d6e07288acddeab18b9a21c72301d36",
@@ -215,19 +215,19 @@
         "8c28dc379b783493cc264945a0a7cd30b0728aa6095966241a632d64972e1bfd",
         "b836f9a9834c4b3ff5cf0f4d623f82a7b411fee42dbcf6667d413cb7093483d9",
         "8c28dc379b783493cc264945a0a7cd30b0728aa6095966241a632d64972e1bfd",
-        "b836f9a9834c4b3ff5cf0f4d623f82a7b411fee42dbcf6667d413cb7093483d9"
+        "b836f9a9834c4b3ff5cf0f4d623f82a7b411fee42dbcf6667d413cb7093483d9",
+        "4df6ccbb2dfc747ec586e3d832d179085362176cbc205cfd8f81670609f95d13"
       ],
       "source_reliability": {
         "arxiv": 0.899998,
         "github": 0.899998
       },
-      "version": 481
+      "version": 482
     },
     "policy_after": {
       "confidence_threshold": 0.5,
       "minimum_sources": 1,
       "observation_history": [
-        "5ef364647f19464aa222af3b99c176e23d6e07288acddeab18b9a21c72301d36",
         "1277c86d3e84499c515266e7e49efa9e8546eaa813cc8bec9c02615b3cc11134",
         "97b4072e68fd7b50353a08172d1e2bed15d619f90bb87d51a62b49816ad1651a",
         "5ef364647f19464aa222af3b99c176e23d6e07288acddeab18b9a21c72301d36",
@@ -426,13 +426,14 @@
         "8c28dc379b783493cc264945a0a7cd30b0728aa6095966241a632d64972e1bfd",
         "b836f9a9834c4b3ff5cf0f4d623f82a7b411fee42dbcf6667d413cb7093483d9",
         "8c28dc379b783493cc264945a0a7cd30b0728aa6095966241a632d64972e1bfd",
-        "b836f9a9834c4b3ff5cf0f4d623f82a7b411fee42dbcf6667d413cb7093483d9"
+        "b836f9a9834c4b3ff5cf0f4d623f82a7b411fee42dbcf6667d413cb7093483d9",
+        "4df6ccbb2dfc747ec586e3d832d179085362176cbc205cfd8f81670609f95d13"
       ],
       "source_reliability": {
         "arxiv": 0.899998,
         "github": 0.899998
       },
-      "version": 481
+      "version": 482
     },
     "policy_before": {
       "confidence_threshold": 0.5,
@@ -645,17 +646,18 @@
       },
       "version": 481
     },
-    "reason": "observation déjà traitée; aucune nouvelle preuve"
+    "reason": "adaptation validée par la baseline"
   },
   "next_actions": [
-    "wait_for_novel_observation",
-    "maintain_current_policy"
+    "reuse_promoted_policy_next_cycle",
+    "measure_source_reliability_again",
+    "search_for_new_observations"
   ],
-  "observation_hash": "b836f9a9834c4b3ff5cf0f4d623f82a7b411fee42dbcf6667d413cb7093483d9",
+  "observation_hash": "4df6ccbb2dfc747ec586e3d832d179085362176cbc205cfd8f81670609f95d13",
   "strategy": {
     "confidence": 0.95,
-    "last_decision_at": "2026-10-26T13:50:35.962564+00:00",
-    "last_outcome": "NO_CHANGE_NEEDED",
+    "last_decision_at": "2026-10-26T19:42:55.410026+00:00",
+    "last_outcome": "PROMOTED",
     "name": "evidence_driven_adaptation"
   }
 }
