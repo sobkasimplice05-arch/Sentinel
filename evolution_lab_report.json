@@ -1,24 +1,24 @@
 {
   "version": 2,
-  "cycle_id": "cycle-20261030T154041-ccfb6a1c7b73",
-  "created_at": "2026-10-30T15:40:50.879970+00:00",
+  "cycle_id": "cycle-20261030T154747-23c21c9887c6",
+  "created_at": "2026-10-30T15:48:00.678562+00:00",
   "experiments": [
     {
-      "cycle_id": "cycle-20261030T154041-ccfb6a1c7b73",
+      "cycle_id": "cycle-20261030T154747-23c21c9887c6",
       "kind": "policy",
-      "decision": "NO_CHANGE_NEEDED",
-      "original_decision": "NO_CHANGE_NEEDED",
+      "decision": "PROMOTED",
+      "original_decision": "PROMOTED",
       "code_promotion_verified": false,
       "changed_files": [],
       "tests_passed": false,
-      "baseline_score": 0.789519,
-      "candidate_score": 0.789519,
+      "baseline_score": 0.889519,
+      "candidate_score": 0.889519,
       "measurable_gain": false,
-      "rejection_reason": "observation déjà traitée; aucune nouvelle preuve",
+      "rejection_reason": "adaptation validée par la baseline",
       "coverage_complete": true
     },
     {
-      "cycle_id": "cycle-20261030T154041-ccfb6a1c7b73",
+      "cycle_id": "cycle-20261030T154747-23c21c9887c6",
       "kind": "self_modification",
       "decision": "REJECTED",
       "original_decision": "REJECTED",
@@ -32,7 +32,7 @@
       "coverage_complete": true
     },
     {
-      "cycle_id": "cycle-20261030T154041-ccfb6a1c7b73",
+      "cycle_id": "cycle-20261030T154747-23c21c9887c6",
       "kind": "source_evolution",
       "decision": "ALREADY_LEARNED",
       "original_decision": "ALREADY_LEARNED",
@@ -46,9 +46,9 @@
       "coverage_complete": true
     }
   ],
-  "pattern_digest": "- [44bdeb2ef925734b] count=35 category=self_modification_promotion: candidat non promu\n- [18abf97a3443f111] count=1 category=self_modification_promotion: PROVIDER_ERROR:HTTP_400",
+  "pattern_digest": "- [44bdeb2ef925734b] count=36 category=self_modification_promotion: candidat non promu\n- [18abf97a3443f111] count=1 category=self_modification_promotion: PROVIDER_ERROR:HTTP_400",
   "summary": {
-    "total_experiments": 107,
+    "total_experiments": 110,
     "verified_code_promotions": 0,
     "rejected_no_measurement": 0,
     "absorbed_after_restart": 0,
@@ -56,8 +56,8 @@
     "awaiting_review": 0,
     "open_error_patterns": 2,
     "latest": {
-      "cycle_id": "cycle-20261030T154041-ccfb6a1c7b73",
-      "created_at": "2026-10-30T15:40:50.877313+00:00",
+      "cycle_id": "cycle-20261030T154747-23c21c9887c6",
+      "created_at": "2026-10-30T15:48:00.677874+00:00",
       "decision": "ALREADY_LEARNED"
     }
   },
