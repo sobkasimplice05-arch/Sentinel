@@ -1,9 +1,9 @@
 {
-  "cycle_id": "self-mod-20261031T042333",
+  "cycle_id": "self-mod-20261031T064533",
   "decision": "REJECTED",
   "provider": "CLOUDFLARE",
-  "hypothesis": "Améliorer la fiabilité des sources en ajustant la fraîcheur observée et adapter le seuil en fonction de la couverture des sources.",
-  "expected_gain": "Augmentation de la qualité des observations et de la précision des scores d'intelligence.",
+  "hypothesis": "Améliorer la fiabilité des sources en ajustant la dynamique de confiance en fonction de la qualité du contenu.",
+  "expected_gain": "Augmentation de la précision de l'intelligence artificielle de 10% en moyenne, avec un seuil de 5% de gain minimum.",
   "baseline_score": 1.0,
   "candidate_score": 0.0,
   "target_file": "learning_engine.py",
@@ -24,16 +24,16 @@
   ],
   "tests": {
     "compile_returncode": 1,
-    "compile_output": "  File \"/tmp/sentinel-candidate-eqge32oo/learning_engine.py\", line 23\n    L'évaluation calcule plusieurs métriques de qualité, de diversité et de\n     ^\nSyntaxError: unterminated string literal (detected at line 23)\n",
+    "compile_output": "  File \"/tmp/sentinel-candidate-8x73teta/learning_engine.py\", line 23\n    L'évaluation calcule plusieurs métriques de qualité, de diversité et de\n     ^\nSyntaxError: unterminated string literal (detected at line 23)\n",
     "test_returncode": 0,
     "test_output": "\n======================================================================\n🔧 PYTEST CONFIGURATION\n======================================================================\n📋 Mode: TEST (Réponses mock activées)\n======================================================================\n\n.........                                                                [100%]\n",
     "benchmark_returncode": 1,
     "benchmark_score": null,
     "benchmark_transfer_verified": false,
     "benchmark_report": {},
-    "benchmark_output": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/tmp/sentinel-candidate-eqge32oo/transfer_benchmark.py\", line 16, in <module>\n    from learning_engine import LearningEngine\n  File \"/tmp/sentinel-candidate-eqge32oo/learning_engine.py\", line 23\n    L'évaluation calcule plusieurs métriques de qualité, de diversité et de\n     ^\nSyntaxError: unterminated string literal (detected at line 23)\n",
+    "benchmark_output": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/tmp/sentinel-candidate-8x73teta/transfer_benchmark.py\", line 16, in <module>\n    from learning_engine import LearningEngine\n  File \"/tmp/sentinel-candidate-8x73teta/learning_engine.py\", line 23\n    L'évaluation calcule plusieurs métriques de qualité, de diversité et de\n     ^\nSyntaxError: unterminated string literal (detected at line 23)\n",
     "baseline_benchmark_score": 1.0,
     "measured_gain": -1.0
   },
-  "created_at": "2026-10-31T04:23:41.438736+00:00"
+  "created_at": "2026-10-31T06:45:41.507352+00:00"
 }
