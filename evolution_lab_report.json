@@ -1,24 +1,24 @@
 {
   "version": 2,
-  "cycle_id": "cycle-20261103T094933-ccfb6a1c7b73",
-  "created_at": "2026-11-03T09:49:45.621251+00:00",
+  "cycle_id": "cycle-20261103T155657-23c21c9887c6",
+  "created_at": "2026-11-03T15:57:09.060261+00:00",
   "experiments": [
     {
-      "cycle_id": "cycle-20261103T094933-ccfb6a1c7b73",
+      "cycle_id": "cycle-20261103T155657-23c21c9887c6",
       "kind": "policy",
-      "decision": "NO_CHANGE_NEEDED",
-      "original_decision": "NO_CHANGE_NEEDED",
+      "decision": "PROMOTED",
+      "original_decision": "PROMOTED",
       "code_promotion_verified": false,
       "changed_files": [],
       "tests_passed": false,
       "baseline_score": 0.789519,
       "candidate_score": 0.789519,
       "measurable_gain": false,
-      "rejection_reason": "observation déjà traitée; aucune nouvelle preuve",
+      "rejection_reason": "adaptation validée par la baseline",
       "coverage_complete": true
     },
     {
-      "cycle_id": "cycle-20261103T094933-ccfb6a1c7b73",
+      "cycle_id": "cycle-20261103T155657-23c21c9887c6",
       "kind": "self_modification",
       "decision": "REJECTED",
       "original_decision": "REJECTED",
@@ -32,7 +32,7 @@
       "coverage_complete": true
     },
     {
-      "cycle_id": "cycle-20261103T094933-ccfb6a1c7b73",
+      "cycle_id": "cycle-20261103T155657-23c21c9887c6",
       "kind": "source_evolution",
       "decision": "ALREADY_LEARNED",
       "original_decision": "ALREADY_LEARNED",
@@ -56,8 +56,8 @@
     "awaiting_review": 0,
     "open_error_patterns": 2,
     "latest": {
-      "cycle_id": "cycle-20261103T094933-ccfb6a1c7b73",
-      "created_at": "2026-11-03T09:49:45.620441+00:00",
+      "cycle_id": "cycle-20261103T155657-23c21c9887c6",
+      "created_at": "2026-11-03T15:57:09.059545+00:00",
       "decision": "ALREADY_LEARNED"
     }
   },
