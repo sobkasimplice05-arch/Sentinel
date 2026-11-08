@@ -1,22 +1,22 @@
 {
   "baseline_score": 0.789519,
   "candidate_score": 0.789519,
-  "created_at": "2026-11-07T23:58:33.868236+00:00",
-  "cycle_id": "cycle-20261107T235833-23c21c9887c6",
-  "decision": "NO_CHANGE_NEEDED",
+  "created_at": "2026-11-08T00:15:30.769589+00:00",
+  "cycle_id": "cycle-20261108T001530-ccfb6a1c7b73",
+  "decision": "PROMOTED",
   "feedback": {
     "baseline_score": 0.789519,
     "candidate_score": 0.789519,
-    "changed": false,
-    "created_at": "2026-11-07T23:58:33.867826+00:00",
-    "cycle_id": "cycle-20261107T235833-23c21c9887c6",
-    "decision": "NO_CHANGE_NEEDED",
-    "observation_hash": "23c21c9887c6374df41dc098cf7b912467ad6e3af54ddc17fb6c0b1b02bb1209",
+    "changed": true,
+    "created_at": "2026-11-08T00:15:30.769002+00:00",
+    "cycle_id": "cycle-20261108T001530-ccfb6a1c7b73",
+    "decision": "PROMOTED",
+    "hypothesis": "Ajuster la fiabilité des sources selon la fraîcheur observée et adapter le seuil selon la couverture des sources.",
+    "observation_hash": "ccfb6a1c7b73f57b4d5b61b1289bea37ba8776542f8b6e5b0985476fffa535e9",
     "policy": {
       "confidence_threshold": 0.5,
       "minimum_sources": 1,
       "observation_history": [
-        "60caa005c4fb59a81e49202ecf55afd1bca1ba4501f1bed8ea8f83ae2b11b854",
         "83b92f633be8bcc456cd50454acb4dc94a81c9b6aa1dcb3fe4537309b0f1d56c",
         "60caa005c4fb59a81e49202ecf55afd1bca1ba4501f1bed8ea8f83ae2b11b854",
         "83b92f633be8bcc456cd50454acb4dc94a81c9b6aa1dcb3fe4537309b0f1d56c",
@@ -215,19 +215,19 @@
         "ccfb6a1c7b73f57b4d5b61b1289bea37ba8776542f8b6e5b0985476fffa535e9",
         "23c21c9887c6374df41dc098cf7b912467ad6e3af54ddc17fb6c0b1b02bb1209",
         "ccfb6a1c7b73f57b4d5b61b1289bea37ba8776542f8b6e5b0985476fffa535e9",
-        "23c21c9887c6374df41dc098cf7b912467ad6e3af54ddc17fb6c0b1b02bb1209"
+        "23c21c9887c6374df41dc098cf7b912467ad6e3af54ddc17fb6c0b1b02bb1209",
+        "ccfb6a1c7b73f57b4d5b61b1289bea37ba8776542f8b6e5b0985476fffa535e9"
       ],
       "source_reliability": {
         "arxiv": 0.899998,
         "github": 0.899998
       },
-      "version": 516
+      "version": 517
     },
     "policy_after": {
       "confidence_threshold": 0.5,
       "minimum_sources": 1,
       "observation_history": [
-        "60caa005c4fb59a81e49202ecf55afd1bca1ba4501f1bed8ea8f83ae2b11b854",
         "83b92f633be8bcc456cd50454acb4dc94a81c9b6aa1dcb3fe4537309b0f1d56c",
         "60caa005c4fb59a81e49202ecf55afd1bca1ba4501f1bed8ea8f83ae2b11b854",
         "83b92f633be8bcc456cd50454acb4dc94a81c9b6aa1dcb3fe4537309b0f1d56c",
@@ -426,13 +426,14 @@
         "ccfb6a1c7b73f57b4d5b61b1289bea37ba8776542f8b6e5b0985476fffa535e9",
         "23c21c9887c6374df41dc098cf7b912467ad6e3af54ddc17fb6c0b1b02bb1209",
         "ccfb6a1c7b73f57b4d5b61b1289bea37ba8776542f8b6e5b0985476fffa535e9",
-        "23c21c9887c6374df41dc098cf7b912467ad6e3af54ddc17fb6c0b1b02bb1209"
+        "23c21c9887c6374df41dc098cf7b912467ad6e3af54ddc17fb6c0b1b02bb1209",
+        "ccfb6a1c7b73f57b4d5b61b1289bea37ba8776542f8b6e5b0985476fffa535e9"
       ],
       "source_reliability": {
         "arxiv": 0.899998,
         "github": 0.899998
       },
-      "version": 516
+      "version": 517
     },
     "policy_before": {
       "confidence_threshold": 0.5,
@@ -645,17 +646,18 @@
       },
       "version": 516
     },
-    "reason": "observation déjà traitée; aucune nouvelle preuve"
+    "reason": "adaptation validée par la baseline"
   },
   "next_actions": [
-    "wait_for_novel_observation",
-    "maintain_current_policy"
+    "reuse_promoted_policy_next_cycle",
+    "measure_source_reliability_again",
+    "search_for_new_observations"
   ],
-  "observation_hash": "23c21c9887c6374df41dc098cf7b912467ad6e3af54ddc17fb6c0b1b02bb1209",
+  "observation_hash": "ccfb6a1c7b73f57b4d5b61b1289bea37ba8776542f8b6e5b0985476fffa535e9",
   "strategy": {
     "confidence": 0.95,
-    "last_decision_at": "2026-11-07T23:58:33.868229+00:00",
-    "last_outcome": "NO_CHANGE_NEEDED",
+    "last_decision_at": "2026-11-08T00:15:30.769580+00:00",
+    "last_outcome": "PROMOTED",
     "name": "evidence_driven_adaptation"
   }
 }
