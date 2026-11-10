@@ -13,7 +13,7 @@
     "evaluate_feedback",
     "self_diagnose_failures"
   ],
-  "cycle_number": 757,
+  "cycle_number": 758,
   "known_failures": [],
   "last_observation_hash": "ccfb6a1c7b73f57b4d5b61b1289bea37ba8776542f8b6e5b0985476fffa535e9",
   "next_actions": [
@@ -23,11 +23,11 @@
   "rejected_experiments": 31,
   "strategy": {
     "confidence": 0.95,
-    "last_decision_at": "2026-11-10T09:10:59.129315+00:00",
+    "last_decision_at": "2026-11-10T16:13:15.322336+00:00",
     "last_outcome": "NO_CHANGE_NEEDED",
     "name": "evidence_driven_adaptation"
   },
   "successful_experiments": 524,
-  "total_plans": 757,
+  "total_plans": 758,
   "version": 1
 }
